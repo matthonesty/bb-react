@@ -1,11 +1,10 @@
 'use client';
 
 import { useAuth } from '@/hooks/useAuth';
-import { Button } from '@/components/ui/Button';
 import { useEffect } from 'react';
 
 export default function Home() {
-  const { isAuthenticated, isLoading, login } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
 
   // Redirect to SRP page if already authenticated
   useEffect(() => {
@@ -39,12 +38,9 @@ export default function Home() {
         <div className="mb-6 flex justify-center">
           <img src="/logo.png" alt="Bombers Bar" className="h-32 w-32" />
         </div>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-8">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
           Welcome to Bombers Bar
         </h1>
-        <Button size="lg" onClick={login}>
-          Login with EVE Online
-        </Button>
       </div>
     </div>
   );
