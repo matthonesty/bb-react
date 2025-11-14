@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Button } from '@/components/ui/Button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
 import { apiClient } from '@/lib/api/client';
 
 export default function FCFeedbackPage() {
-  const { isAuthenticated, isLoading } = useAuth();
   const [formData, setFormData] = useState({
     fc_name: '',
     fleet_date: '',
@@ -72,33 +71,9 @@ export default function FCFeedbackPage() {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-          <p className="mt-4 text-foreground-muted">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return (
-      <div className="mx-auto max-w-2xl px-4 py-12">
-        <Card>
-          <CardContent className="pt-6">
-            <p className="text-center text-foreground-muted">
-              Please log in to submit FC feedback.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
   return (
-    <div className="mx-auto max-w-4xl px-4 py-12">
+    <RequireAuth>
+      <div className="mx-auto max-w-4xl px-4 py-12">
       <Card>
         <CardHeader>
           <CardTitle>FC Feedback</CardTitle>
@@ -377,5 +352,6 @@ export default function FCFeedbackPage() {
         </CardContent>
       </Card>
     </div>
+    </RequireAuth>
   );
 }

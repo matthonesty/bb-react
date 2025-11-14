@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from '@/lib/auth/session';
+import { getPublicSession } from '@/lib/auth/session';
 
 /**
  * POST /api/fc-application - Submit FC application
@@ -12,7 +12,7 @@ import { getServerSession } from '@/lib/auth/session';
 export async function POST(request: NextRequest) {
   try {
     // Require authentication
-    const session = await getServerSession();
+    const session = await getPublicSession();
 
     if (!session) {
       return NextResponse.json({

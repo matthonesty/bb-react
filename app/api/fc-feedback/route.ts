@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerSession } from '@/lib/auth/session';
+import { getPublicSession } from '@/lib/auth/session';
 
 /**
  * POST /api/fc-feedback - Submit FC feedback
@@ -12,7 +12,7 @@ import { getServerSession } from '@/lib/auth/session';
 export async function POST(request: NextRequest) {
   try {
     // Require authentication (but keep feedback anonymous)
-    const session = await getServerSession();
+    const session = await getPublicSession();
 
     if (!session) {
       return NextResponse.json({
