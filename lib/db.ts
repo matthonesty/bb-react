@@ -138,7 +138,8 @@ export async function initializeTables(): Promise<void> {
     // Create wallet journal table
     await pool.query(`
       CREATE TABLE IF NOT EXISTS wallet_journal (
-        id BIGINT PRIMARY KEY,
+        id BIGINT NOT NULL,
+        division INTEGER NOT NULL DEFAULT 1,
         amount NUMERIC NOT NULL,
         balance NUMERIC NOT NULL,
         context_id BIGINT,
@@ -156,7 +157,8 @@ export async function initializeTables(): Promise<void> {
         tax_receiver_id BIGINT,
         tax_receiver_name VARCHAR(255),
         created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+        updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+        PRIMARY KEY (id, division)
       )
     `);
 
@@ -164,6 +166,10 @@ export async function initializeTables(): Promise<void> {
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_ref_type ON wallet_journal(ref_type)`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_context_id ON wallet_journal(context_id)`);
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_reason ON wallet_journal(reason) WHERE reason IS NOT NULL`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_division ON wallet_journal(division)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_division_date ON wallet_journal(division, date DESC)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_division_reftype_date ON wallet_journal(division, ref_type, date DESC)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_div4_date ON wallet_journal(date DESC) WHERE division = 4`);
 
     // Create fleet commanders table
     await pool.query(`

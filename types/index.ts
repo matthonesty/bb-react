@@ -124,6 +124,26 @@ export interface WalletTransaction {
   created_at: string;
 }
 
+export interface WalletJournalEntry {
+  id: number;
+  division: number;
+  date: string;
+  ref_type: string;
+  amount: number;
+  balance: number;
+  first_party_id: number | null;
+  first_party_name: string | null;
+  second_party_id: number | null;
+  second_party_name: string | null;
+  context_id: number | null;
+  context_id_name: string | null;
+  reason: string | null;
+  description: string | null;
+  tax: number | null;
+  tax_receiver_id: number | null;
+  tax_receiver_name: string | null;
+}
+
 // UI Component Props Types
 export interface TableColumn<T> {
   key: keyof T | string;

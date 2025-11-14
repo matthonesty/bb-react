@@ -22,6 +22,11 @@ export const NAV_ITEMS: NavItem[] = [
     href: '/mail',
     roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
   },
+  {
+    label: 'Wallet',
+    href: '/wallet',
+    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+  },
 ];
 
 export const DEFAULT_PAGE_SIZE = 50;
