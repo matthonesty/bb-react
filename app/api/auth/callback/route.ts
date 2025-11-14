@@ -120,15 +120,14 @@ export async function GET(request: NextRequest) {
         console.log('[CALLBACK] Mailer refresh token stored in database for persistent ESI operations');
         console.log('[CALLBACK] Authorized Character:', characterInfo.CharacterName, '(ID:', characterInfo.CharacterID + ')');
 
-        // Clear state cookie
-        const response = NextResponse.redirect(new URL(returnUrl || '/admin', request.url));
-        response.cookies.delete('auth_state');
-
-        // Show success message by redirecting with query param
-        const successUrl = new URL(returnUrl || '/admin', request.url);
+        // Clear state cookie and redirect to home
+        const successUrl = new URL(returnUrl || '/', request.url);
         successUrl.searchParams.set('mailer_authorized', 'true');
 
-        return NextResponse.redirect(successUrl);
+        const response = NextResponse.redirect(successUrl);
+        response.cookies.delete('auth_state');
+
+        return response;
       } catch (error: any) {
         console.error('[CALLBACK] Failed to store mailer refresh token:', error);
         return NextResponse.json(
