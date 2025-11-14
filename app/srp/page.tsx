@@ -1,27 +1,41 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { SRPTable } from '@/components/srp/SRPTable';
 import { SRPFilters } from '@/components/srp/SRPFilters';
+import { SRPDetailView } from '@/components/srp/SRPDetailView';
 import { Card } from '@/components/ui/Card';
 import type { SRPStatus } from '@/types';
 
-export default function SRPPage() {
+function SRPContent() {
   useEffect(() => {
     document.title = 'Ship Replacement Program - Bombers Bar';
   }, []);
   const { user, hasRole } = useAuth();
+  const searchParams = useSearchParams();
+  const srpId = searchParams.get('id');
+
   const [statusFilter, setStatusFilter] = useState<SRPStatus | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
 
   const isAdmin = hasRole(['admin', 'Council', 'Accountant']);
 
-  return (
-    <RequireAuth requireFCRole>
+  // If an SRP ID is provided, show detail view
+  if (srpId) {
+    return (
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <SRPDetailView srpId={srpId} isAdmin={isAdmin} />
+      </div>
+    );
+  }
+
+  // Otherwise show the normal table view
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Page Header */}
       <div className="mb-8">
         <div className="mb-4">
@@ -52,6 +66,24 @@ export default function SRPPage() {
         />
       </Card>
     </div>
+  );
+}
+
+export default function SRPPage() {
+  return (
+    <RequireAuth requireFCRole>
+      <Suspense fallback={
+        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center p-12">
+            <div className="text-center">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+              <p className="mt-4 text-foreground-muted">Loading...</p>
+            </div>
+          </div>
+        </div>
+      }>
+        <SRPContent />
+      </Suspense>
     </RequireAuth>
   );
 }
