@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { RequireAuth } from '@/components/auth/RequireAuth';
 import { ProcessedMailsTable } from '@/components/mail/ProcessedMailsTable';
 
 export default function ProcessedMailsPage() {
-  const { user, isAuthenticated, isLoading, hasAnyRole } = useAuth();
+  const { user } = useAuth();
   const [isViewOnly, setIsViewOnly] = useState(false);
 
   useEffect(() => {
@@ -20,73 +21,9 @@ export default function ProcessedMailsPage() {
     }
   }, [user]);
 
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-          <p className="mt-4 text-foreground-muted">Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  // Require authentication
-  if (!isAuthenticated) {
-    return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="max-w-md w-full bg-card-bg border border-card-border rounded-lg shadow-lg">
-          <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Authentication Required
-            </h1>
-            <p className="text-foreground-muted mb-6">
-              Please log in to continue.
-            </p>
-            <img
-              src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
-              alt="Login with EVE Online"
-              onClick={() => {
-                const returnUrl = encodeURIComponent(window.location.pathname);
-                window.location.href = `/api/auth/login?return_url=${returnUrl}`;
-              }}
-              className="cursor-pointer hover:opacity-80 transition-opacity mx-auto"
-            />
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Require any active FC role (anyone in fleet_commanders with active status)
-  // This includes: admin, Council, Accountant, OBomberCare, FC, Election Officer
-  const hasAccess = user && user.roles.length > 1; // More than just 'user' role
-  if (!hasAccess) {
-    return (
-      <div className="flex min-h-screen items-center justify-center px-4">
-        <div className="max-w-md w-full bg-card-bg border border-card-border rounded-lg shadow-lg">
-          <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Access Denied
-            </h1>
-            <p className="text-foreground-muted mb-6">
-              You do not have permission to access this page.
-            </p>
-            <button
-              onClick={() => window.location.href = '/'}
-              className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
-            >
-              Go Home
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <div className="container mx-auto px-4 py-8">
+    <RequireAuth requireFCRole>
+      <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground mb-2">Processed Mails</h1>
         <p className="text-foreground-muted">
@@ -96,5 +33,6 @@ export default function ProcessedMailsPage() {
 
       <ProcessedMailsTable isViewOnly={isViewOnly} />
     </div>
+    </RequireAuth>
   );
 }
