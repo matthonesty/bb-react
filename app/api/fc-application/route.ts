@@ -49,82 +49,35 @@ export async function POST(request: NextRequest) {
       }, { status: 400 });
     }
 
-    // Build Discord embed
+    // Build Discord embed with each answer on its own line
+    const description = [
+      `**Applicant Character:** ${session.character_name}`,
+      `**Character ID:** ${session.character_id}`,
+      `**Main Character (Self-Reported):** ${main_character}`,
+      `**Discord Name:** ${body.discord_name || 'Same as main'}`,
+      ``,
+      `**BLOPS Experience:** ${blops_experience}`,
+      `**Hunter Experience:** ${hunter_experience}`,
+      `**Bridge Experience:** ${bridge_experience}`,
+      `**Roller Experience:** ${roller_experience}`,
+      `**Familiar with Fleet Types:** ${familiar_fleet_types}`,
+      `**Time with BB:** ${bb_duration}`,
+      `**Preferred Timezones:** ${timezones}`,
+      ``,
+      `**Prior FC Experience:**`,
+      prior_fc_experience.substring(0, 1024),
+      ``,
+      `**Desired Fleet Types:**`,
+      fleet_types.substring(0, 1024),
+      ``,
+      `**Motivation:**`,
+      motivation.substring(0, 1024)
+    ].join('\n');
+
     const embed = {
       title: 'New FC Application',
+      description: description.substring(0, 4096), // Discord limit
       color: 0x22c55e, // Green color for applications
-      fields: [
-        {
-          name: 'Applicant Character',
-          value: session.character_name,
-          inline: true
-        },
-        {
-          name: 'Character ID',
-          value: session.character_id.toString(),
-          inline: true
-        },
-        {
-          name: 'Main Character (Self-Reported)',
-          value: main_character,
-          inline: true
-        },
-        {
-          name: 'Discord Name',
-          value: body.discord_name || 'Same as main',
-          inline: true
-        },
-        {
-          name: 'BLOPS Experience',
-          value: blops_experience,
-          inline: true
-        },
-        {
-          name: 'Hunter Experience',
-          value: hunter_experience,
-          inline: true
-        },
-        {
-          name: 'Bridge Experience',
-          value: bridge_experience,
-          inline: true
-        },
-        {
-          name: 'Roller Experience',
-          value: roller_experience,
-          inline: true
-        },
-        {
-          name: 'Familiar with Fleet Types',
-          value: familiar_fleet_types,
-          inline: true
-        },
-        {
-          name: 'Time with BB',
-          value: bb_duration,
-          inline: true
-        },
-        {
-          name: 'Preferred Timezones',
-          value: timezones,
-          inline: false
-        },
-        {
-          name: 'Prior FC Experience',
-          value: prior_fc_experience.substring(0, 1024),
-          inline: false
-        },
-        {
-          name: 'Desired Fleet Types',
-          value: fleet_types.substring(0, 1024),
-          inline: false
-        },
-        {
-          name: 'Motivation',
-          value: motivation.substring(0, 1024),
-          inline: false
-        }
-      ],
       timestamp: new Date().toISOString(),
       footer: {
         text: `Applied via ${session.character_name}`
