@@ -7,10 +7,15 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { apiClient } from '@/lib/api/client';
 
 export default function BombingIntelPage() {
+  // Get current UTC date and time for defaults
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  const currentTime = now.toISOString().split('T')[1].substring(0, 5); // HH:MM
+
   const [formData, setFormData] = useState({
     target_location: '',
-    timer_date: '',
-    timer_time: '',
+    timer_date: currentDate,
+    timer_time: currentTime,
     affiliation: '',
     target_description: '',
     expected_doctrines: '',
@@ -39,11 +44,15 @@ export default function BombingIntelPage() {
         type: 'success',
         message: 'Intel submitted successfully! Thank you for contributing.'
       });
-      // Reset form
+      // Reset form with fresh UTC date/time
+      const resetNow = new Date();
+      const resetDate = resetNow.toISOString().split('T')[0];
+      const resetTime = resetNow.toISOString().split('T')[1].substring(0, 5);
+
       setFormData({
         target_location: '',
-        timer_date: '',
-        timer_time: '',
+        timer_date: resetDate,
+        timer_time: resetTime,
         affiliation: '',
         target_description: '',
         expected_doctrines: '',
@@ -103,7 +112,7 @@ export default function BombingIntelPage() {
                   value={formData.timer_date}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary [color-scheme:dark]"
                 />
               </div>
 
@@ -118,7 +127,7 @@ export default function BombingIntelPage() {
                   value={formData.timer_time}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary [color-scheme:dark]"
                 />
               </div>
             </div>

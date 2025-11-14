@@ -7,10 +7,15 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/com
 import { apiClient } from '@/lib/api/client';
 
 export default function FCFeedbackPage() {
+  // Get current UTC date and time for defaults
+  const now = new Date();
+  const currentDate = now.toISOString().split('T')[0]; // YYYY-MM-DD
+  const currentTime = now.toISOString().split('T')[1].substring(0, 5); // HH:MM
+
   const [formData, setFormData] = useState({
     fc_name: '',
-    fleet_date: '',
-    fleet_time: '',
+    fleet_date: currentDate,
+    fleet_time: currentTime,
     fleet_type: '',
     fleet_length: '',
     was_clear: '',
@@ -44,11 +49,15 @@ export default function FCFeedbackPage() {
         type: 'success',
         message: 'Feedback submitted successfully! Thank you.'
       });
-      // Reset form
+      // Reset form with fresh UTC date/time
+      const resetNow = new Date();
+      const resetDate = resetNow.toISOString().split('T')[0];
+      const resetTime = resetNow.toISOString().split('T')[1].substring(0, 5);
+
       setFormData({
         fc_name: '',
-        fleet_date: '',
-        fleet_time: '',
+        fleet_date: resetDate,
+        fleet_time: resetTime,
         fleet_type: '',
         fleet_length: '',
         was_clear: '',
@@ -112,7 +121,7 @@ export default function FCFeedbackPage() {
                   value={formData.fleet_date}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary [color-scheme:dark]"
                 />
               </div>
 
@@ -127,7 +136,7 @@ export default function FCFeedbackPage() {
                   value={formData.fleet_time}
                   onChange={handleChange}
                   required
-                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-md border border-border bg-background px-3 py-2 text-foreground focus:outline-none focus:ring-2 focus:ring-primary [color-scheme:dark]"
                 />
               </div>
 
