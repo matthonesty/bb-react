@@ -21,7 +21,7 @@ export interface Session {
  * Get the current user session from cookies
  * Returns null if not authenticated
  */
-export async function getServerSession(): Promise<Session | null> {
+export async function getServerSession(requireAuthorizedRole: boolean = true): Promise<Session | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
@@ -34,8 +34,17 @@ export async function getServerSession(): Promise<Session | null> {
     const decoded = jwt.verify(token, JWT_SECRET) as Session;
 
     // Re-check roles from database to ensure they're up-to-date
-    const { getRoles } = require('@/lib/auth/roles');
+    const { getRoles, isAuthorizedRole } = require('@/lib/auth/roles');
     const currentRoles = await getRoles(decoded.character_id);
+
+    // If requireAuthorizedRole is true, check for fleet_commanders access
+    if (requireAuthorizedRole) {
+      const hasAuthorizedRole = currentRoles.some((role: string) => isAuthorizedRole(role));
+
+      if (!hasAuthorizedRole) {
+        return null;
+      }
+    }
 
     // Return session with current roles from database
     return {
@@ -46,6 +55,14 @@ export async function getServerSession(): Promise<Session | null> {
     console.error('[AUTH] Session verification failed:', error);
     return null;
   }
+}
+
+/**
+ * Get session for standalone pages that don't require fleet_commanders access
+ * Allows any authenticated EVE user
+ */
+export async function getPublicSession(): Promise<Session | null> {
+  return getServerSession(false);
 }
 
 /**

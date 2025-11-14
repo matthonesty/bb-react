@@ -2,6 +2,9 @@
  * Application constants and configuration
  */
 
+// Import ROLES for consistent role references (from roleConstants to avoid importing database code)
+const { ROLES } = require('@/lib/auth/roleConstants');
+
 export interface NavItem {
   label: string;
   href: string;
@@ -16,7 +19,7 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: 'Processed Mails',
     href: '/mail',
-    roles: ['admin', 'Council', 'Accountant', 'FC'],
+    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.FC],
   },
 ];
 

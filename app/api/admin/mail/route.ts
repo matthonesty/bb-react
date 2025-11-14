@@ -34,8 +34,9 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
+  const { ROLES } = require('@/lib/auth/roles');
   const isAdmin = session.roles?.some(role =>
-    ['admin', 'Council', 'Accountant'].includes(role)
+    [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT].includes(role)
   );
 
   if (!isAdmin) {

@@ -139,15 +139,12 @@ export async function GET(request: NextRequest) {
 
     // Regular user login flow
     // Get roles from database (checks ADMIN_CHARACTER_IDS and fleet_commanders table)
-    const { getRoles } = require('@/lib/auth/roles');
+    const { getRoles, hasAuthorizedAccess } = require('@/lib/auth/roles');
     const roles = await getRoles(characterInfo.CharacterID);
+    const hasAccess = await hasAuthorizedAccess(characterInfo.CharacterID);
 
     // Check if user has any authorized role (admin or FC role from fleet_commanders)
-    const hasAuthorizedRole = roles.some((role: string) =>
-      ['admin', 'Council', 'Accountant', 'OBomberCare', 'FC'].includes(role)
-    );
-
-    if (!hasAuthorizedRole) {
+    if (!hasAccess) {
       console.log('[CALLBACK] User not authorized:', characterInfo.CharacterName, '(ID:', characterInfo.CharacterID + ')');
       console.log('[CALLBACK] User roles:', roles);
 

@@ -298,6 +298,7 @@ class Database {
           id SERIAL PRIMARY KEY,
           status VARCHAR(50) NOT NULL DEFAULT 'active',
           rank VARCHAR(100) NOT NULL,
+          access_level VARCHAR(50),
           main_character_id BIGINT NOT NULL,
           main_character_name VARCHAR(255) NOT NULL,
           bb_corp_alt_id BIGINT,

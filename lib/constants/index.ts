@@ -1,5 +1,8 @@
 import type { UserRole, SRPStatus, FCRank } from '@/types';
 
+// Import ROLES for consistent role references (from roleConstants to avoid importing database code)
+const { ROLES } = require('@/lib/auth/roleConstants');
+
 /**
  * Application constants and configuration
  */
@@ -9,25 +12,25 @@ export const APP_SHORT_NAME = 'BB';
 
 // User Roles with permissions
 export const USER_ROLES: UserRole[] = [
-  'admin',
-  'Council',
-  'Accountant',
-  'OBomberCare',
-  'FC',
-  'User',
+  ROLES.ADMIN,
+  ROLES.COUNCIL,
+  ROLES.ACCOUNTANT,
+  ROLES.OBOMBERCARE,
+  ROLES.FC,
+  ROLES.USER,
 ];
 
 // Admin roles that have elevated permissions
-export const ADMIN_ROLES: UserRole[] = ['admin', 'Council'];
+export const ADMIN_ROLES: UserRole[] = [ROLES.ADMIN, ROLES.COUNCIL];
 
 // Roles that can manage SRP
-export const SRP_MANAGER_ROLES: UserRole[] = ['admin', 'Council', 'Accountant'];
+export const SRP_MANAGER_ROLES: UserRole[] = [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT];
 
 // Roles that can manage fleets
 export const FLEET_MANAGER_ROLES: UserRole[] = [
-  'admin',
-  'Council',
-  'OBomberCare',
+  ROLES.ADMIN,
+  ROLES.COUNCIL,
+  ROLES.OBOMBERCARE,
 ];
 
 // SRP Status options
@@ -81,7 +84,7 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: 'Wallet',
     href: '/wallet',
-    roles: ['admin', 'Council', 'Accountant'],
+    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT],
     icon: 'Wallet',
   },
   {
@@ -104,7 +107,7 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: 'System',
     href: '/system',
-    roles: ['admin'],
+    roles: [ROLES.ADMIN],
     icon: 'Settings',
   },
 ];

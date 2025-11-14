@@ -39,9 +39,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has any authorized role
-    const hasAuthorizedRole = user.roles?.some((role: string) =>
-      ['admin', 'Council', 'Accountant', 'OBomberCare', 'FC'].includes(role)
-    );
+    const { isAuthorizedRole } = require('@/lib/auth/roles');
+    const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
 
     if (!hasAuthorizedRole) {
       return NextResponse.json(

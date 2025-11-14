@@ -30,9 +30,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const isAdmin = session.roles?.some(role =>
-    ['admin', 'Council', 'Accountant', 'FC'].includes(role)
-  );
+  const { isAuthorizedRole } = require('@/lib/auth/roles');
+  const isAdmin = session.roles?.some(role => isAuthorizedRole(role));
 
   if (!isAdmin) {
     return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -141,8 +140,9 @@ export async function DELETE(request: NextRequest) {
   }
 
   // FC and Accountant are view-only, cannot delete
+  const { ROLES } = require('@/lib/auth/roles');
   const isAdmin = session.roles?.some(role =>
-    ['admin', 'Council'].includes(role)
+    [ROLES.ADMIN, ROLES.COUNCIL].includes(role)
   );
 
   if (!isAdmin) {
