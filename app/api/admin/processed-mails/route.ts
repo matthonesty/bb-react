@@ -1,14 +1,13 @@
 /**
  * @fileoverview Admin API for Processed Mails
  *
- * Allows admins to view and manage processed mails from the mailer system.
+ * Allows admins to view processed mails from the mailer system.
  * Requires admin authentication.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
-import { isAuthorizedRole, ROLES } from '@/lib/auth/roles';
-
+import { isAuthorizedRole } from '@/lib/auth/roles';
 import pool from '@/lib/db';
 
 /**
@@ -121,62 +120,3 @@ export async function GET(request: NextRequest) {
   }
 }
 
-/**
- * DELETE /api/admin/processed-mails
- *
- * Delete a processed mail (allows reprocessing on next cron run)
- * Query params:
- * - mail_id: required
- */
-export async function DELETE(request: NextRequest) {
-  // Check authentication and admin role
-  const session = await getServerSession();
-
-  if (!session) {
-    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
-  }
-
-  // FC and Accountant are view-only, cannot delete
-  const isAdmin = session.roles?.some(role =>
-    [ROLES.ADMIN, ROLES.COUNCIL].includes(role as any)
-  );
-
-  if (!isAdmin) {
-    return NextResponse.json({ error: 'Admin or Council access required' }, { status: 403 });
-  }
-
-  try {
-    const searchParams = request.nextUrl.searchParams;
-    const mail_id = searchParams.get('mail_id');
-
-    if (!mail_id) {
-      return NextResponse.json(
-        { success: false, error: 'Missing required parameter: mail_id' },
-        { status: 400 }
-      );
-    }
-
-    const result = await pool.query(
-      'DELETE FROM processed_mails WHERE mail_id = $1 RETURNING *',
-      [mail_id]
-    );
-
-    if (result.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Processed mail not found' },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      message: 'Processed mail deleted successfully'
-    });
-  } catch (error: any) {
-    console.error('[ADMIN] Delete processed mail error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
-  }
-}

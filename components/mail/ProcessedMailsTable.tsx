@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Trash2 } from 'lucide-react';
+import Link from 'next/link';
 import { formatDate } from '@/lib/utils/format';
 
 interface ProcessedMail {
@@ -22,11 +22,7 @@ interface ProcessedMailDetail extends ProcessedMail {
   killmail_data?: any;
 }
 
-interface ProcessedMailsTableProps {
-  isViewOnly: boolean;
-}
-
-export function ProcessedMailsTable({ isViewOnly }: ProcessedMailsTableProps) {
+export function ProcessedMailsTable() {
   const [mails, setMails] = useState<ProcessedMail[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -102,28 +98,6 @@ export function ProcessedMailsTable({ isViewOnly }: ProcessedMailsTableProps) {
     }
   }
 
-  async function deleteMail(mailId: number) {
-    if (!confirm(`Are you sure you want to delete mail ${mailId}? This will allow it to be reprocessed on the next cron run.`)) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/admin/processed-mails?mail_id=${mailId}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to delete mail');
-      }
-
-      loadMails();
-    } catch (err: any) {
-      alert('Failed to delete mail: ' + err.message);
-    }
-  }
-
   const filteredMails = mails.filter(mail =>
     mail.sender_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -189,13 +163,12 @@ export function ProcessedMailsTable({ isViewOnly }: ProcessedMailsTableProps) {
                 <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Status</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Processed At</th>
                 <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">SRP Request</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {loading && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-foreground-muted">
+                  <td colSpan={5} className="px-4 py-12 text-center text-foreground-muted">
                     Loading processed mails...
                   </td>
                 </tr>
@@ -203,7 +176,7 @@ export function ProcessedMailsTable({ isViewOnly }: ProcessedMailsTableProps) {
 
               {!loading && filteredMails.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-4 py-12 text-center text-foreground-muted">
+                  <td colSpan={5} className="px-4 py-12 text-center text-foreground-muted">
                     No processed mails found
                   </td>
                 </tr>
@@ -225,25 +198,23 @@ export function ProcessedMailsTable({ isViewOnly }: ProcessedMailsTableProps) {
                     <td className="px-4 py-3 text-sm text-foreground-muted">
                       {formatDate(mail.processed_at, 'MMM d, yyyy HH:mm')}
                     </td>
-                    <td className="px-4 py-3 text-sm text-foreground">{mail.srp_request_id || '-'}</td>
-                    <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                      {!isViewOnly ? (
-                        <button
-                          onClick={() => deleteMail(mail.mail_id)}
-                          className="text-danger hover:text-danger/80 transition-colors"
-                          title="Delete mail"
+                    <td className="px-4 py-3 text-sm" onClick={(e) => e.stopPropagation()}>
+                      {mail.srp_request_id ? (
+                        <Link
+                          href={`/srp?id=${mail.srp_request_id}`}
+                          className="text-primary hover:underline"
                         >
-                          <Trash2 size={16} />
-                        </button>
+                          {mail.srp_request_id}
+                        </Link>
                       ) : (
-                        <span className="text-xs text-foreground-muted">View Only</span>
+                        '-'
                       )}
                     </td>
                   </tr>
 
                   {expandedMailId === mail.mail_id && (
                     <tr>
-                      <td colSpan={6} className="px-4 py-4 bg-background-secondary/50">
+                      <td colSpan={5} className="px-4 py-4 bg-background-secondary/50">
                         <MailDetail
                           mail={expandedMailData[mail.mail_id]}
                           loading={!expandedMailData[mail.mail_id]}
