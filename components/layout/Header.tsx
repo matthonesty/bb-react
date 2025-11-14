@@ -6,6 +6,12 @@ import { useAuth } from '@/hooks/useAuth';
 import { NAV_ITEMS } from '@/lib/constants';
 import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 
+const FORM_ITEMS = [
+  { label: 'FC Feedback', href: '/fc-feedback' },
+  { label: 'FC Application', href: '/fc-application' },
+  { label: 'Bombing Intel', href: '/bombing-intel' },
+];
+
 /**
  * Header component with navigation and user menu
  * Includes mobile responsive hamburger menu
@@ -14,6 +20,7 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  const [formsMenuOpen, setFormsMenuOpen] = useState(false);
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (!item.roles) return true;
@@ -39,19 +46,50 @@ export function Header() {
           </div>
 
           {/* Desktop Navigation */}
-          {isAuthenticated && (
-            <nav className="hidden md:flex md:items-center md:space-x-1">
-              {visibleNavItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
-                >
-                  {item.label}
-                </Link>
-              ))}
-            </nav>
-          )}
+          <nav className="hidden md:flex md:items-center md:space-x-1">
+            {/* Forms Dropdown - Always visible */}
+            <div className="relative">
+              <button
+                onClick={() => setFormsMenuOpen(!formsMenuOpen)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors flex items-center space-x-1"
+              >
+                <span>Forms</span>
+                <ChevronDown size={16} />
+              </button>
+
+              {formsMenuOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setFormsMenuOpen(false)}
+                  />
+                  <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                    {FORM_ITEMS.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setFormsMenuOpen(false)}
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
+                      >
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Authenticated user nav items */}
+            {isAuthenticated && visibleNavItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
 
           {/* Desktop User Menu */}
           {isAuthenticated && user ? (
@@ -115,22 +153,43 @@ export function Header() {
       </div>
 
       {/* Mobile Navigation */}
-      {mobileMenuOpen && isAuthenticated && (
+      {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background-secondary">
           <nav className="px-4 py-3 space-y-1">
-            {visibleNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {/* Forms section - Always visible */}
+            <div className="mb-2">
+              <p className="px-3 py-2 text-xs font-semibold text-foreground-muted uppercase">Forms</p>
+              {FORM_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Authenticated user nav items */}
+            {isAuthenticated && visibleNavItems.length > 0 && (
+              <div className="border-t border-border pt-2">
+                {visibleNavItems.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            )}
           </nav>
 
-          {user && (
+          {/* User profile section (authenticated only) */}
+          {isAuthenticated && user && (
             <div className="border-t border-border px-4 py-3">
               <div className="mb-2 flex items-center space-x-2">
                 <img
@@ -159,21 +218,21 @@ export function Header() {
               </button>
             </div>
           )}
-        </div>
-      )}
 
-      {/* Mobile Login Menu */}
-      {mobileMenuOpen && !isAuthenticated && (
-        <div className="md:hidden border-t border-border bg-background-secondary px-4 py-3">
-          <img
-            src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
-            alt="Login with EVE Online"
-            onClick={() => {
-              const returnUrl = encodeURIComponent(window.location.pathname);
-              window.location.href = `/api/auth/login?return_url=${returnUrl}`;
-            }}
-            className="cursor-pointer hover:opacity-80 transition-opacity"
-          />
+          {/* Login section (unauthenticated only) */}
+          {!isAuthenticated && (
+            <div className="border-t border-border px-4 py-3">
+              <img
+                src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
+                alt="Login with EVE Online"
+                onClick={() => {
+                  const returnUrl = encodeURIComponent(window.location.pathname);
+                  window.location.href = `/api/auth/login?return_url=${returnUrl}`;
+                }}
+                className="cursor-pointer hover:opacity-80 transition-opacity"
+              />
+            </div>
+          )}
         </div>
       )}
     </header>
