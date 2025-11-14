@@ -161,7 +161,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         success: false,
         error: 'Mailer character ID not configured',
-        hint: 'Set EVE_MAILER_CHARACTER_ID environment variable'
+        hint: 'Set MAILER_CHARACTER_ID environment variable'
       }, { status: 500 });
     }
 
