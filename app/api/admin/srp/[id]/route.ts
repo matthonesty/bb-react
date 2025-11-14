@@ -30,7 +30,7 @@ async function verifyAuth(request: NextRequest) {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verify authentication
@@ -52,20 +52,20 @@ export async function GET(
       );
     }
 
-    const { id } = await params;
-    const srpId = parseInt(id);
+    const { id } = await context.params;
+    const numericId = parseInt(id);
 
-    if (isNaN(srpId)) {
+    if (isNaN(numericId)) {
       return NextResponse.json(
-        { error: 'Invalid SRP ID' },
+        { error: 'Invalid ID' },
         { status: 400 }
       );
     }
 
-    // Fetch the SRP request
+    // Fetch the SRP request by either SRP ID or killmail ID
     const result = await pool.query(
-      `SELECT * FROM srp_requests WHERE id = $1`,
-      [srpId]
+      `SELECT * FROM srp_requests WHERE id = $1 OR killmail_id = $1`,
+      [numericId]
     );
 
     if (result.rows.length === 0) {
