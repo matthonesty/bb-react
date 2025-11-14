@@ -1,65 +1,144 @@
-import Image from "next/image";
+'use client';
+
+import { useAuth } from '@/hooks/useAuth';
+import { Button } from '@/components/ui/Button';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/Card';
+import { Shield, Users, Rocket, Target } from 'lucide-react';
+import { redirect } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function Home() {
+  const { isAuthenticated, isLoading, login } = useAuth();
+
+  // Redirect to SRP page if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && !isLoading) {
+      window.location.href = '/srp';
+    }
+  }, [isAuthenticated, isLoading]);
+
+  // Only show loading if we're authenticated (brief redirect loading)
+  if (isLoading && isAuthenticated) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+          <p className="mt-4 text-foreground-muted">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // If authenticated, show nothing (about to redirect)
+  if (isAuthenticated) {
+    return null;
+  }
+
+  // Show landing page for unauthenticated users
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+      {/* Hero Section */}
+      <div className="text-center mb-16">
+        <div className="mb-6 flex justify-center">
+          <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-primary">
+            <span className="text-4xl font-bold text-white">BB</span>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-4">
+          Welcome to Bombers Bar
+        </h1>
+        <p className="text-xl text-foreground-muted max-w-2xl mx-auto mb-8">
+          Elite bomber fleet operations in EVE Online. Join us for coordinated
+          attacks, ship replacement programs, and more.
+        </p>
+        <Button size="lg" onClick={login}>
+          Login with EVE Online
+        </Button>
+      </div>
+
+      {/* Features Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <Card variant="bordered">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Shield className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">SRP</h3>
+              <p className="text-sm text-foreground-muted">
+                Ship Replacement Program to cover your losses
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card variant="bordered">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Users className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Fleet Ops</h3>
+              <p className="text-sm text-foreground-muted">
+                Organized fleet operations with experienced FCs
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card variant="bordered">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Rocket className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Doctrines</h3>
+              <p className="text-sm text-foreground-muted">
+                Optimized bomber fits and fleet compositions
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card variant="bordered">
+          <CardContent className="pt-6">
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
+                <Target className="h-6 w-6 text-primary" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Intel</h3>
+              <p className="text-sm text-foreground-muted">
+                Bombing run intelligence and target tracking
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* About Section */}
+      <Card variant="bordered" padding="lg">
+        <CardHeader>
+          <CardTitle>About Bombers Bar</CardTitle>
+          <CardDescription>
+            Your premier stealth bomber community in EVE Online
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="prose prose-invert max-w-none">
+            <p className="text-foreground-muted">
+              Bombers Bar is a public NPSI (Not Purple Shoot It) community focused on
+              stealth bomber fleet operations in EVE Online. We run regular fleets
+              targeting high-value targets across New Eden.
+            </p>
+            <p className="text-foreground-muted mt-4">
+              Our Ship Replacement Program (SRP) ensures that pilots who follow
+              doctrine and FC commands will have their losses covered. Join us for
+              exciting bombing runs and coordinated attacks.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

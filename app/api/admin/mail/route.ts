@@ -1,0 +1,147 @@
+/**
+ * @fileoverview Admin Mail Management Endpoint
+ *
+ * Allows admins to read EVE in-game mail and manually trigger mail processing.
+ * Requires admin authentication.
+ */
+
+import { NextRequest, NextResponse } from 'next/server';
+import { getServerSession } from '@/lib/auth/session';
+import { getMailerAccessToken } from '@/lib/mailerToken';
+import { getMailHeaders, getMailContent, getMailLabels, MAILER_CHARACTER_ID } from '@/lib/esi/mail';
+import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
+import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
+import { checkESIHealth } from '@/lib/esi/status';
+import Database from '@/src/database';
+
+/**
+ * GET /api/admin/mail
+ *
+ * Get mail headers for admin character or process mails
+ * Query params:
+ * - mailId: optional mail ID to get specific mail content
+ * - labels: optional, if true, returns labels instead of mail
+ * - processMails: if true, processes mails for SRP
+ */
+export async function GET(request: NextRequest) {
+  // Check authentication and admin role
+  const session = await getServerSession();
+
+  if (!session) {
+    return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+  }
+
+  const isAdmin = session.roles?.some(role =>
+    ['admin', 'Council', 'Accountant'].includes(role)
+  );
+
+  if (!isAdmin) {
+    return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
+  }
+
+  try {
+    // Get mailer service account access token
+    let accessToken;
+    try {
+      accessToken = await getMailerAccessToken();
+    } catch (error: any) {
+      return NextResponse.json({
+        error: 'No mailer token available',
+        hint: 'Admin must authorize mailer service account via /auth/mailer-login first',
+        details: error.message
+      }, { status: 500 });
+    }
+
+    // Use mailer service account character ID
+    const characterId = MAILER_CHARACTER_ID;
+
+    const searchParams = request.nextUrl.searchParams;
+    const mailId = searchParams.get('mailId');
+    const labels = searchParams.get('labels');
+    const processMails = searchParams.get('processMails');
+
+    // Get specific mail content if mailId provided
+    if (mailId) {
+      const mail = await getMailContent(accessToken, characterId, parseInt(mailId));
+
+      return NextResponse.json({
+        success: true,
+        mail: mail
+      });
+    }
+
+    // Get labels if requested
+    if (labels === 'true') {
+      const labelsData = await getMailLabels(accessToken, characterId);
+
+      return NextResponse.json({
+        success: true,
+        labels: labelsData
+      });
+    }
+
+    // Get mail headers (list)
+    const options: any = {};
+    const lastMailId = searchParams.get('lastMailId');
+    if (lastMailId) {
+      options.lastMailId = parseInt(lastMailId);
+    }
+
+    const mailHeaders = await getMailHeaders(accessToken, characterId, options);
+
+    // Sort by timestamp descending (newest first)
+    mailHeaders.sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    // Auto-process mails for SRP if requested
+    let processingResults = null;
+    let queueResults = null;
+    if (processMails === 'true') {
+      // Check ESI health before processing
+      console.log('[ADMIN MAIL] Checking ESI health status...');
+      const health = await checkESIHealth();
+
+      if (!health.healthy) {
+        console.error('[ADMIN MAIL] ESI unhealthy, cannot process mails:', health.issues.join(', '));
+        return NextResponse.json({
+          success: false,
+          error: 'ESI is currently unhealthy',
+          esi_status: 'UNHEALTHY',
+          issues: health.issues,
+          warnings: health.warnings,
+          hint: 'Wait for ESI to recover before processing mails'
+        }, { status: 503 });
+      }
+
+      if (health.warnings.length > 0) {
+        console.warn('[ADMIN MAIL] ESI degraded but proceeding:', health.warnings.join(', '));
+      }
+
+      const db = await Database.getInstance();
+
+      // Step 1: Process incoming mails (queues rejection/confirmation mails)
+      processingResults = await processMailsForSRP({
+        accessToken,
+        characterId,
+        mailHeaders,
+        db
+      });
+
+      // Step 2: Send queued mails with rate limiting
+      queueResults = await sendQueuedMails(accessToken);
+    }
+
+    return NextResponse.json({
+      success: true,
+      mailHeaders: mailHeaders,
+      count: mailHeaders.length,
+      processingResults: processingResults,
+      queueResults: queueResults
+    });
+  } catch (error: any) {
+    console.error('[ADMIN] Mail read error:', error);
+    return NextResponse.json({
+      success: false,
+      error: error.message
+    }, { status: 500 });
+  }
+}

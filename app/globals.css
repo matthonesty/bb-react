@@ -1,26 +1,125 @@
 @import "tailwindcss";
 
+/* EVE Online / Bombers Bar Dark Theme */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Background colors - Deep space blues */
+  --background: #0a0e1a;
+  --background-secondary: #12182b;
+  --background-tertiary: #1a2338;
+
+  /* Foreground colors */
+  --foreground: #e8edf4;
+  --foreground-muted: #a8b3c5;
+
+  /* Primary colors - EVE Online blue */
+  --primary: #3b82f6;
+  --primary-hover: #2563eb;
+  --primary-light: #60a5fa;
+
+  /* Accent colors */
+  --accent: #8b5cf6;
+  --accent-hover: #7c3aed;
+
+  /* Border colors */
+  --border: #2a3548;
+  --border-light: #3a4558;
+
+  /* Status colors */
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  /* Component colors */
+  --card-bg: #12182b;
+  --card-border: #2a3548;
+  --input-bg: #1a2338;
+  --input-border: #2a3548;
+
+  /* Text colors */
+  --text-primary: #e8edf4;
+  --text-secondary: #a8b3c5;
+  --text-muted: #6b7589;
+
+  /* Header/Navigation */
+  --header-bg: #0f1420;
+  --header-border: #1e2639;
 }
 
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-background-tertiary: var(--background-tertiary);
   --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-light: var(--primary-light);
+
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+
+  --color-border: var(--border);
+  --color-border-light: var(--border-light);
+
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-error: var(--error);
+  --color-info: var(--info);
+
+  --color-card-bg: var(--card-bg);
+  --color-card-border: var(--card-border);
+  --color-input-bg: var(--input-bg);
+  --color-input-border: var(--input-border);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+
+  --color-header-bg: var(--header-bg);
+  --color-header-border: var(--header-border);
+
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-light);
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--primary);
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: var(--background);
+}
+
+/* Focus visible outline */
+*:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }

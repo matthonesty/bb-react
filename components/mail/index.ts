@@ -1,0 +1,1 @@
+export { ProcessedMailsTable } from './ProcessedMailsTable';
