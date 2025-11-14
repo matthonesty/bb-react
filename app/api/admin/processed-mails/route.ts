@@ -7,7 +7,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
-import Database from '@/src/database';
+
+const Database = require('@/src/database') as {
+  getInstance: () => Promise<any>;
+};
 
 /**
  * GET /api/admin/processed-mails

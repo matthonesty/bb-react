@@ -13,7 +13,10 @@ import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
 import { checkESIHealth } from '@/lib/esi/status';
 import { runWalletReconciliation } from '@/lib/wallet/reconciliation';
-import Database from '@/src/database';
+
+const Database = require('@/src/database') as {
+  getInstance: () => Promise<any>;
+};
 
 /**
  * Post cron results to Discord webhook
@@ -152,9 +155,23 @@ export async function GET(request: NextRequest) {
 
     const db = await Database.getInstance();
 
+    // Validate mailer character ID is configured
+    if (!MAILER_CHARACTER_ID) {
+      console.error('[MAIL CRON] MAILER_CHARACTER_ID not configured');
+      return NextResponse.json({
+        success: false,
+        error: 'Mailer character ID not configured',
+        hint: 'Set EVE_MAILER_CHARACTER_ID environment variable'
+      }, { status: 500 });
+    }
+
     // Step 0: Check ESI health before processing
     console.log('[MAIL CRON] Checking ESI health status...');
-    const health = await checkESIHealth();
+    const health = await checkESIHealth() as {
+      healthy: boolean;
+      issues: string[];
+      warnings: string[];
+    };
 
     if (!health.healthy) {
       console.error('[MAIL CRON] ESI unhealthy, skipping mail processing:', health.issues.join(', '));
@@ -225,7 +242,10 @@ export async function GET(request: NextRequest) {
     // Step 2: Reconcile SRP payments from wallet journal
     console.log('[MAIL CRON] Running wallet reconciliation...');
     try {
-      const reconciliationResults = await runWalletReconciliation(db);
+      const reconciliationResults = await runWalletReconciliation(db) as {
+        journalSaved: number;
+        paymentsReconciled: number;
+      };
       console.log(`[MAIL CRON] Reconciliation complete:`, reconciliationResults);
       results.journalEntriesSaved = reconciliationResults.journalSaved;
       results.paymentsReconciled = reconciliationResults.paymentsReconciled;
@@ -236,7 +256,7 @@ export async function GET(request: NextRequest) {
 
     // Step 3: Fetch recent mail headers (last 30 days)
     console.log('[MAIL CRON] Fetching mail headers...');
-    const mailHeaders = await getMailHeaders(accessToken, MAILER_CHARACTER_ID, { labels: null, last_mail_id: null });
+    const mailHeaders = await getMailHeaders(accessToken, MAILER_CHARACTER_ID, {});
     console.log(`[MAIL CRON] Found ${mailHeaders.length} total mails`);
 
     // Process mails using shared module
@@ -245,7 +265,12 @@ export async function GET(request: NextRequest) {
       characterId: MAILER_CHARACTER_ID,
       mailHeaders,
       db
-    });
+    }) as {
+      processed: number;
+      created: number;
+      skipped: number;
+      errors: any[];
+    };
 
     // Update results with processing outcomes
     results.processed = processingResults.processed;

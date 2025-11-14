@@ -252,17 +252,19 @@ export function SRPDetailModal({
       {/* Footer */}
       <ModalFooter>
         <div className="flex items-center justify-between w-full">
-          <a
-            href={getZkillboardUrl(request.killmail_id)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center text-primary hover:text-primary-hover"
-          >
-            <ExternalLink size={16} className="mr-2" />
-            View on zKillboard
-          </a>
+          {request.killmail_id && (
+            <a
+              href={getZkillboardUrl(request.killmail_id)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center text-primary hover:text-primary-hover"
+            >
+              <ExternalLink size={16} className="mr-2" />
+              View on zKillboard
+            </a>
+          )}
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 ml-auto">
             {isAdmin && (
               <SRPActionButtons request={request} onUpdate={onUpdate} />
             )}
