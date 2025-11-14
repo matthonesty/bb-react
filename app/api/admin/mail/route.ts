@@ -12,7 +12,10 @@ import { getMailHeaders, getMailContent, getMailLabels, MAILER_CHARACTER_ID } fr
 import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
 import { checkESIHealth } from '@/lib/esi/status';
-import Database from '@/src/database';
+
+const Database = require('@/src/database') as {
+  getInstance: () => Promise<any>;
+};
 
 /**
  * GET /api/admin/mail
