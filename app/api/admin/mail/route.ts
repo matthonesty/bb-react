@@ -55,6 +55,13 @@ export async function GET(request: NextRequest) {
     // Use mailer service account character ID
     const characterId = MAILER_CHARACTER_ID;
 
+    if (!characterId) {
+      return NextResponse.json({
+        error: 'Mailer character ID not configured',
+        hint: 'Set EVE_MAILER_CHARACTER_ID environment variable'
+      }, { status: 500 });
+    }
+
     const searchParams = request.nextUrl.searchParams;
     const mailId = searchParams.get('mailId');
     const labels = searchParams.get('labels');
