@@ -93,7 +93,10 @@ export function Header() {
               <img
                 src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
                 alt="Login with EVE Online"
-                onClick={() => (window.location.href = '/api/auth/login')}
+                onClick={() => {
+                  const returnUrl = encodeURIComponent(window.location.pathname);
+                  window.location.href = `/api/auth/login?return_url=${returnUrl}`;
+                }}
                 className="cursor-pointer hover:opacity-80 transition-opacity"
               />
             </div>
@@ -165,7 +168,10 @@ export function Header() {
           <img
             src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
             alt="Login with EVE Online"
-            onClick={() => (window.location.href = '/api/auth/login')}
+            onClick={() => {
+              const returnUrl = encodeURIComponent(window.location.pathname);
+              window.location.href = `/api/auth/login?return_url=${returnUrl}`;
+            }}
             className="cursor-pointer hover:opacity-80 transition-opacity"
           />
         </div>

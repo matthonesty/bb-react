@@ -155,21 +155,10 @@ export async function GET(request: NextRequest) {
 
     // Regular user login flow
     // Get roles from database (checks ADMIN_CHARACTER_IDS and fleet_commanders table)
+    // ALL authenticated users get at least 'user' role, so everyone can access public forms
     const roles = await getRoles(characterInfo.CharacterID);
-    const hasAccess = await hasAuthorizedAccess(characterInfo.CharacterID);
 
-    // Check if user has any authorized role (admin or FC role from fleet_commanders)
-    if (!hasAccess) {
-      console.log('[CALLBACK] User not authorized:', characterInfo.CharacterName, '(ID:', characterInfo.CharacterID + ')');
-      console.log('[CALLBACK] User roles:', roles);
-
-      return NextResponse.json({
-        error: 'Not Authorized',
-        message: 'You do not have access to this system. You must be listed in the Fleet Commanders roster with active status.'
-      }, { status: 403 });
-    }
-
-    console.log('[CALLBACK] Authorized user:', characterInfo.CharacterName, 'Roles:', roles);
+    console.log('[CALLBACK] Authenticated user:', characterInfo.CharacterName, 'Roles:', roles);
 
     // Create JWT payload
     const jwtPayload = {
