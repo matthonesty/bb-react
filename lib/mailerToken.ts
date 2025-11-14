@@ -16,8 +16,7 @@
 
 import pool from '@/lib/db';
 
-// Using require for now until we convert SSO files to TypeScript
-const mailerSso = require('./auth/mailerSso');
+import mailerSso from './auth/mailerSso';
 
 /**
  * Key for mailer refresh token in database
