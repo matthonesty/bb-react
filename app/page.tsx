@@ -25,11 +25,6 @@ export default function Home() {
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
           Welcome to Bombers Bar
         </h1>
-        {isAuthenticated && (
-          <p className="mt-4 text-lg text-foreground-muted">
-            Use the navigation menu above to access the tools you need.
-          </p>
-        )}
       </div>
     </div>
   );
