@@ -72,12 +72,27 @@ export async function GET(request: NextRequest) {
     // Search filter
     if (search) {
       const searchPattern = `%${search}%`;
-      params.push(searchPattern, searchPattern, searchPattern);
-      query += ` AND (
-        character_name ILIKE $${paramCount++}
-        OR ship_name ILIKE $${paramCount++}
-        OR solar_system_name ILIKE $${paramCount++}
-      )`;
+      const numericSearch = parseInt(search);
+
+      if (!isNaN(numericSearch)) {
+        // If search is numeric, search by ID or killmail_id as well
+        params.push(numericSearch, numericSearch, searchPattern, searchPattern, searchPattern);
+        query += ` AND (
+          id = $${paramCount++}
+          OR killmail_id = $${paramCount++}
+          OR character_name ILIKE $${paramCount++}
+          OR ship_name ILIKE $${paramCount++}
+          OR solar_system_name ILIKE $${paramCount++}
+        )`;
+      } else {
+        // Text search only
+        params.push(searchPattern, searchPattern, searchPattern);
+        query += ` AND (
+          character_name ILIKE $${paramCount++}
+          OR ship_name ILIKE $${paramCount++}
+          OR solar_system_name ILIKE $${paramCount++}
+        )`;
+      }
     }
 
     // Count total
