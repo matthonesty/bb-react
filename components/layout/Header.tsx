@@ -90,12 +90,12 @@ export function Header() {
             </div>
           ) : (
             <div className="hidden md:block">
-              <button
+              <img
+                src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
+                alt="Login with EVE Online"
                 onClick={() => (window.location.href = '/api/auth/login')}
-                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary-hover transition-colors"
-              >
-                Login with EVE
-              </button>
+                className="cursor-pointer hover:opacity-80 transition-opacity"
+              />
             </div>
           )}
 
@@ -156,6 +156,18 @@ export function Header() {
               </button>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Mobile Login Menu */}
+      {mobileMenuOpen && !isAuthenticated && (
+        <div className="md:hidden border-t border-border bg-background-secondary px-4 py-3">
+          <img
+            src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
+            alt="Login with EVE Online"
+            onClick={() => (window.location.href = '/api/auth/login')}
+            className="cursor-pointer hover:opacity-80 transition-opacity"
+          />
         </div>
       )}
     </header>
