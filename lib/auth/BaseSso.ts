@@ -8,14 +8,53 @@
  * @module lib/auth/BaseSso
  */
 
-const axios = require('axios');
-const crypto = require('crypto');
+import axios from 'axios';
+import crypto from 'crypto';
+import { buildScopeString } from './scopes';
+import * as jwks from './jwks';
+import type { EVEJWTPayload } from './jwks';
 
 /**
  * EVE SSO base URL for all authorization and token endpoints
- * @constant {string}
  */
 const SSO_BASE_URL = 'https://login.eveonline.com';
+
+/**
+ * SSO Configuration
+ */
+export interface SSOConfig {
+  /** OAuth application client ID */
+  clientId: string;
+  /** OAuth application secret */
+  secretKey: string;
+  /** Registered OAuth callback URL */
+  callbackUrl: string;
+  /** Label for logging (e.g., 'Regular SSO', 'Admin SSO') */
+  label?: string;
+}
+
+/**
+ * OAuth token response from EVE SSO
+ */
+export interface TokenResponse {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+}
+
+/**
+ * Character information from EVE SSO verify endpoint
+ */
+export interface CharacterInfo {
+  CharacterID: number;
+  CharacterName: string;
+  ExpiresOn: string;
+  Scopes: string;
+  TokenType: string;
+  CharacterOwnerHash: string;
+  IntellectualProperty: string;
+}
 
 /**
  * Base EVE Online SSO Service
@@ -23,21 +62,20 @@ const SSO_BASE_URL = 'https://login.eveonline.com';
  * Implements OAuth 2.0 Authorization Code flow with configurable credentials.
  * Provides all core SSO functionality: authorization, token exchange,
  * token refresh, validation, and revocation.
- *
- * @class
  */
-class BaseSso {
+export class BaseSso {
+  protected clientId: string;
+  protected secretKey: string;
+  protected callbackUrl: string;
+  protected label: string;
+
   /**
    * Initialize EVE SSO service with provided credentials
    *
-   * @param {Object} config - SSO configuration
-   * @param {string} config.clientId - OAuth application client ID
-   * @param {string} config.secretKey - OAuth application secret
-   * @param {string} config.callbackUrl - Registered OAuth callback URL
-   * @param {string} [config.label='SSO'] - Label for logging (e.g., 'Regular SSO', 'Admin SSO')
-   * @throws {Error} If any required credential is missing
+   * @param config - SSO configuration
+   * @throws Error If any required credential is missing
    */
-  constructor({ clientId, secretKey, callbackUrl, label = 'SSO' }) {
+  constructor({ clientId, secretKey, callbackUrl, label = 'SSO' }: SSOConfig) {
     this.clientId = clientId;
     this.secretKey = secretKey;
     this.callbackUrl = callbackUrl;
@@ -53,13 +91,11 @@ class BaseSso {
    *
    * Constructs authorization URL with all required parameters for EVE SSO.
    *
-   * @param {string} state - Random CSRF protection token (can include flow type like "abc123:admin")
-   * @param {string[]|string} [requestedScopes=null] - Array of scope strings or space-separated string
-   * @returns {string} Complete EVE SSO authorization URL
+   * @param state - Random CSRF protection token (can include flow type like "abc123:admin")
+   * @param requestedScopes - Array of scope strings or space-separated string
+   * @returns Complete EVE SSO authorization URL
    */
-  getAuthorizationUrl(state, requestedScopes = null) {
-    const { buildScopeString } = require('./scopes');
-
+  getAuthorizationUrl(state: string, requestedScopes: readonly string[] | string[] | string | null = null): string {
     // Default to public data only
     let scopes = 'publicData';
 
@@ -85,20 +121,20 @@ class BaseSso {
   /**
    * Generate cryptographically secure random state string
    *
-   * @returns {string} 64-character hexadecimal random string
+   * @returns 64-character hexadecimal random string
    */
-  generateState() {
+  generateState(): string {
     return crypto.randomBytes(32).toString('hex');
   }
 
   /**
    * Exchange authorization code for access and refresh tokens
    *
-   * @param {string} code - One-time authorization code from OAuth callback
-   * @returns {Promise<Object>} Token response with access_token, refresh_token, expires_in
-   * @throws {Error} If token exchange fails
+   * @param code - One-time authorization code from OAuth callback
+   * @returns Token response with access_token, refresh_token, expires_in
+   * @throws Error If token exchange fails
    */
-  async exchangeCodeForToken(code) {
+  async exchangeCodeForToken(code: string): Promise<TokenResponse> {
     const auth = Buffer.from(`${this.clientId}:${this.secretKey}`).toString('base64');
 
     const data = new URLSearchParams({
@@ -116,7 +152,7 @@ class BaseSso {
       });
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[${this.label}] Error exchanging code for token:`, error.response?.data || error.message);
       throw new Error('Failed to exchange authorization code for token');
     }
@@ -128,18 +164,16 @@ class BaseSso {
    * Performs full JWT validation with signature verification.
    * Falls back to basic validation if JWKS verification fails.
    *
-   * @param {string} accessToken - JWT access token from EVE SSO
-   * @returns {Promise<Object>} Verified JWT payload
-   * @throws {Error} If token is invalid or expired
+   * @param accessToken - JWT access token from EVE SSO
+   * @returns Verified JWT payload
+   * @throws Error If token is invalid or expired
    */
-  async validateAccessToken(accessToken) {
-    const jwks = require('./jwks');
-
+  async validateAccessToken(accessToken: string): Promise<EVEJWTPayload> {
     try {
       // Try full verification with JWKS signature check
       const payload = await jwks.verifyJWT(accessToken, this.clientId);
       return payload;
-    } catch (jwksError) {
+    } catch (jwksError: any) {
       console.warn(`[${this.label}] JWKS verification failed, falling back to basic validation:`, jwksError.message);
 
       // Fallback to basic validation without signature verification
@@ -147,7 +181,7 @@ class BaseSso {
         const payload = jwks.validateTokenBasic(accessToken, this.clientId);
         console.warn(`[${this.label}] WARNING: Token validated without signature verification`);
         return payload;
-      } catch (error) {
+      } catch (error: any) {
         console.error(`[${this.label}] Error validating access token:`, error.message);
         throw error;
       }
@@ -157,11 +191,11 @@ class BaseSso {
   /**
    * Refresh expired access token using refresh token
    *
-   * @param {string} refreshToken - Current refresh token
-   * @returns {Promise<Object>} Token response with new access_token and refresh_token
-   * @throws {Error} If refresh fails
+   * @param refreshToken - Current refresh token
+   * @returns Token response with new access_token and refresh_token
+   * @throws Error If refresh fails
    */
-  async refreshAccessToken(refreshToken) {
+  async refreshAccessToken(refreshToken: string): Promise<TokenResponse> {
     const auth = Buffer.from(`${this.clientId}:${this.secretKey}`).toString('base64');
 
     const data = new URLSearchParams({
@@ -179,7 +213,7 @@ class BaseSso {
       });
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[${this.label}] Error refreshing token:`, error.response?.data || error.message);
       throw new Error('Failed to refresh access token');
     }
@@ -188,11 +222,11 @@ class BaseSso {
   /**
    * Get character information from EVE SSO verify endpoint
    *
-   * @param {string} accessToken - JWT access token
-   * @returns {Promise<Object>} Character information object
-   * @throws {Error} If token is invalid or request fails
+   * @param accessToken - JWT access token
+   * @returns Character information object
+   * @throws Error If token is invalid or request fails
    */
-  async getCharacterInfo(accessToken) {
+  async getCharacterInfo(accessToken: string): Promise<CharacterInfo> {
     try {
       const response = await axios.get(`${SSO_BASE_URL}/oauth/verify`, {
         headers: {
@@ -201,7 +235,7 @@ class BaseSso {
       });
 
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[${this.label}] Error getting character info:`, error.response?.data || error.message);
       throw new Error('Failed to get character information');
     }
@@ -213,10 +247,9 @@ class BaseSso {
    * Invalidates the refresh token. Does not throw on failure
    * as token may already be expired/revoked.
    *
-   * @param {string} refreshToken - Refresh token to revoke
-   * @returns {Promise<void>}
+   * @param refreshToken - Refresh token to revoke
    */
-  async revokeRefreshToken(refreshToken) {
+  async revokeRefreshToken(refreshToken: string): Promise<void> {
     const auth = Buffer.from(`${this.clientId}:${this.secretKey}`).toString('base64');
 
     const data = new URLSearchParams({
@@ -232,11 +265,11 @@ class BaseSso {
           'Host': 'login.eveonline.com'
         }
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(`[${this.label}] Error revoking token:`, error.response?.data || error.message);
       // Don't throw - revocation failures are not critical
     }
   }
 }
 
-module.exports = BaseSso;
+export default BaseSso;

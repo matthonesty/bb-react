@@ -7,15 +7,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-
-const BaseSso = require('@/lib/auth/BaseSso');
-const mailerSso = require('@/lib/auth/mailerSso');
-const { storeRefreshToken: storeMailerRefreshToken } = require('@/lib/mailerToken');
+import { getRoles, hasAuthorizedAccess } from '@/lib/auth/roles';
+import { storeRefreshToken as storeMailerRefreshToken } from '@/lib/mailerToken';
+import { BaseSso } from '@/lib/auth/BaseSso';
+import mailerSso from '@/lib/auth/mailerSso';
 
 const eveSso = new BaseSso({
-  clientId: process.env.EVE_CLIENT_ID,
-  secretKey: process.env.EVE_SECRET_KEY,
-  callbackUrl: process.env.EVE_CALLBACK_URL,
+  clientId: process.env.EVE_CLIENT_ID || '',
+  secretKey: process.env.EVE_SECRET_KEY || '',
+  callbackUrl: process.env.EVE_CALLBACK_URL || '',
   label: 'Regular SSO'
 });
 
@@ -74,6 +74,14 @@ export async function GET(request: NextRequest) {
     // Exchange code for tokens
     const tokens = await ssoService.exchangeCodeForToken(code);
 
+    if (!tokens || !tokens.access_token) {
+      console.error('[CALLBACK] Token exchange failed - missing access_token');
+      return NextResponse.json(
+        { error: 'Authentication failed - invalid token response' },
+        { status: 500 }
+      );
+    }
+
     // Get character info from access token
     const characterInfo = await ssoService.getCharacterInfo(tokens.access_token);
 
@@ -115,6 +123,14 @@ export async function GET(request: NextRequest) {
       }
 
       // Character ID matches - proceed with token storage
+      if (!tokens.refresh_token) {
+        console.error('[CALLBACK] Token exchange succeeded but missing refresh_token');
+        return NextResponse.json(
+          { error: 'Authentication failed - missing refresh token' },
+          { status: 500 }
+        );
+      }
+
       try {
         await storeMailerRefreshToken(tokens.refresh_token);
         console.log('[CALLBACK] Mailer refresh token stored in database for persistent ESI operations');
@@ -139,7 +155,6 @@ export async function GET(request: NextRequest) {
 
     // Regular user login flow
     // Get roles from database (checks ADMIN_CHARACTER_IDS and fleet_commanders table)
-    const { getRoles, hasAuthorizedAccess } = require('@/lib/auth/roles');
     const roles = await getRoles(characterInfo.CharacterID);
     const hasAccess = await hasAuthorizedAccess(characterInfo.CharacterID);
 

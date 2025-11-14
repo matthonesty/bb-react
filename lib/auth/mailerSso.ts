@@ -14,12 +14,12 @@
  * - Mailer account: Service account with persistent refresh token for ESI operations
  */
 
-const BaseSso = require('./BaseSso');
+import { BaseSso } from './BaseSso';
 
 // Mailer service account credentials
-const clientId = process.env.MAILER_CLIENT_ID;
-const secretKey = process.env.MAILER_SECRET_KEY;
-const callbackUrl = process.env.EVE_CALLBACK_URL;
+const clientId = process.env.MAILER_CLIENT_ID || '';
+const secretKey = process.env.MAILER_SECRET_KEY || '';
+const callbackUrl = process.env.EVE_CALLBACK_URL || '';
 
 // Validate required credentials
 if (!clientId) {
@@ -30,7 +30,8 @@ if (!secretKey) {
   console.error('[MAILER SSO] MAILER_SECRET_KEY not configured - mailer operations will fail');
 }
 
-module.exports = new BaseSso({
+// Export singleton instance
+export default new BaseSso({
   clientId,
   secretKey,
   callbackUrl,

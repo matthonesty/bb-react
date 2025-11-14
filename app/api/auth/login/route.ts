@@ -5,14 +5,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-
-// Import backend SSO logic
-const BaseSso = require('@/lib/auth/BaseSso');
+import { BaseSso } from '@/lib/auth/BaseSso';
 
 const eveSso = new BaseSso({
-  clientId: process.env.EVE_CLIENT_ID,
-  secretKey: process.env.EVE_SECRET_KEY,
-  callbackUrl: process.env.EVE_CALLBACK_URL,
+  clientId: process.env.EVE_CLIENT_ID || '',
+  secretKey: process.env.EVE_SECRET_KEY || '',
+  callbackUrl: process.env.EVE_CALLBACK_URL || '',
   label: 'Regular SSO'
 });
 

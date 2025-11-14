@@ -26,17 +26,15 @@
 /**
  * Public data scope (no explicit consent required)
  * Provides basic character information without requiring scope selection
- * @constant {string}
  */
-const PUBLIC_DATA = 'publicData';
+export const PUBLIC_DATA = 'publicData';
 
 /**
  * Character-related scopes
  * Access to character assets, skills, location, wallet, etc.
  * Source: https://esi.evetech.net/latest/swagger.json
- * @constant {Object}
  */
-const CHARACTER_SCOPES = {
+export const CHARACTER_SCOPES = {
   // Assets
   ASSETS: 'esi-assets.read_assets.v1',
 
@@ -126,15 +124,14 @@ const CHARACTER_SCOPES = {
 
   // Wallet
   WALLET: 'esi-wallet.read_character_wallet.v1'
-};
+} as const;
 
 /**
  * Corporation-related scopes
  * Access to corporation assets, wallets, and management
  * Source: https://esi.evetech.net/latest/swagger.json
- * @constant {Object}
  */
-const CORPORATION_SCOPES = {
+export const CORPORATION_SCOPES = {
   // Assets
   ASSETS: 'esi-assets.read_corporation_assets.v1',
 
@@ -191,45 +188,41 @@ const CORPORATION_SCOPES = {
 
   // Wallet
   WALLETS: 'esi-wallet.read_corporation_wallets.v1'
-};
+} as const;
 
 /**
  * Alliance-related scopes
  * Alliance contacts and information
  * Source: https://esi.evetech.net/latest/swagger.json
- * @constant {Object}
  */
-const ALLIANCE_SCOPES = {
+export const ALLIANCE_SCOPES = {
   CONTACTS: 'esi-alliances.read_contacts.v1'
-};
+} as const;
 
 /**
  * Fleet-related scopes
  * Fleet management and participation
  * Source: https://esi.evetech.net/latest/swagger.json
- * @constant {Object}
  */
-const FLEET_SCOPES = {
+export const FLEET_SCOPES = {
   READ: 'esi-fleets.read_fleet.v1',
   WRITE: 'esi-fleets.write_fleet.v1'
-};
+} as const;
 
 /**
  * Universe-related scopes
  * Structure information
  * Source: https://esi.evetech.net/latest/swagger.json
- * @constant {Object}
  */
-const UNIVERSE_SCOPES = {
+export const UNIVERSE_SCOPES = {
   STRUCTURES: 'esi-universe.read_structures.v1'
-};
+} as const;
 
 /**
  * Application-specific scope presets
  * Common scope combinations for different use cases
- * @constant {Object}
  */
-const SCOPE_PRESETS = {
+export const SCOPE_PRESETS = {
   // Basic public data only (default)
   PUBLIC_ONLY: [PUBLIC_DATA],
 
@@ -254,7 +247,7 @@ const SCOPE_PRESETS = {
     PUBLIC_DATA,
     CHARACTER_SCOPES.CORPORATION_ROLES,
     CORPORATION_SCOPES.ASSETS,
-    CORPORATION_SCOPES.WALLET_DIVISIONS,
+    CORPORATION_SCOPES.WALLETS,
     CORPORATION_SCOPES.MARKET_ORDERS,
     CORPORATION_SCOPES.CONTRACTS
   ],
@@ -262,10 +255,10 @@ const SCOPE_PRESETS = {
   // Industry manager
   INDUSTRY_MANAGER: [
     PUBLIC_DATA,
-    CHARACTER_SCOPES.INDUSTRY,
+    CHARACTER_SCOPES.INDUSTRY_JOBS,
     CHARACTER_SCOPES.ASSETS,
     CHARACTER_SCOPES.SKILLS,
-    CHARACTER_SCOPES.PLANETS
+    CHARACTER_SCOPES.PLANETS_MANAGE
   ],
 
   // Fleet commander
@@ -286,7 +279,7 @@ const SCOPE_PRESETS = {
     ...Object.values(FLEET_SCOPES),
     ...Object.values(UNIVERSE_SCOPES)
   ]
-};
+} as const;
 
 /**
  * Get scope description for display to users
@@ -294,15 +287,15 @@ const SCOPE_PRESETS = {
  * Provides human-readable descriptions of what each scope allows.
  * Useful for building consent screens or documentation.
  *
- * @param {string} scope - ESI scope identifier
- * @returns {string} Human-readable description
+ * @param scope - ESI scope identifier
+ * @returns Human-readable description
  *
  * @example
  * getScopeDescription(CHARACTER_SCOPES.WALLET)
  * // Returns: "Read your character's wallet balance and transactions"
  */
-function getScopeDescription(scope) {
-  const descriptions = {
+export function getScopeDescription(scope: string): string {
+  const descriptions: Record<string, string> = {
     // Public
     [PUBLIC_DATA]: 'Basic character information (no private data)',
 
@@ -469,17 +462,17 @@ function getScopeDescription(scope) {
  * Checks if a scope string is valid and recognized by EVE SSO.
  * Useful for validating user input or configuration.
  *
- * @param {string} scope - Scope to validate
- * @returns {boolean} True if scope is valid
+ * @param scope - Scope to validate
+ * @returns True if scope is valid
  *
  * @example
  * isValidScope('esi-assets.read_assets.v1') // Returns: true
  * isValidScope('invalid.scope') // Returns: false
  */
-function isValidScope(scope) {
+export function isValidScope(scope: string): boolean {
   if (scope === PUBLIC_DATA) return true;
 
-  const allScopes = [
+  const allScopes: string[] = [
     ...Object.values(ALLIANCE_SCOPES),
     ...Object.values(CHARACTER_SCOPES),
     ...Object.values(CORPORATION_SCOPES),
@@ -496,14 +489,14 @@ function isValidScope(scope) {
  * Converts array of scopes to space-separated string format required by OAuth.
  * Filters out invalid scopes and removes duplicates.
  *
- * @param {string[]} scopes - Array of scope strings
- * @returns {string} Space-separated scope string
+ * @param scopes - Array of scope strings
+ * @returns Space-separated scope string
  *
  * @example
  * buildScopeString([CHARACTER_SCOPES.WALLET, CHARACTER_SCOPES.ASSETS])
  * // Returns: "esi-wallet.read_character_wallet.v1 esi-assets.read_assets.v1"
  */
-function buildScopeString(scopes) {
+export function buildScopeString(scopes: readonly string[] | string[]): string {
   // Remove duplicates and invalid scopes
   const validScopes = [...new Set(scopes)].filter(isValidScope);
   return validScopes.join(' ');
@@ -514,14 +507,14 @@ function buildScopeString(scopes) {
  *
  * Extracts scopes from JWT token scp claim (array or space-separated string).
  *
- * @param {string|string[]} scp - Scopes from JWT token
- * @returns {string[]} Array of scope strings
+ * @param scp - Scopes from JWT token
+ * @returns Array of scope strings
  *
  * @example
  * parseTokenScopes("publicData esi-assets.read_assets.v1")
  * // Returns: ["publicData", "esi-assets.read_assets.v1"]
  */
-function parseTokenScopes(scp) {
+export function parseTokenScopes(scp: string | string[]): string[] {
   if (Array.isArray(scp)) {
     return scp;
   }
@@ -537,33 +530,15 @@ function parseTokenScopes(scp) {
  * Verifies that a JWT token contains all required scopes.
  * Useful for authorization checks in API endpoints.
  *
- * @param {string|string[]} tokenScopes - Scopes from JWT token (scp claim)
- * @param {string[]} requiredScopes - Scopes required for operation
- * @returns {boolean} True if token has all required scopes
+ * @param tokenScopes - Scopes from JWT token (scp claim)
+ * @param requiredScopes - Scopes required for operation
+ * @returns True if token has all required scopes
  *
  * @example
  * hasRequiredScopes(["publicData", "esi-assets.read_assets.v1"], [CHARACTER_SCOPES.ASSETS])
  * // Returns: true
  */
-function hasRequiredScopes(tokenScopes, requiredScopes) {
+export function hasRequiredScopes(tokenScopes: string | string[], requiredScopes: string[]): boolean {
   const scopes = parseTokenScopes(tokenScopes);
   return requiredScopes.every(required => scopes.includes(required));
 }
-
-module.exports = {
-  // Constants
-  PUBLIC_DATA,
-  ALLIANCE_SCOPES,
-  CHARACTER_SCOPES,
-  CORPORATION_SCOPES,
-  FLEET_SCOPES,
-  UNIVERSE_SCOPES,
-  SCOPE_PRESETS,
-
-  // Functions
-  getScopeDescription,
-  isValidScope,
-  buildScopeString,
-  parseTokenScopes,
-  hasRequiredScopes
-};

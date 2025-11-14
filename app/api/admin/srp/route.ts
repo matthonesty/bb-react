@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 import pool from '@/lib/db';
+import { isAuthorizedRole } from '@/lib/auth/roles';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -39,7 +40,6 @@ export async function GET(request: NextRequest) {
     }
 
     // Check if user has any authorized role
-    const { isAuthorizedRole } = require('@/lib/auth/roles');
     const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
 
     if (!hasAuthorizedRole) {

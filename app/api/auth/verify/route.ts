@@ -6,6 +6,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { getRoles, isAuthorizedRole } from '@/lib/auth/roles';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
@@ -27,7 +28,6 @@ export async function GET(request: NextRequest) {
 
       // Re-check roles from database to ensure they're up-to-date
       // This ensures role changes take effect immediately without requiring re-login
-      const { getRoles, isAuthorizedRole } = require('@/lib/auth/roles');
       const currentRoles = await getRoles(decoded.character_id);
 
       // Check if user still has authorized access

@@ -7,6 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
+import { isAuthorizedRole, ROLES } from '@/lib/auth/roles';
 
 import pool from '@/lib/db';
 
@@ -28,7 +29,6 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const { isAuthorizedRole } = require('@/lib/auth/roles');
   const isAdmin = session.roles?.some(role => isAuthorizedRole(role));
 
   if (!isAdmin) {
@@ -137,9 +137,8 @@ export async function DELETE(request: NextRequest) {
   }
 
   // FC and Accountant are view-only, cannot delete
-  const { ROLES } = require('@/lib/auth/roles');
   const isAdmin = session.roles?.some(role =>
-    [ROLES.ADMIN, ROLES.COUNCIL].includes(role)
+    [ROLES.ADMIN, ROLES.COUNCIL].includes(role as any)
   );
 
   if (!isAdmin) {

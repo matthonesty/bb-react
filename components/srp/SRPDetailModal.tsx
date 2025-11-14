@@ -3,6 +3,7 @@
 import { Modal, ModalFooter } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { CopyButton, CopyableField } from '@/components/ui/CopyButton';
 import { SRPActionButtons } from './SRPActionButtons';
 import { ProximityDataDisplay } from './ProximityDataDisplay';
 import {
@@ -13,7 +14,7 @@ import {
   getDotlanUrl,
 } from '@/lib/utils/format';
 import type { SRPRequest } from '@/types';
-import { ExternalLink, User, MapPin, Ship, Calendar, DollarSign } from 'lucide-react';
+import { ExternalLink, User, MapPin, Ship, Calendar } from 'lucide-react';
 
 interface SRPDetailModalProps {
   request: SRPRequest;
@@ -68,6 +69,11 @@ export function SRPDetailModal({
                 FC{fcsPresent.length > 1 ? 's' : ''} Present: {fcsPresent.join(', ')}
               </div>
             )}
+            {request.status === 'approved' && (
+              <div className="mt-2 text-sm text-foreground-muted">
+                Approved requests are automatically paid when payment is reconciled
+              </div>
+            )}
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-foreground">
@@ -84,7 +90,9 @@ export function SRPDetailModal({
           <div className="flex items-center gap-2">
             <User size={18} className="text-foreground-muted" />
             <div className="flex-1">
-              <div className="font-medium text-foreground">{request.character_name}</div>
+              <div className="font-medium text-foreground">
+                {request.character_name}
+              </div>
               <div className="text-sm text-foreground-muted">
                 {request.alliance_name || request.corporation_name}
               </div>
@@ -100,7 +108,31 @@ export function SRPDetailModal({
           </div>
         </div>
 
-        {/* Ship and Location */}
+        {/* Copyable SRP Details - Only for pending, approved, and paid */}
+        {['pending', 'approved', 'paid'].includes(request.status) && (
+          <div className="rounded-lg bg-background-secondary p-4">
+            <div className="text-sm font-medium text-foreground-muted mb-3">SRP Details (Copyable)</div>
+            <div className="space-y-2 text-sm">
+              <CopyableField
+                label="Character Name"
+                value={request.character_name}
+              />
+              {request.killmail_id && (
+                <CopyableField
+                  label="Killmail ID"
+                  value={request.killmail_id}
+                />
+              )}
+              <CopyableField
+                label="Payment Amount"
+                value={formatISK(request.final_payout_amount, 0)}
+                copyValue={request.final_payout_amount.toString()}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Ship, Location, and Killmail Link */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="rounded-lg bg-background-secondary p-4">
             <div className="flex items-center gap-2 mb-2">
@@ -112,6 +144,19 @@ export function SRPDetailModal({
                 ? 'Multiple Killmails'
                 : request.ship_name}
             </div>
+            {request.killmail_id && (
+              <div className="mt-3">
+                <a
+                  href={getZkillboardUrl(request.killmail_id)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-sm text-primary hover:text-primary-hover"
+                >
+                  <ExternalLink size={14} className="mr-1" />
+                  View on zKillboard
+                </a>
+              </div>
+            )}
           </div>
 
           <div className="rounded-lg bg-background-secondary p-4">
@@ -120,12 +165,10 @@ export function SRPDetailModal({
               <div className="text-sm font-medium text-foreground-muted">Location</div>
             </div>
             <div className="flex items-center justify-between">
-              <div>
-                <div className="text-lg font-medium text-foreground">
-                  {!request.solar_system_name && !request.killmail_id
-                    ? 'Not Applicable'
-                    : request.solar_system_name || 'Unknown'}
-                </div>
+              <div className="text-lg font-medium text-foreground">
+                {!request.solar_system_name && !request.killmail_id
+                  ? 'Not Applicable'
+                  : request.solar_system_name || 'Unknown'}
               </div>
               {request.solar_system_name && (
                 <a
@@ -141,82 +184,61 @@ export function SRPDetailModal({
           </div>
         </div>
 
-        {/* Dates and Financial Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="rounded-lg bg-background-secondary p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <Calendar size={18} className="text-foreground-muted" />
-              <div className="text-sm font-medium text-foreground-muted">Timeline</div>
-            </div>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between">
-                <span className="text-foreground-muted">Loss:</span>
-                <span className="text-foreground">
-                  {formatDate(request.killmail_time)}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-foreground-muted">Submitted:</span>
-                <span className="text-foreground">
-                  {formatDate(request.submitted_at)}
-                </span>
-              </div>
-              {request.processed_at && (
-                <div className="flex justify-between">
-                  <span className="text-foreground-muted">Processed:</span>
-                  <span className="text-foreground">
-                    {formatDate(request.processed_at)}
-                  </span>
-                </div>
-              )}
-              {request.paid_at && (
-                <div className="flex justify-between">
-                  <span className="text-foreground-muted">Paid:</span>
-                  <span className="text-foreground">
-                    {formatDate(request.paid_at)}
-                  </span>
-                </div>
-              )}
-            </div>
+        {/* Timeline */}
+        <div className="rounded-lg bg-background-secondary p-4">
+          <div className="flex items-center gap-2 mb-2">
+            <Calendar size={18} className="text-foreground-muted" />
+            <div className="text-sm font-medium text-foreground-muted">Timeline</div>
           </div>
-
-          <div className="rounded-lg bg-background-secondary p-4">
-            <div className="flex items-center gap-2 mb-2">
-              <DollarSign size={18} className="text-foreground-muted" />
-              <div className="text-sm font-medium text-foreground-muted">Pricing</div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-foreground-muted">Loss:</span>
+              <span className="text-foreground">
+                {formatDate(request.killmail_time)}
+              </span>
             </div>
-            <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-foreground-muted">Submitted:</span>
+              <span className="text-foreground">
+                {formatDate(request.submitted_at)}
+              </span>
+            </div>
+            {request.processed_at && (
               <div className="flex justify-between">
-                <span className="text-foreground-muted">Base Price:</span>
+                <span className="text-foreground-muted">Processed:</span>
                 <span className="text-foreground">
-                  {request.status === 'denied' ? '—' : formatISK(request.base_payout_amount, 0)}
+                  {formatDate(request.processed_at)}
                 </span>
               </div>
-              {request.payout_adjusted && request.status !== 'denied' && (
-                <div className="flex justify-between font-medium">
-                  <span className="text-foreground">Adjusted Payout:</span>
-                  <span className="text-success">
-                    {formatISK(request.final_payout_amount, 0)}
-                  </span>
-                </div>
-              )}
-              {request.payment_amount && (
-                <div className="flex justify-between font-medium">
-                  <span className="text-foreground">Payment Amount:</span>
-                  <span className="text-success">
-                    {formatISK(request.payment_amount, 0)}
-                  </span>
-                </div>
-              )}
-            </div>
+            )}
+            {request.paid_at && (
+              <div className="flex justify-between">
+                <span className="text-foreground-muted">Paid:</span>
+                <span className="text-foreground">
+                  {formatDate(request.paid_at)}
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Fleet Info */}
         {request.fleet_description && (
           <div className="rounded-lg bg-background-secondary p-4">
-            <div className="text-sm font-medium text-foreground-muted mb-2">Fleet</div>
-            <div className="text-foreground">{request.fleet_description}</div>
+            <div className="text-sm font-medium text-foreground-muted mb-2">Fleet Description</div>
+            <div className="text-foreground">
+              {request.fleet_description}
+            </div>
+          </div>
+        )}
+
+        {/* FC Name */}
+        {request.fc_name && (
+          <div className="rounded-lg bg-background-secondary p-4">
+            <div className="text-sm font-medium text-foreground-muted mb-2">Fleet Commander</div>
+            <div className="text-foreground">
+              {request.fc_name}
+            </div>
           </div>
         )}
 
@@ -251,27 +273,13 @@ export function SRPDetailModal({
 
       {/* Footer */}
       <ModalFooter>
-        <div className="flex items-center justify-between w-full">
-          {request.killmail_id && (
-            <a
-              href={getZkillboardUrl(request.killmail_id)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center text-primary hover:text-primary-hover"
-            >
-              <ExternalLink size={16} className="mr-2" />
-              View on zKillboard
-            </a>
+        <div className="flex gap-2 ml-auto items-center">
+          {isAdmin && (
+            <SRPActionButtons request={request} onUpdate={onUpdate} onClose={onClose} />
           )}
-
-          <div className="flex gap-2 ml-auto">
-            {isAdmin && (
-              <SRPActionButtons request={request} onUpdate={onUpdate} />
-            )}
-            <Button variant="secondary" onClick={onClose}>
-              Close
-            </Button>
-          </div>
+          <Button variant="secondary" onClick={onClose} className="min-w-[100px]">
+            Close
+          </Button>
         </div>
       </ModalFooter>
     </Modal>

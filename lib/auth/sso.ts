@@ -30,7 +30,7 @@
  * @see {@link https://login.eveonline.com/.well-known/oauth-authorization-server} SSO metadata endpoint
  */
 
-const BaseSso = require('./BaseSso');
+import { BaseSso } from './BaseSso';
 
 /**
  * Regular EVE SSO service instance
@@ -40,9 +40,9 @@ const BaseSso = require('./BaseSso');
  *
  * For admin access with extended scopes, use adminSso.js instead.
  */
-module.exports = new BaseSso({
-  clientId: process.env.EVE_CLIENT_ID,
-  secretKey: process.env.EVE_SECRET_KEY,
-  callbackUrl: process.env.EVE_CALLBACK_URL,
+export default new BaseSso({
+  clientId: process.env.EVE_CLIENT_ID || '',
+  secretKey: process.env.EVE_SECRET_KEY || '',
+  callbackUrl: process.env.EVE_CALLBACK_URL || '',
   label: 'Regular SSO'
 });

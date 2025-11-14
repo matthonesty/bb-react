@@ -12,6 +12,7 @@ import { getMailHeaders, getMailContent, getMailLabels, MAILER_CHARACTER_ID } fr
 import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
 import { checkESIHealth } from '@/lib/esi/status';
+import { ROLES } from '@/lib/auth/roles';
 
 import pool from '@/lib/db';
 
@@ -32,9 +33,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const { ROLES } = require('@/lib/auth/roles');
   const isAdmin = session.roles?.some(role =>
-    [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT].includes(role)
+    [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT].includes(role as any)
   );
 
   if (!isAdmin) {

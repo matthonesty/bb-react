@@ -4,6 +4,7 @@
 
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
+import { getRoles, isAuthorizedRole } from '@/lib/auth/roles';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
@@ -34,7 +35,6 @@ export async function getServerSession(requireAuthorizedRole: boolean = true): P
     const decoded = jwt.verify(token, JWT_SECRET) as Session;
 
     // Re-check roles from database to ensure they're up-to-date
-    const { getRoles, isAuthorizedRole } = require('@/lib/auth/roles');
     const currentRoles = await getRoles(decoded.character_id);
 
     // If requireAuthorizedRole is true, check for fleet_commanders access

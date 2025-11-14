@@ -1,7 +1,7 @@
 import type { UserRole, SRPStatus, FCRank } from '@/types';
+import { ROLES } from '@/lib/auth/roleConstants';
 
 // Import ROLES for consistent role references (from roleConstants to avoid importing database code)
-const { ROLES } = require('@/lib/auth/roleConstants');
 
 /**
  * Application constants and configuration

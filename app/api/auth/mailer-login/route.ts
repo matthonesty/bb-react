@@ -23,9 +23,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-
-const mailerSso = require('@/lib/auth/mailerSso');
-const { MAILER_SCOPES } = require('@/lib/auth/mailerScopes');
+import mailerSso from '@/lib/auth/mailerSso';
+import { MAILER_SCOPES } from '@/lib/auth/mailerScopes';
 
 /**
  * GET /api/auth/mailer-login
@@ -39,7 +38,7 @@ export async function GET(request: NextRequest) {
     const randomState = mailerSso.generateState();
 
     // Get return URL from query parameter (for redirect after login)
-    const returnUrl = request.nextUrl.searchParams.get('return_url') || '/admin';
+    const returnUrl = request.nextUrl.searchParams.get('return_url') || '/';
 
     // Encode flow type and return URL in state parameter
     // Format: "randomstate:mailer:returnurl"

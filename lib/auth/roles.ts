@@ -6,11 +6,11 @@
  * Role Assignment:
  * - user: Default role for all authenticated users
  * - admin: Hardcoded in ADMIN_CHARACTER_IDS env var (for security/bootstrap)
- * - moderator: Managed via database (not hardcoded)
+ * - Other roles: Managed via database (fleet_commanders table with access_level)
  *
  * Security:
  * - Admin character IDs are hardcoded in environment for security
- * - Other roles (moderator, custom roles) should be managed via database
+ * - FC roles managed via database (Council, Accountant, OBomberCare, FC, Election Officer)
  * - Roles are assigned server-side only (not in JWT or client-visible)
  * - Admin checks happen on every request (no caching)
  */

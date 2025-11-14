@@ -3,7 +3,7 @@
  */
 
 // Import ROLES for consistent role references (from roleConstants to avoid importing database code)
-const { ROLES } = require('@/lib/auth/roleConstants');
+import { ROLES } from '@/lib/auth/roleConstants';
 
 export interface NavItem {
   label: string;

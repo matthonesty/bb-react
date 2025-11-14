@@ -18,7 +18,8 @@ export type UserRole =
   | 'Accountant'
   | 'OBomberCare'
   | 'FC'
-  | 'User';
+  | 'Election Officer'
+  | 'user';
 
 // SRP Types
 export interface SRPRequest {

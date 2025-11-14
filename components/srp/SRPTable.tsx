@@ -14,7 +14,6 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { SRPDetailModal } from './SRPDetailModal';
-import { SRPActionButtons } from './SRPActionButtons';
 import { Pagination } from '@/components/ui/Pagination';
 import { formatISK, formatDate, formatRelativeTime } from '@/lib/utils/format';
 import type { SRPStatus, SRPRequest } from '@/types';
@@ -128,7 +127,6 @@ export function SRPTable({
                 Status <SortIcon column="status" />
               </TableHead>
               <TableHead>Killmail</TableHead>
-              {isAdmin && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -209,11 +207,6 @@ export function SRPTable({
                     <span className="text-xs text-foreground-muted">—</span>
                   )}
                 </TableCell>
-                {isAdmin && (
-                  <TableCell onClick={(e) => e.stopPropagation()}>
-                    <SRPActionButtons request={request} onUpdate={refetch} />
-                  </TableCell>
-                )}
               </TableRow>
             ))}
           </TableBody>
