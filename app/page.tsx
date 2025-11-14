@@ -39,12 +39,9 @@ export default function Home() {
         <div className="mb-6 flex justify-center">
           <img src="/logo.png" alt="Bombers Bar" className="h-32 w-32" />
         </div>
-        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-4">
-          Bombers Bar SRP
+        <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl mb-8">
+          Welcome to Bombers Bar
         </h1>
-        <p className="text-xl text-foreground-muted max-w-2xl mx-auto mb-8">
-          Ship Replacement Program
-        </p>
         <Button size="lg" onClick={login}>
           Login with EVE Online
         </Button>
