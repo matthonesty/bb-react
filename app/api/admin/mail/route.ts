@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
     } catch (error: any) {
       return NextResponse.json({
         error: 'No mailer token available',
-        hint: 'Admin must authorize mailer service account via /auth/mailer-login first',
+        hint: 'Admin must authorize mailer service account via /api/auth/mailer-login first',
         details: error.message
       }, { status: 500 });
     }

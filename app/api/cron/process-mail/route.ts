@@ -227,7 +227,7 @@ export async function GET(request: NextRequest) {
 
       return NextResponse.json({
         success: false,
-        error: 'No mailer token available. Admin must authorize mailer service account via /auth/mailer-login first.',
+        error: 'No mailer token available. Admin must authorize mailer service account via /api/auth/mailer-login first.',
         details: error.message
       }, { status: 500 });
     }
