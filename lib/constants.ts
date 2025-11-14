@@ -15,11 +15,12 @@ export const NAV_ITEMS: NavItem[] = [
   {
     label: 'SRP',
     href: '/srp',
+    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
   },
   {
     label: 'Processed Mails',
     href: '/mail',
-    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.FC],
+    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
   },
 ];
 
