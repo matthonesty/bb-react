@@ -8,8 +8,14 @@ class ApiClient {
   private client: AxiosInstance;
 
   constructor() {
+    // Use current origin if in browser, otherwise fall back to env var
+    // This ensures HTTPS is used when the page is loaded over HTTPS
+    const baseURL = typeof window !== 'undefined'
+      ? window.location.origin
+      : (process.env.NEXT_PUBLIC_API_URL || '');
+
     this.client = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL || '',
+      baseURL,
       headers: {
         'Content-Type': 'application/json',
       },
