@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { srpApi } from '@/lib/api/srp';
 import {
@@ -26,7 +26,6 @@ interface SRPTableProps {
   currentPage: number;
   onPageChange: (page: number) => void;
   isAdmin: boolean;
-  autoOpenId?: string | null;
 }
 
 /**
@@ -38,7 +37,6 @@ export function SRPTable({
   currentPage,
   onPageChange,
   isAdmin,
-  autoOpenId,
 }: SRPTableProps) {
   const [sortBy, setSortBy] = useState<string>('submitted_at');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
@@ -57,22 +55,6 @@ export function SRPTable({
         sortDirection,
       }),
   });
-
-  // Auto-open modal when autoOpenId is provided and data is loaded
-  useEffect(() => {
-    if (autoOpenId && data && data.data.length > 0 && !selectedRequest) {
-      const numericId = parseInt(autoOpenId);
-      if (!isNaN(numericId)) {
-        // Find matching request by either ID or killmail_id
-        const matchingRequest = data.data.find(
-          (req) => req.id === numericId || req.killmail_id === numericId
-        );
-        if (matchingRequest) {
-          setSelectedRequest(matchingRequest);
-        }
-      }
-    }
-  }, [autoOpenId, data, selectedRequest]);
 
   const handleSort = (column: string) => {
     if (sortBy === column) {

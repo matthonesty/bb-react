@@ -52,7 +52,6 @@ function SRPContent() {
           currentPage={currentPage}
           onPageChange={setCurrentPage}
           isAdmin={isAdmin}
-          autoOpenId={idFromUrl}
         />
       </Card>
     </div>
