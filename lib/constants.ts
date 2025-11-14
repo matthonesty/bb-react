@@ -18,7 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
     roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
   },
   {
-    label: 'Processed Mails',
+    label: 'Mail',
     href: '/mail',
     roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
   },
