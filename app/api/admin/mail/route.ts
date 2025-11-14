@@ -62,7 +62,15 @@ export async function GET(request: NextRequest) {
 
     // Get specific mail content if mailId provided
     if (mailId) {
-      const mail = await getMailContent(accessToken, characterId, parseInt(mailId));
+      const parsedMailId = parseInt(mailId, 10);
+      if (isNaN(parsedMailId)) {
+        return NextResponse.json(
+          { success: false, error: 'Invalid mail ID' },
+          { status: 400 }
+        );
+      }
+
+      const mail = await getMailContent(accessToken, characterId, parsedMailId);
 
       return NextResponse.json({
         success: true,
@@ -84,7 +92,10 @@ export async function GET(request: NextRequest) {
     const options: any = {};
     const lastMailId = searchParams.get('lastMailId');
     if (lastMailId) {
-      options.lastMailId = parseInt(lastMailId);
+      const parsedLastMailId = parseInt(lastMailId, 10);
+      if (!isNaN(parsedLastMailId)) {
+        options.lastMailId = parsedLastMailId;
+      }
     }
 
     const mailHeaders = await getMailHeaders(accessToken, characterId, options);
