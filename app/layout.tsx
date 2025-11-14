@@ -16,9 +16,27 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bombers Bar - EVE Online Fleet Management & SRP",
-  description: "Ship Replacement Program and Fleet Management for Bombers Bar - EVE Online",
-  keywords: ["EVE Online", "Bombers Bar", "SRP", "Fleet Management", "EVE SSO"],
+  metadataBase: new URL('https://www.bombers.bar'),
+  title: "Bombers Bar",
+  description: "Bombers Bar",
+  openGraph: {
+    title: "Bombers Bar",
+    description: "Bombers Bar",
+    images: [
+      {
+        url: "/logo.png",
+        width: 512,
+        height: 512,
+        alt: "Bombers Bar Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary",
+    title: "Bombers Bar",
+    description: "Bombers Bar",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
