@@ -116,7 +116,11 @@ export async function GET(request: NextRequest) {
     if (processMails === 'true') {
       // Check ESI health before processing
       console.log('[ADMIN MAIL] Checking ESI health status...');
-      const health = await checkESIHealth();
+      const health = await checkESIHealth() as {
+        healthy: boolean;
+        issues: string[];
+        warnings: string[];
+      };
 
       if (!health.healthy) {
         console.error('[ADMIN MAIL] ESI unhealthy, cannot process mails:', health.issues.join(', '));
