@@ -14,9 +14,7 @@ import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
 import { checkESIHealth } from '@/lib/esi/status';
 import { runWalletReconciliation } from '@/lib/wallet/reconciliation';
 
-const Database = require('@/src/database') as {
-  getInstance: () => Promise<any>;
-};
+import pool from '@/lib/db';
 
 /**
  * Post cron results to Discord webhook
@@ -153,8 +151,6 @@ export async function GET(request: NextRequest) {
   try {
     console.log('[MAIL CRON] Starting automated mail processing...');
 
-    const db = await Database.getInstance();
-
     // Validate mailer character ID is configured
     if (!MAILER_CHARACTER_ID) {
       console.error('[MAIL CRON] MAILER_CHARACTER_ID not configured');
@@ -242,7 +238,7 @@ export async function GET(request: NextRequest) {
     // Step 2: Reconcile SRP payments from wallet journal
     console.log('[MAIL CRON] Running wallet reconciliation...');
     try {
-      const reconciliationResults = await runWalletReconciliation(db) as {
+      const reconciliationResults = await runWalletReconciliation(pool) as {
         journalSaved: number;
         paymentsReconciled: number;
       };
@@ -264,7 +260,7 @@ export async function GET(request: NextRequest) {
       accessToken,
       characterId: MAILER_CHARACTER_ID,
       mailHeaders,
-      db
+      db: pool
     }) as {
       processed: number;
       created: number;

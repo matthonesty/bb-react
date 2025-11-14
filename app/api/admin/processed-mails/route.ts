@@ -8,9 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
 
-const Database = require('@/src/database') as {
-  getInstance: () => Promise<any>;
-};
+import pool from '@/lib/db';
 
 /**
  * GET /api/admin/processed-mails
@@ -38,7 +36,6 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const db = await Database.getInstance();
     const searchParams = request.nextUrl.searchParams;
     const status = searchParams.get('status');
     const limit = parseInt(searchParams.get('limit') || '100');
@@ -47,7 +44,7 @@ export async function GET(request: NextRequest) {
 
     // Get single mail with full details
     if (mail_id) {
-      const result = await db.query(
+      const result = await pool.query(
         'SELECT * FROM processed_mails WHERE mail_id = $1',
         [mail_id]
       );
@@ -96,7 +93,7 @@ export async function GET(request: NextRequest) {
     params.push(offset);
     query += ` OFFSET $${params.length}`;
 
-    const result = await db.query(query, params);
+    const result = await pool.query(query, params);
 
     // Get total count for pagination
     let countQuery = `SELECT COUNT(*) FROM processed_mails WHERE 1=1`;
@@ -105,7 +102,7 @@ export async function GET(request: NextRequest) {
       countParams.push(status);
       countQuery += ` AND status = $${countParams.length}`;
     }
-    const countResult = await db.query(countQuery, countParams);
+    const countResult = await pool.query(countQuery, countParams);
 
     return NextResponse.json({
       success: true,
@@ -150,7 +147,6 @@ export async function DELETE(request: NextRequest) {
   }
 
   try {
-    const db = await Database.getInstance();
     const searchParams = request.nextUrl.searchParams;
     const mail_id = searchParams.get('mail_id');
 
@@ -161,7 +157,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await db.query(
+    const result = await pool.query(
       'DELETE FROM processed_mails WHERE mail_id = $1 RETURNING *',
       [mail_id]
     );

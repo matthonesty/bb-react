@@ -14,7 +14,9 @@
  * - Persistent ESI data pulls
  */
 
-const db = require('../src/database');
+import pool from '@/lib/db';
+
+// Using require for now until we convert SSO files to TypeScript
 const mailerSso = require('./auth/mailerSso');
 
 /**
@@ -25,12 +27,10 @@ const MAILER_TOKEN_KEY = 'mailer_refresh_token';
 /**
  * Get stored mailer refresh token
  *
- * @returns {Promise<string|null>} Refresh token or null if not set
+ * @returns Refresh token or null if not set
  */
-async function getStoredRefreshToken() {
-  await db.initialize();
-
-  const result = await db.query(
+export async function getStoredRefreshToken(): Promise<string | null> {
+  const result = await pool.query(
     'SELECT token FROM admin_tokens WHERE key = $1',
     [MAILER_TOKEN_KEY]
   );
@@ -47,12 +47,10 @@ async function getStoredRefreshToken() {
  *
  * Uses UPSERT to handle first-time insert or update.
  *
- * @param {string} refreshToken - EVE SSO refresh token
+ * @param refreshToken - EVE SSO refresh token
  */
-async function storeRefreshToken(refreshToken) {
-  await db.initialize();
-
-  await db.query(`
+export async function storeRefreshToken(refreshToken: string): Promise<void> {
+  await pool.query(`
     INSERT INTO admin_tokens (key, token, updated_at)
     VALUES ($1, $2, NOW())
     ON CONFLICT (key)
@@ -71,10 +69,10 @@ async function storeRefreshToken(refreshToken) {
  * 3. Stores NEW refresh token back to database (rotation)
  * 4. Returns access token
  *
- * @returns {Promise<string>} Fresh access token
+ * @returns Fresh access token
  * @throws {Error} If no refresh token stored or refresh fails
  */
-async function getMailerAccessToken() {
+export async function getMailerAccessToken(): Promise<string> {
   // Get stored refresh token
   const refreshToken = await getStoredRefreshToken();
 
@@ -96,17 +94,11 @@ async function getMailerAccessToken() {
 /**
  * Check if mailer refresh token is configured
  *
- * @returns {Promise<boolean>} True if token exists
+ * @returns True if token exists
  */
-async function hasStoredToken() {
+export async function hasStoredToken(): Promise<boolean> {
   const token = await getStoredRefreshToken();
   return token !== null;
 }
 
-module.exports = {
-  getStoredRefreshToken,
-  storeRefreshToken,
-  getMailerAccessToken,
-  hasStoredToken,
-  MAILER_TOKEN_KEY
-};
+export { MAILER_TOKEN_KEY };

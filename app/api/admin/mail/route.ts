@@ -13,9 +13,7 @@ import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
 import { checkESIHealth } from '@/lib/esi/status';
 
-const Database = require('@/src/database') as {
-  getInstance: () => Promise<any>;
-};
+import pool from '@/lib/db';
 
 /**
  * GET /api/admin/mail
@@ -142,14 +140,13 @@ export async function GET(request: NextRequest) {
         console.warn('[ADMIN MAIL] ESI degraded but proceeding:', health.warnings.join(', '));
       }
 
-      const db = await Database.getInstance();
 
       // Step 1: Process incoming mails (queues rejection/confirmation mails)
       processingResults = await processMailsForSRP({
         accessToken,
         characterId,
         mailHeaders,
-        db
+        db: pool
       });
 
       // Step 2: Send queued mails with rate limiting

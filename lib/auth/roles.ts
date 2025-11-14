@@ -13,12 +13,10 @@
  * - Other roles (moderator, custom roles) should be managed via database
  * - Roles are assigned server-side only (not in JWT or client-visible)
  * - Admin checks happen on every request (no caching)
- *
- * @see {@link ./middleware.js} for authentication implementation
  */
 
-// Import ROLES constants from separate file to avoid importing database code into client
-const { ROLES, isAuthorizedRole } = require('./roleConstants');
+import pool from '@/lib/db';
+import { ROLES, isAuthorizedRole as checkAuthorizedRole } from './roleConstants';
 
 /**
  * Get list of admin character IDs from environment
@@ -26,21 +24,10 @@ const { ROLES, isAuthorizedRole } = require('./roleConstants');
  * Checks both ADMIN_CHARACTER_ID (singular) and ADMIN_CHARACTER_IDS (plural).
  * Supports both formats for flexibility.
  *
- * @returns {number[]} Array of admin character IDs
- * @private
- *
- * @example
- * // .env file option 1 (single admin):
- * // ADMIN_CHARACTER_ID=12345
- * // Returns: [12345]
- *
- * @example
- * // .env file option 2 (multiple admins):
- * // ADMIN_CHARACTER_IDS=12345,67890,11111
- * // Returns: [12345, 67890, 11111]
+ * @returns Array of admin character IDs
  */
-function getAdminCharacterIds() {
-  const adminIds = [];
+function getAdminCharacterIds(): number[] {
+  const adminIds: number[] = [];
 
   // Check for single admin ID
   const singleAdminId = process.env.ADMIN_CHARACTER_ID;
@@ -74,20 +61,14 @@ function getAdminCharacterIds() {
  * Compares character ID against configured admin list.
  * Admin IDs are read from ADMIN_CHARACTER_IDS environment variable.
  *
- * @param {number} characterId - EVE character ID to check
- * @returns {boolean} True if character is an admin
- *
- * @example
- * // .env: ADMIN_CHARACTER_IDS=12345,67890
- * isAdmin(12345) // Returns: true
- * isAdmin(99999) // Returns: false
+ * @param characterId - EVE character ID to check
+ * @returns True if character is an admin
  */
-function isAdmin(characterId) {
+export function isAdmin(characterId: number | string): boolean {
   const adminIds = getAdminCharacterIds();
   const numericId = typeof characterId === 'string' ? parseInt(characterId, 10) : characterId;
   return adminIds.includes(numericId);
 }
-
 
 /**
  * Get FC access level from database
@@ -95,16 +76,12 @@ function isAdmin(characterId) {
  * Queries the fleet_commanders table to get the access_level for a character.
  * Checks both main_character_id and bb_corp_alt_id.
  *
- * @param {number} characterId - EVE character ID
- * @returns {Promise<string|null>} Access level (Council, Accountant, OBomberCare, FC) or null
- * @private
+ * @param characterId - EVE character ID
+ * @returns Access level (Council, Accountant, OBomberCare, FC) or null
  */
-async function getFCAccessLevel(characterId) {
+async function getFCAccessLevel(characterId: number): Promise<string | null> {
   try {
-    const Database = require('../../src/database');
-    const db = await Database.getInstance();
-
-    const result = await db.query(
+    const result = await pool.query(
       `SELECT access_level
        FROM fleet_commanders
        WHERE (main_character_id = $1 OR bb_corp_alt_id = $1)
@@ -118,7 +95,7 @@ async function getFCAccessLevel(characterId) {
     }
     return null;
   } catch (error) {
-    console.error('Error fetching FC access level:', error);
+    console.error('[ROLES] Error fetching FC access level:', error);
     return null;
   }
 }
@@ -131,16 +108,11 @@ async function getFCAccessLevel(characterId) {
  * Characters in ADMIN_CHARACTER_IDS also get 'admin' role.
  * Characters in fleet_commanders table get their access_level as a role.
  *
- * @param {number} characterId - EVE character ID
- * @returns {Promise<string[]>} Array of role strings
- *
- * @example
- * // .env: ADMIN_CHARACTER_IDS=12345
- * await getRoles(12345) // Returns: ['user', 'admin']
- * await getRoles(99999) // Returns: ['user', 'FC'] (if FC in database)
+ * @param characterId - EVE character ID
+ * @returns Array of role strings
  */
-async function getRoles(characterId) {
-  const roles = [ROLES.USER];
+export async function getRoles(characterId: number): Promise<string[]> {
+  const roles: string[] = [ROLES.USER];
 
   // Check ENV-based admin role
   if (isAdmin(characterId)) {
@@ -162,15 +134,11 @@ async function getRoles(characterId) {
  * Verifies that a character has the specified role.
  * Useful for authorization checks in API endpoints.
  *
- * @param {number} characterId - EVE character ID
- * @param {string} role - Role to check (use ROLES enum)
- * @returns {Promise<boolean>} True if character has the role
- *
- * @example
- * await hasRole(12345, ROLES.ADMIN) // Returns: true if admin, false otherwise
- * await hasRole(12345, ROLES.USER)  // Returns: true (all authenticated users)
+ * @param characterId - EVE character ID
+ * @param role - Role to check (use ROLES enum)
+ * @returns True if character has the role
  */
-async function hasRole(characterId, role) {
+export async function hasRole(characterId: number, role: string): Promise<boolean> {
   const characterRoles = await getRoles(characterId);
   return characterRoles.includes(role);
 }
@@ -178,19 +146,13 @@ async function hasRole(characterId, role) {
 /**
  * Check if user has any authorized role (admin or FC access)
  *
- * @param {number} characterId - EVE character ID
- * @returns {Promise<boolean>} True if user has authorized access
+ * @param characterId - EVE character ID
+ * @returns True if user has authorized access
  */
-async function hasAuthorizedAccess(characterId) {
+export async function hasAuthorizedAccess(characterId: number): Promise<boolean> {
   const roles = await getRoles(characterId);
-  return roles.some(role => isAuthorizedRole(role));
+  return roles.some(role => checkAuthorizedRole(role));
 }
 
-module.exports = {
-  ROLES,
-  isAdmin,
-  getRoles,
-  hasRole,
-  isAuthorizedRole,
-  hasAuthorizedAccess
-};
+// Re-export for convenience
+export { ROLES, checkAuthorizedRole as isAuthorizedRole };

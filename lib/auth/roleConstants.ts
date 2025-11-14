@@ -7,9 +7,8 @@
 
 /**
  * Available user roles
- * @enum {string}
  */
-const ROLES = {
+export const ROLES = {
   USER: 'user',
   ADMIN: 'admin',           // ENV-controlled only
   COUNCIL: 'Council',       // Database-managed via fleet_commanders
@@ -17,17 +16,17 @@ const ROLES = {
   OBOMBERCARE: 'OBomberCare', // Database-managed via fleet_commanders
   FC: 'FC',                 // Database-managed via fleet_commanders
   ELECTION_OFFICER: 'Election Officer' // Database-managed via fleet_commanders (manual SQL only)
-};
+} as const;
 
 /**
  * Check if a role is an authorized FC/admin role
  * Centralized helper to avoid hardcoding role lists everywhere
  *
- * @param {string} role - Role to check
- * @returns {boolean} True if role has authorized access
+ * @param role - Role to check
+ * @returns True if role has authorized access
  */
-function isAuthorizedRole(role) {
-  const authorizedRoles = [
+export function isAuthorizedRole(role: string): boolean {
+  const authorizedRoles: string[] = [
     ROLES.ADMIN,
     ROLES.COUNCIL,
     ROLES.ACCOUNTANT,
@@ -37,8 +36,3 @@ function isAuthorizedRole(role) {
   ];
   return authorizedRoles.includes(role);
 }
-
-module.exports = {
-  ROLES,
-  isAuthorizedRole
-};
