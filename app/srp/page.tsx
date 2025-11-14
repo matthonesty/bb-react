@@ -40,7 +40,7 @@ export default function SRPPage() {
               Authentication Required
             </h1>
             <p className="text-foreground-muted mb-6">
-              You must be logged in to access the Ship Replacement Program.
+              Please log in to continue.
             </p>
             <img
               src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"

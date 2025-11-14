@@ -42,7 +42,7 @@ export default function ProcessedMailsPage() {
               Authentication Required
             </h1>
             <p className="text-foreground-muted mb-6">
-              You must be logged in to access processed mails.
+              Please log in to continue.
             </p>
             <img
               src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
@@ -71,13 +71,13 @@ export default function ProcessedMailsPage() {
               Access Denied
             </h1>
             <p className="text-foreground-muted mb-6">
-              You do not have permission to access processed mails. This page is restricted to Fleet Commanders and Leadership.
+              You do not have permission to access this page.
             </p>
             <button
-              onClick={() => window.location.href = '/srp'}
+              onClick={() => window.location.href = '/'}
               className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
             >
-              Go to SRP
+              Go Home
             </button>
           </div>
         </div>
