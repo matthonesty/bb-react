@@ -59,8 +59,9 @@ export default function ProcessedMailsPage() {
     );
   }
 
-  // Require FC/Admin/Council/Accountant role
-  const hasAccess = hasAnyRole(['admin', 'Council', 'FC', 'Accountant']);
+  // Require any active FC role (anyone in fleet_commanders with active status)
+  // This includes: admin, Council, Accountant, OBomberCare, FC, Election Officer
+  const hasAccess = user && user.roles.length > 1; // More than just 'user' role
   if (!hasAccess) {
     return (
       <div className="flex min-h-screen items-center justify-center px-4">
