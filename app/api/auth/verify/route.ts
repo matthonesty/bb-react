@@ -30,17 +30,8 @@ export async function GET(request: NextRequest) {
       // This ensures role changes take effect immediately without requiring re-login
       const currentRoles = await getRoles(decoded.character_id);
 
-      // Check if user still has authorized access
-      const hasAuthorizedRole = currentRoles.some((role: string) => isAuthorizedRole(role));
-
-      if (!hasAuthorizedRole) {
-        // User's roles have been revoked, invalidate their session
-        return NextResponse.json(
-          { authenticated: false, user: null, error: 'Access revoked' },
-          { status: 403 }
-        );
-      }
-
+      // All authenticated users are allowed (at minimum they have 'user' role)
+      // Individual pages/endpoints can check for specific roles as needed
       return NextResponse.json({
         authenticated: true,
         user: {
