@@ -5,6 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { SRPTable } from '@/components/srp/SRPTable';
 import { SRPFilters } from '@/components/srp/SRPFilters';
+import { Card } from '@/components/ui/Card';
 import type { SRPStatus } from '@/types';
 
 export default function SRPPage() {
@@ -51,5 +52,6 @@ export default function SRPPage() {
         />
       </Card>
     </div>
+    </RequireAuth>
   );
 }

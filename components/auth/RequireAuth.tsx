@@ -3,13 +3,14 @@
 import { ReactNode } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
+import type { UserRole } from '@/types';
 
 interface RequireAuthProps {
   children: ReactNode;
   /** If true, requires user to have more than just 'user' role (i.e., FC/Admin role) */
   requireFCRole?: boolean;
   /** Custom roles required (checks if user has ANY of these roles) */
-  requiredRoles?: string[];
+  requiredRoles?: UserRole[];
 }
 
 /**
@@ -86,7 +87,7 @@ export function RequireAuth({ children, requireFCRole = false, requiredRoles }: 
 
     if (requireFCRole) {
       // Require any active FC role (more than just 'user' role)
-      hasAccess = user && user.roles.length > 1;
+      hasAccess = !!(user && user.roles.length > 1);
     } else if (requiredRoles) {
       // Check if user has any of the required roles
       hasAccess = hasAnyRole(requiredRoles);
