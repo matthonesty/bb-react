@@ -33,7 +33,15 @@ export async function getServerSession(): Promise<Session | null> {
     // Verify and decode JWT
     const decoded = jwt.verify(token, JWT_SECRET) as Session;
 
-    return decoded;
+    // Re-check roles from database to ensure they're up-to-date
+    const { getRoles } = require('@/lib/auth/roles');
+    const currentRoles = await getRoles(decoded.character_id);
+
+    // Return session with current roles from database
+    return {
+      ...decoded,
+      roles: currentRoles
+    };
   } catch (error) {
     console.error('[AUTH] Session verification failed:', error);
     return null;

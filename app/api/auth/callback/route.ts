@@ -139,11 +139,26 @@ export async function GET(request: NextRequest) {
     }
 
     // Regular user login flow
-    // Determine user roles
-    const roles = ['User'];
-    if (ADMIN_CHARACTER_IDS.includes(characterInfo.CharacterID)) {
-      roles.push('admin', 'Council');
+    // Get roles from database (checks ADMIN_CHARACTER_IDS and fleet_commanders table)
+    const { getRoles } = require('@/lib/auth/roles');
+    const roles = await getRoles(characterInfo.CharacterID);
+
+    // Check if user has any authorized role (admin or FC role from fleet_commanders)
+    const hasAuthorizedRole = roles.some((role: string) =>
+      ['admin', 'Council', 'Accountant', 'OBomberCare', 'FC'].includes(role)
+    );
+
+    if (!hasAuthorizedRole) {
+      console.log('[CALLBACK] User not authorized:', characterInfo.CharacterName, '(ID:', characterInfo.CharacterID + ')');
+      console.log('[CALLBACK] User roles:', roles);
+
+      return NextResponse.json({
+        error: 'Not Authorized',
+        message: 'You do not have access to this system. You must be listed in the Fleet Commanders roster with active status.'
+      }, { status: 403 });
     }
+
+    console.log('[CALLBACK] Authorized user:', characterInfo.CharacterName, 'Roles:', roles);
 
     // Create JWT payload
     const jwtPayload = {

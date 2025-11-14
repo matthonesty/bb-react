@@ -38,6 +38,18 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    // Check if user has any authorized role
+    const hasAuthorizedRole = user.roles?.some((role: string) =>
+      ['admin', 'Council', 'Accountant', 'OBomberCare', 'FC'].includes(role)
+    );
+
+    if (!hasAuthorizedRole) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Authorized role required' },
+        { status: 403 }
+      );
+    }
+
     // Get query parameters
     const searchParams = request.nextUrl.searchParams;
     const page = parseInt(searchParams.get('page') || '1');
