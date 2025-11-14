@@ -6,7 +6,6 @@ import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { SRPTable } from '@/components/srp/SRPTable';
 import { SRPFilters } from '@/components/srp/SRPFilters';
-import { SRPDetailView } from '@/components/srp/SRPDetailView';
 import { Card } from '@/components/ui/Card';
 import type { SRPStatus } from '@/types';
 
@@ -16,24 +15,14 @@ function SRPContent() {
   }, []);
   const { user, hasRole } = useAuth();
   const searchParams = useSearchParams();
-  const srpId = searchParams.get('id');
+  const idFromUrl = searchParams.get('id');
 
   const [statusFilter, setStatusFilter] = useState<SRPStatus | 'all'>('all');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(idFromUrl || '');
   const [currentPage, setCurrentPage] = useState(1);
 
   const isAdmin = hasRole(['admin', 'Council', 'Accountant']);
 
-  // If an SRP ID is provided, show detail view
-  if (srpId) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <SRPDetailView srpId={srpId} isAdmin={isAdmin} />
-      </div>
-    );
-  }
-
-  // Otherwise show the normal table view
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
       {/* Page Header */}
@@ -63,6 +52,7 @@ function SRPContent() {
           currentPage={currentPage}
           onPageChange={setCurrentPage}
           isAdmin={isAdmin}
+          autoOpenId={idFromUrl}
         />
       </Card>
     </div>
