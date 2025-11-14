@@ -11,7 +11,7 @@ interface RejectModalProps {
   onConfirm: (reason: string) => void;
   isLoading?: boolean;
   characterName: string;
-  shipName: string;
+  shipName: string | null;
 }
 
 /**
@@ -56,7 +56,7 @@ export function RejectModal({
                 You are about to reject this SRP request
               </div>
               <div className="text-sm text-foreground-muted">
-                <strong>{characterName}</strong> - {shipName}
+                <strong>{characterName}</strong> - {shipName ?? 'Unknown Ship'}
               </div>
             </div>
           </div>
