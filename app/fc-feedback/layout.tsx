@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import { generatePageMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: "FC Feedback - Bombers Bar",
-  description: "FC Feedback",
-  openGraph: {
-    title: "FC Feedback - Bombers Bar",
-    description: "FC Feedback",
-    images: ["/logo.png"],
-  },
-  twitter: {
-    card: "summary",
-    title: "FC Feedback - Bombers Bar",
-    description: "FC Feedback",
-    images: ["/logo.png"],
-  },
-};
+export const metadata = generatePageMetadata({
+  title: 'FC Feedback',
+  description: 'Provide feedback on Fleet Commander performance',
+});
 
 export default function FCFeedbackLayout({
   children,

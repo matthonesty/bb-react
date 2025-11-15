@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import { generatePageMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: "FC Application - Bombers Bar",
-  description: "FC Application",
-  openGraph: {
-    title: "FC Application - Bombers Bar",
-    description: "FC Application",
-    images: ["/logo.png"],
-  },
-  twitter: {
-    card: "summary",
-    title: "FC Application - Bombers Bar",
-    description: "FC Application",
-    images: ["/logo.png"],
-  },
-};
+export const metadata = generatePageMetadata({
+  title: 'FC Application',
+  description: 'Apply to become a Fleet Commander for Bombers Bar',
+});
 
 export default function FCApplicationLayout({
   children,

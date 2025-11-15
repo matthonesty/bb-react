@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import { generatePageMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: "Processed Mails - Bombers Bar",
-  description: "Processed Mails",
-  openGraph: {
-    title: "Processed Mails - Bombers Bar",
-    description: "Processed Mails",
-    images: ["/logo.png"],
-  },
-  twitter: {
-    card: "summary",
-    title: "Processed Mails - Bombers Bar",
-    description: "Processed Mails",
-    images: ["/logo.png"],
-  },
-};
+export const metadata = generatePageMetadata({
+  title: 'Processed Mails',
+  description: 'View EVE in-game mails processed by the automated SRP mailer system',
+});
 
 export default function MailLayout({
   children,

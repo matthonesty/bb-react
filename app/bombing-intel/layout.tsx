@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import { generatePageMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: "Bombing Intel - Bombers Bar",
-  description: "Bombing Intel",
-  openGraph: {
-    title: "Bombing Intel - Bombers Bar",
-    description: "Bombing Intel",
-    images: ["/logo.png"],
-  },
-  twitter: {
-    card: "summary",
-    title: "Bombing Intel - Bombers Bar",
-    description: "Bombing Intel",
-    images: ["/logo.png"],
-  },
-};
+export const metadata = generatePageMetadata({
+  title: 'Bombing Intel',
+  description: 'Submit and view bombing intelligence reports',
+});
 
 export default function BombingIntelLayout({
   children,

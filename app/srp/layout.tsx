@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import { generatePageMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: "Ship Replacement Program - Bombers Bar",
-  description: "Ship Replacement Program",
-  openGraph: {
-    title: "Ship Replacement Program - Bombers Bar",
-    description: "Ship Replacement Program",
-    images: ["/logo.png"],
-  },
-  twitter: {
-    card: "summary",
-    title: "Ship Replacement Program - Bombers Bar",
-    description: "Ship Replacement Program",
-    images: ["/logo.png"],
-  },
-};
+export const metadata = generatePageMetadata({
+  title: 'Ship Replacement Program',
+  description: 'View and manage SRP requests for fleet losses',
+});
 
 export default function SRPLayout({
   children,

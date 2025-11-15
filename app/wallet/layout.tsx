@@ -1,20 +1,9 @@
-import type { Metadata } from "next";
+import { generatePageMetadata } from '@/lib/utils/metadata';
 
-export const metadata: Metadata = {
-  title: "Wallet - Bombers Bar",
-  description: "Wallet History",
-  openGraph: {
-    title: "Wallet - Bombers Bar",
-    description: "Wallet History",
-    images: ["/logo.png"],
-  },
-  twitter: {
-    card: "summary",
-    title: "Wallet - Bombers Bar",
-    description: "Wallet History",
-    images: ["/logo.png"],
-  },
-};
+export const metadata = generatePageMetadata({
+  title: 'Wallet',
+  description: 'View corporation wallet journal entries',
+});
 
 export default function WalletLayout({
   children,
