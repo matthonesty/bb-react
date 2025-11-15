@@ -142,7 +142,7 @@ export async function GET(request: NextRequest) {
     // Add is_admin flag to each FC
     const fcs = result.rows.map((fc) => ({
       ...fc,
-      is_admin: adminIds.includes(fc.main_character_id),
+      is_admin: adminIds.includes(Number(fc.main_character_id)),
     }));
 
     // Get total count for pagination
@@ -256,7 +256,7 @@ export async function POST(request: NextRequest) {
     const adminIds = getAdminCharacterIds();
     const fc = {
       ...result.rows[0],
-      is_admin: adminIds.includes(result.rows[0].main_character_id),
+      is_admin: adminIds.includes(Number(result.rows[0].main_character_id)),
     };
 
     return NextResponse.json({
@@ -322,7 +322,7 @@ export async function PUT(request: NextRequest) {
     const adminIds = getAdminCharacterIds();
     const targetFC = {
       ...existingFC.rows[0],
-      is_admin: adminIds.includes(existingFC.rows[0].main_character_id),
+      is_admin: adminIds.includes(Number(existingFC.rows[0].main_character_id)),
     };
 
     // Check if user can manage this FC
@@ -371,7 +371,7 @@ export async function PUT(request: NextRequest) {
     // Add is_admin flag
     const fc = {
       ...result.rows[0],
-      is_admin: adminIds.includes(result.rows[0].main_character_id),
+      is_admin: adminIds.includes(Number(result.rows[0].main_character_id)),
     };
 
     return NextResponse.json({
