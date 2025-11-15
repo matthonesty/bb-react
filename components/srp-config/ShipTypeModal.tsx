@@ -75,33 +75,20 @@ export function ShipTypeModal({ isOpen, onClose, onSuccess, shipType }: ShipType
     setError(null);
 
     try {
-      // Search for the type
-      const searchResponse = await fetch(
-        `/api/esi/ship-info?search=${encodeURIComponent(shipLookup.trim())}`
-      );
+      // Import the client helper
+      const { resolveIds, getTypeInfo } = await import('@/lib/client/esi');
 
-      const searchData = await searchResponse.json();
+      // Resolve ship name to ID
+      const resolved = await resolveIds([shipLookup.trim()]);
 
-      if (!searchData.success) {
-        throw new Error(searchData.error || 'Ship type not found');
-      }
-
-      if (!searchData.type_ids || searchData.type_ids.length === 0) {
+      if (!resolved.inventory_types || resolved.inventory_types.length === 0) {
         throw new Error(`Ship type "${shipLookup}" not found`);
       }
 
-      const typeId = searchData.type_ids[0];
+      const typeId = resolved.inventory_types[0].id;
 
       // Get type and group details
-      const typeResponse = await fetch(`/api/admin/type-info?type_id=${typeId}`);
-
-      const typeData = await typeResponse.json();
-
-      if (!typeData.success) {
-        throw new Error(typeData.error || 'Failed to fetch ship type details');
-      }
-
-      const typeInfo = typeData.type_info;
+      const typeInfo = await getTypeInfo(typeId);
 
       setFormData({
         ...formData,

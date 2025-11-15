@@ -7,11 +7,10 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getMailerAccessToken } from '@/lib/mailerToken';
-import { getMailHeaders, MAILER_CHARACTER_ID } from '@/lib/esi/mail';
-import { getQueueStats } from '@/lib/esi/pendingMailQueue';
+import { getMailHeaders, MAILER_CHARACTER_ID, checkESIHealth } from '@/lib/esi.js';
+import { getQueueStats } from '@/lib/pendingMailQueue.js';
 import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
-import { checkESIHealth } from '@/lib/esi/status';
 import { runWalletReconciliation } from '@/lib/wallet/reconciliation';
 
 import pool from '@/lib/db';

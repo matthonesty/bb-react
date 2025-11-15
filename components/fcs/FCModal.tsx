@@ -87,19 +87,9 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
     if (!name.trim()) return null;
 
     try {
-      const response = await fetch('/api/admin/universe-ids', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ names: [name.trim()] }),
-      });
+      const { resolveIds } = await import('@/lib/client/esi');
 
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Character not found');
-      }
+      const data = await resolveIds([name.trim()]);
 
       // resolveIds returns { characters: [{id, name}], corporations: [{id, name}], ... }
       if (!data.characters || data.characters.length === 0) {

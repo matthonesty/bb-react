@@ -8,10 +8,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
 import { getMailerAccessToken } from '@/lib/mailerToken';
-import { getMailHeaders, getMailContent, getMailLabels, MAILER_CHARACTER_ID } from '@/lib/esi/mail';
+import { getMailHeaders, getMailContent, getMailLabels, MAILER_CHARACTER_ID, checkESIHealth } from '@/lib/esi.js';
 import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
-import { checkESIHealth } from '@/lib/esi/status';
 import { ROLES } from '@/lib/auth/roles';
 
 import pool from '@/lib/db';

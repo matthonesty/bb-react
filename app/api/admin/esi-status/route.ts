@@ -7,8 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
-import { getESIStatus, getHealthSummary } from '@/lib/esi/status.js';
-import { getCompatibilityDateSync } from '@/lib/esi/helpers.js';
+import { getESIStatus, getHealthSummary, getCompatibilityDateSync } from '@/lib/esi.js';
 
 /**
  * Critical routes we depend on for mail processing and operations
@@ -21,7 +20,7 @@ const CRITICAL_ROUTES = [
   { method: 'GET', path: '/corporations/{corporation_id}/wallets/{division}/journal/' },
 ];
 
-// Removed duplicate functions - now using centralized helpers from lib/esi/status.js and lib/esi/helpers.js
+// Removed duplicate functions - now using centralized helpers from lib/esi.js
 
 /**
  * GET /api/admin/esi-status
