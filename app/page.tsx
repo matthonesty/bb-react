@@ -3,7 +3,7 @@
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
 
   if (isLoading) {
     return (

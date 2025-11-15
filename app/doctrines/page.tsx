@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { PageContainer } from '@/components/layout/PageContainer';
@@ -17,7 +17,7 @@ export default function DoctrinesPage() {
     document.title = 'Doctrines - Bombers Bar';
   }, []);
 
-  const { user, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const [fleetTypes, setFleetTypes] = useState<FleetType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -32,11 +32,7 @@ export default function DoctrinesPage() {
 
   const canManage = hasRole(['admin', 'Council']);
 
-  useEffect(() => {
-    loadFleetTypes();
-  }, [includeInactive]);
-
-  async function loadFleetTypes() {
+  const loadFleetTypes = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -59,7 +55,11 @@ export default function DoctrinesPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [includeInactive]);
+
+  useEffect(() => {
+    loadFleetTypes();
+  }, [loadFleetTypes]);
 
   function openAddFleetTypeModal() {
     setSelectedFleetType(null);

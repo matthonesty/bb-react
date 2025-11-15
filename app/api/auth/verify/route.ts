@@ -3,14 +3,14 @@
  * Verifies JWT token and returns user information
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-import { getRoles, isAuthorizedRole } from '@/lib/auth/roles';
+import { getRoles } from '@/lib/auth/roles';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
@@ -47,7 +47,7 @@ export async function GET(request: NextRequest) {
           roles: currentRoles,
         },
       });
-    } catch (jwtError) {
+    } catch {
       // Token invalid or expired
       return NextResponse.json({ authenticated: false, user: null }, { status: 401 });
     }

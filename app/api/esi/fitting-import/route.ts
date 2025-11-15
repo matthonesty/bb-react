@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     let shipInfo: any;
     try {
       shipInfo = await getShipInfo(categorized.ship_type_id);
-    } catch (error: any) {
+    } catch {
       return NextResponse.json(
         { success: false, error: 'Failed to fetch ship information from ESI' },
         { status: 400 }

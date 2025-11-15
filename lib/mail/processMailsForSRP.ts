@@ -10,9 +10,9 @@
 
 import { getMailContent, resolveNames } from '../esi';
 import { validateSRPRequest, ValidationResult } from '../srp/validator';
-import { getAllApprovedShips, ShipsMap } from '../srp/shipTypes';
+import { getAllApprovedShips } from '../srp/shipTypes';
 import { queueMailSend } from '../pendingMailQueue';
-import { getProximityData, loadFleetCommandersMap, ProximityData, FCInfo } from '../killmail/parser';
+import { getProximityData, loadFleetCommandersMap, ProximityData } from '../killmail/parser';
 import { isBanned } from '../banlist/checker';
 import { Pool } from 'pg';
 
@@ -309,7 +309,7 @@ export async function processMailsForSRP({ accessToken, characterId, mailHeaders
     // =====================================================================
     // PHASE 2: Bulk resolve ALL IDs (senders + killmail data) in ONE ESI call
     // =====================================================================
-    let nameMap: Record<number, string> = {};
+    const nameMap: Record<number, string> = {};
     try {
       const uniqueIds = [...new Set([...allIdsToResolve, ...Array.from(allSenderIds)])];
       console.log(

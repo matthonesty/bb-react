@@ -7,7 +7,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
-import { getRoles, hasAuthorizedAccess } from '@/lib/auth/roles';
+import { getRoles } from '@/lib/auth/roles';
 import { storeRefreshToken as storeMailerRefreshToken } from '@/lib/mailerToken';
 import { BaseSso } from '@/lib/auth/BaseSso';
 import mailerSso from '@/lib/auth/mailerSso';
@@ -20,10 +20,6 @@ const eveSso = new BaseSso({
 });
 
 const JWT_SECRET = process.env.JWT_SECRET!;
-const ADMIN_CHARACTER_IDS = (process.env.ADMIN_CHARACTER_IDS || '')
-  .split(',')
-  .map((id) => parseInt(id.trim()))
-  .filter((id) => !isNaN(id));
 
 export async function GET(request: NextRequest) {
   try {

@@ -41,7 +41,7 @@ export async function GET() {
     // Test connection with a simple query
     try {
       await pool.query('SELECT 1');
-    } catch (error) {
+    } catch {
       poolStatus.isConnected = false;
     }
 

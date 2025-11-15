@@ -3,7 +3,7 @@
  * Simple, straightforward pool management without over-engineering
  */
 
-import { Pool, QueryResult } from 'pg';
+import { Pool } from 'pg';
 
 // Create connection pool
 const pool = new Pool({

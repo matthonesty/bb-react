@@ -3,7 +3,7 @@
 import { Modal, ModalFooter } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { CopyButton, CopyableField } from '@/components/ui/CopyButton';
+import { CopyableField } from '@/components/ui/CopyButton';
 import { SRPActionButtons } from './SRPActionButtons';
 import { ProximityDataDisplay } from './ProximityDataDisplay';
 import {

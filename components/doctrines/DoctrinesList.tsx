@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Button } from '@/components/ui/Button';
 import { Plus } from 'lucide-react';
 import { DoctrineCard } from './DoctrineCard';
@@ -19,11 +19,7 @@ export function DoctrinesList({ fleetTypeId, canManage, onReload }: DoctrinesLis
   const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    loadDoctrines();
-  }, [fleetTypeId]);
-
-  async function loadDoctrines() {
+  const loadDoctrines = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -45,7 +41,11 @@ export function DoctrinesList({ fleetTypeId, canManage, onReload }: DoctrinesLis
     } finally {
       setLoading(false);
     }
-  }
+  }, [fleetTypeId]);
+
+  useEffect(() => {
+    loadDoctrines();
+  }, [loadDoctrines]);
 
   function openAddDoctrineModal() {
     setIsModalOpen(true);

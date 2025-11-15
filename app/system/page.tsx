@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
@@ -43,7 +43,7 @@ export default function SystemPage() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  async function loadESIStatus() {
+  const loadESIStatus = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/esi-status');
       const data = await response.json();
@@ -57,9 +57,9 @@ export default function SystemPage() {
       console.error('Failed to load ESI status:', err);
       setError(err.message);
     }
-  }
+  }, []);
 
-  async function loadSystemStatus() {
+  const loadSystemStatus = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/system-status');
       const data = await response.json();
@@ -73,14 +73,14 @@ export default function SystemPage() {
       console.error('Failed to load system status:', err);
       setError(err.message);
     }
-  }
+  }, []);
 
-  async function refreshAll() {
+  const refreshAll = useCallback(async () => {
     setLoading(true);
     setError(null);
     await Promise.all([loadESIStatus(), loadSystemStatus()]);
     setLoading(false);
-  }
+  }, [loadESIStatus, loadSystemStatus]);
 
   async function clearIdleConnections() {
     setClearingIdle(true);
@@ -126,7 +126,7 @@ export default function SystemPage() {
     // Auto-refresh every 60 seconds
     const interval = setInterval(refreshAll, 60000);
     return () => clearInterval(interval);
-  }, []);
+  }, [refreshAll]);
 
   function getStatusBadgeVariant(status: string): 'success' | 'warning' | 'error' {
     const normalizedStatus = status.toUpperCase();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
@@ -27,7 +27,7 @@ export default function BansPage() {
     document.title = 'Ban List - Bombers Bar';
   }, []);
 
-  const { user, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const [bans, setBans] = useState<Ban[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,11 +43,7 @@ export default function BansPage() {
 
   const canManage = hasRole(['admin', 'Council']);
 
-  useEffect(() => {
-    loadBans();
-  }, [typeFilter, banTypeFilter, searchQuery]);
-
-  async function loadBans() {
+  const loadBans = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -73,7 +69,11 @@ export default function BansPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [typeFilter, banTypeFilter, searchQuery]);
+
+  useEffect(() => {
+    loadBans();
+  }, [loadBans]);
 
   function openAddModal() {
     setSelectedBan(null);

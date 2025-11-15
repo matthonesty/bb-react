@@ -44,7 +44,7 @@ export default function BombingIntelPage() {
     setSubmitStatus(null);
 
     try {
-      const response = await apiClient.post('/api/bombing-intel', formData);
+      await apiClient.post('/api/bombing-intel', formData);
       setSubmitStatus({
         type: 'success',
         message: 'Intel submitted successfully! Thank you for contributing.',

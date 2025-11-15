@@ -42,7 +42,7 @@ export default function FCApplicationPage() {
     setSubmitStatus(null);
 
     try {
-      const response = await apiClient.post('/api/fc-application', formData);
+      await apiClient.post('/api/fc-application', formData);
       setSubmitStatus({
         type: 'success',
         message: 'Application submitted successfully! Thank you for applying.',

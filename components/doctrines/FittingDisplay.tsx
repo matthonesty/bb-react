@@ -1,8 +1,5 @@
 'use client';
 
-import { useState } from 'react';
-import { Button } from '@/components/ui/Button';
-import { Copy } from 'lucide-react';
 import { FittingWheel } from './FittingWheel';
 import type { ModuleItem } from '@/types';
 
@@ -26,14 +23,12 @@ interface FittingDisplayProps {
   cargoItems: ModuleItem[];
 
   // Optional features
-  showCopyButton?: boolean;
   notes?: string | null;
 }
 
 export function FittingDisplay({
   shipTypeId,
   shipName,
-  fittingName,
   highSlots,
   midSlots,
   lowSlots,
@@ -43,72 +38,8 @@ export function FittingDisplay({
   lowSlotModules,
   rigModules,
   cargoItems,
-  showCopyButton = true,
   notes,
 }: FittingDisplayProps) {
-  const [copied, setCopied] = useState(false);
-
-  const generateEFTFitting = () => {
-    let eft = `[${shipName}, ${fittingName}]\n\n`;
-
-    // Low slots
-    lowSlotModules.forEach((mod) => {
-      if (mod && mod.type_id) {
-        const name = (mod as any).name || mod.type_name || 'Unknown Module';
-        eft += `${name}\n`;
-      }
-    });
-    eft += '\n';
-
-    // Mid slots
-    midSlotModules.forEach((mod) => {
-      if (mod && mod.type_id) {
-        const name = (mod as any).name || mod.type_name || 'Unknown Module';
-        eft += `${name}\n`;
-      }
-    });
-    eft += '\n';
-
-    // High slots
-    highSlotModules.forEach((mod) => {
-      if (mod && mod.type_id) {
-        const name = (mod as any).name || mod.type_name || 'Unknown Module';
-        eft += `${name}\n`;
-      }
-    });
-    eft += '\n';
-
-    // Rigs
-    rigModules.forEach((mod) => {
-      if (mod && mod.type_id) {
-        const name = (mod as any).name || mod.type_name || 'Unknown Module';
-        eft += `${name}\n`;
-      }
-    });
-    eft += '\n';
-
-    // Cargo
-    cargoItems.forEach((item) => {
-      if (item && item.type_id) {
-        const name = (item as any).name || item.type_name || 'Unknown Item';
-        eft += `${name} x${item.quantity}\n`;
-      }
-    });
-
-    return eft;
-  };
-
-  const copyFitting = async () => {
-    try {
-      const eft = generateEFTFitting();
-      await navigator.clipboard.writeText(eft);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-    }
-  };
-
   const renderModuleList = (title: string, modules: ModuleItem[]) => {
     const filledModules = modules.filter((m) => m !== null && m && m.type_id);
     if (filledModules.length === 0) return null;

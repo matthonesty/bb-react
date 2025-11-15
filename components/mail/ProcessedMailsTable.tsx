@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/format';
 import { sanitizeMailHtml } from '@/lib/utils/sanitizeMailHtml';
@@ -47,11 +47,7 @@ export function ProcessedMailsTable() {
 
   const pageSize = 100;
 
-  useEffect(() => {
-    loadMails();
-  }, [currentPage, statusFilter]);
-
-  async function loadMails() {
+  const loadMails = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -80,7 +76,11 @@ export function ProcessedMailsTable() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [currentPage, statusFilter]);
+
+  useEffect(() => {
+    loadMails();
+  }, [loadMails]);
 
   async function toggleMailExpand(mailId: number) {
     if (expandedMailId === mailId) {

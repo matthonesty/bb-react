@@ -15,7 +15,7 @@ function SRPContent() {
   useEffect(() => {
     document.title = 'Ship Replacement Program - Bombers Bar';
   }, []);
-  const { user, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const searchParams = useSearchParams();
   const idFromUrl = searchParams.get('id');
 

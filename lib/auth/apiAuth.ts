@@ -5,7 +5,6 @@
  * Centralizes JWT verification and permission checking to maintain DRY principles.
  */
 
-import { NextRequest } from 'next/server';
 import { cookies } from 'next/headers';
 import jwt from 'jsonwebtoken';
 
@@ -30,7 +29,7 @@ export interface AuthUser {
  * @param request - Next.js request object
  * @returns Decoded user object or null if not authenticated
  */
-export async function verifyAuth(request: NextRequest): Promise<AuthUser | null> {
+export async function verifyAuth(): Promise<AuthUser | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get('auth_token')?.value;
 

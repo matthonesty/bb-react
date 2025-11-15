@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
@@ -30,7 +30,7 @@ const TRANSACTION_TYPES = [
 ];
 
 export default function WalletPage() {
-  const { user, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const [currentDivision, setCurrentDivision] = useState(4);
   const [refTypeFilter, setRefTypeFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -52,11 +52,7 @@ export default function WalletPage() {
     document.title = 'Wallet - Bombers Bar';
   }, []);
 
-  useEffect(() => {
-    loadJournal();
-  }, [currentDivision, refTypeFilter, currentPage]);
-
-  const loadJournal = async () => {
+  const loadJournal = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -91,7 +87,11 @@ export default function WalletPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentDivision, refTypeFilter, currentPage]);
+
+  useEffect(() => {
+    loadJournal();
+  }, [loadJournal]);
 
   const switchDivision = (division: number) => {
     if (division !== 4 && !canAccessAllDivisions) {

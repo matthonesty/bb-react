@@ -37,7 +37,7 @@ const ESI_BASE_URL = 'https://esi.evetech.net';
  * When a newer date is available, changelog is displayed for developer review.
  * Update this date manually after reviewing breaking changes.
  */
-let cachedCompatibilityDate: {
+const cachedCompatibilityDate: {
   date: string;
   lastFetched: number | null;
   cacheDuration: number;
@@ -176,7 +176,7 @@ const requestStats = {
 /**
  * Cached status data (for ESI health checks)
  */
-let cachedStatus: {
+const cachedStatus: {
   data: any | null;
   lastFetched: number | null;
   cacheDuration: number;
@@ -413,7 +413,7 @@ function isRetryableError(error: any) {
  * @returns {number} Delay in milliseconds
  */
 function calculateRetryDelay(attemptNumber: any, error: any = null) {
-  let baseDelay = ESI_CONFIG.INITIAL_RETRY_DELAY;
+  const baseDelay = ESI_CONFIG.INITIAL_RETRY_DELAY;
 
   // Check for MailStopSpamming error with remainingTime
   // Format: "MailStopSpamming, details: {"remainingTime": 564217469}"

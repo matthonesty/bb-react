@@ -7,7 +7,7 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
-import { getESIStatus, getHealthSummary, getCompatibilityDateSync } from '@/lib/esi';
+import { getESIStatus, getCompatibilityDateSync } from '@/lib/esi';
 
 /**
  * Critical routes we depend on for mail processing and operations

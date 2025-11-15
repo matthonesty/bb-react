@@ -5,7 +5,7 @@
  * Runs on a schedule (e.g., every 5 minutes) to process incoming mails.
  */
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { getMailerAccessToken } from '@/lib/mailerToken';
 import { getMailHeaders, MAILER_CHARACTER_ID, checkESIHealth } from '@/lib/esi';
 import { getQueueStats } from '@/lib/pendingMailQueue';
@@ -135,7 +135,7 @@ async function postToDiscord(results: any) {
  * This endpoint should be called periodically by a cron job (e.g., Vercel Cron).
  * Security: Check for authorization header or run on internal schedule only.
  */
-export async function GET(request: NextRequest) {
+export async function GET() {
   const startTime = Date.now();
   const results = {
     success: true,

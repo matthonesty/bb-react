@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
@@ -31,7 +31,7 @@ export default function SRPConfigPage() {
     document.title = 'SRP Config - Bombers Bar';
   }, []);
 
-  const { user, hasRole } = useAuth();
+  const { hasRole } = useAuth();
   const [shipTypes, setShipTypes] = useState<ShipType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -50,11 +50,7 @@ export default function SRPConfigPage() {
   // Get unique groups for filter
   const uniqueGroups = Array.from(new Set(shipTypes.map((st) => st.group_name))).sort();
 
-  useEffect(() => {
-    loadShipTypes();
-  }, [activeFilter, searchQuery]);
-
-  async function loadShipTypes() {
+  const loadShipTypes = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -79,7 +75,11 @@ export default function SRPConfigPage() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [activeFilter, searchQuery]);
+
+  useEffect(() => {
+    loadShipTypes();
+  }, [loadShipTypes]);
 
   function openAddModal() {
     setSelectedShipType(null);

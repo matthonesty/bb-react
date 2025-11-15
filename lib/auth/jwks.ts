@@ -171,20 +171,6 @@ export async function getPublicKey(token: string): Promise<JWKSKey> {
  * Convert JWKS key to PEM format for jsonwebtoken library
  *
  * The jsonwebtoken library expects PEM-formatted public keys.
- * This function converts JWKS RSA key to PEM format.
- *
- * @param jwk - JWKS key object
- * @returns PEM-formatted public key
- *
- * Note: For production use, consider using a library like node-jose or jose
- * for proper JWKS to PEM conversion. This is a simplified implementation.
- */
-function jwkToPem(jwk: JWKSKey): JWKSKey {
-  // For simplicity, we'll use the key directly with jsonwebtoken
-  // jsonwebtoken 9.x can handle JWKS format directly
-  return jwk;
-}
-
 /**
  * Verify and decode JWT access token with signature verification
  *

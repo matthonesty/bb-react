@@ -49,7 +49,7 @@ export default function FCFeedbackPage() {
     setSubmitStatus(null);
 
     try {
-      const response = await apiClient.post('/api/fc-feedback', formData);
+      await apiClient.post('/api/fc-feedback', formData);
       setSubmitStatus({
         type: 'success',
         message: 'Feedback submitted successfully! Thank you.',
