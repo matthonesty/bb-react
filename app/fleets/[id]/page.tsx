@@ -18,8 +18,12 @@ import {
   Pencil,
   Target,
   TrendingUp,
+  Plus,
+  UserPlus,
 } from 'lucide-react';
 import { FleetModal } from '@/components/fleets/FleetModal';
+import { AddParticipantModal } from '@/components/fleets/AddParticipantModal';
+import { AddKillsModal } from '@/components/fleets/AddKillsModal';
 import type {
   FleetManagement,
   FleetParticipant,
@@ -67,6 +71,8 @@ export default function FleetDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isAddParticipantModalOpen, setIsAddParticipantModalOpen] = useState(false);
+  const [isAddKillsModalOpen, setIsAddKillsModalOpen] = useState(false);
 
   const canManage = hasRole(['admin', 'Council', 'FC', 'OBomberCare']);
 
@@ -321,7 +327,7 @@ export default function FleetDetailPage() {
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-foreground-muted text-sm">
                     <Users size={16} className="text-primary" />
-                    <span>Participants</span>
+                    <span>Hunters & Support</span>
                   </div>
                   <div className="text-2xl font-bold text-foreground">
                     {fleet.participant_count || 0}
@@ -332,12 +338,20 @@ export default function FleetDetailPage() {
           )}
         </Card>
 
-        {/* Participants Section */}
-        {participants.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-foreground mb-4">
-              Participants ({participants.length})
+        {/* Hunters & Support Section */}
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-foreground">
+              Hunters & Support ({participants.length})
             </h2>
+            {canManage && (
+              <Button variant="secondary" size="sm" onClick={() => setIsAddParticipantModalOpen(true)}>
+                <UserPlus size={14} className="mr-2" />
+                Add Hunter/Support
+              </Button>
+            )}
+          </div>
+          {participants.length > 0 ? (
             <Card variant="bordered">
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -370,15 +384,34 @@ export default function FleetDetailPage() {
                 </table>
               </div>
             </Card>
-          </div>
-        )}
+          ) : (
+            <Card>
+              <div className="text-center py-12">
+                <p className="text-foreground-muted text-lg mb-2">No hunters or support yet</p>
+                {canManage && (
+                  <p className="text-foreground-muted/70 text-sm">
+                    Click "Add Hunter/Support" to add fleet members
+                  </p>
+                )}
+              </div>
+            </Card>
+          )}
+        </div>
 
         {/* Kills Section */}
-        {Object.keys(killsByDrop).length > 0 && (
-          <div>
-            <h2 className="text-xl font-semibold text-foreground mb-4">
+        <div>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold text-foreground">
               Kills ({kills.length})
             </h2>
+            {canManage && (
+              <Button variant="secondary" size="sm" onClick={() => setIsAddKillsModalOpen(true)}>
+                <Plus size={14} className="mr-2" />
+                Add Kills
+              </Button>
+            )}
+          </div>
+          {Object.keys(killsByDrop).length > 0 ? (
             <div className="space-y-6">
               {Object.keys(killsByDrop)
                 .sort((a, b) => parseInt(a) - parseInt(b))
@@ -457,8 +490,19 @@ export default function FleetDetailPage() {
                   );
                 })}
             </div>
-          </div>
-        )}
+          ) : (
+            <Card>
+              <div className="text-center py-12">
+                <p className="text-foreground-muted text-lg mb-2">No kills yet</p>
+                {canManage && (
+                  <p className="text-foreground-muted/70 text-sm">
+                    Click "Add Kills" to record fleet kills
+                  </p>
+                )}
+              </div>
+            </Card>
+          )}
+        </div>
 
         {/* Edit Modal */}
         {isEditModalOpen && fleet && (
@@ -469,6 +513,31 @@ export default function FleetDetailPage() {
             onClose={() => setIsEditModalOpen(false)}
             onSuccess={() => {
               setIsEditModalOpen(false);
+              loadFleetData();
+            }}
+          />
+        )}
+
+        {/* Add Participant Modal */}
+        {isAddParticipantModalOpen && fleet && (
+          <AddParticipantModal
+            fleetId={fleet.id}
+            onClose={() => setIsAddParticipantModalOpen(false)}
+            onSuccess={() => {
+              setIsAddParticipantModalOpen(false);
+              loadFleetData();
+            }}
+          />
+        )}
+
+        {/* Add Kills Modal */}
+        {isAddKillsModalOpen && fleet && (
+          <AddKillsModal
+            fleetId={fleet.id}
+            participants={participants}
+            onClose={() => setIsAddKillsModalOpen(false)}
+            onSuccess={() => {
+              setIsAddKillsModalOpen(false);
               loadFleetData();
             }}
           />
