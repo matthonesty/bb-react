@@ -124,10 +124,10 @@ export default function AboutPage() {
               Discord
             </a>
             <a
-              href="#fittings"
+              href="/#doctrines"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
             >
-              Fittings
+              Fleet Doctrines
             </a>
             <a
               href="#obombercare"
@@ -187,19 +187,6 @@ export default function AboutPage() {
               </div>
             </Card>
           </div>
-        </section>
-
-        {/* Fittings Section */}
-        <section id="fittings" className="mb-16 scroll-mt-20">
-          <Card className="p-6 text-center">
-            <a
-              href="/#doctrines"
-              className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
-            >
-              <Target className="h-5 w-5" />
-              View Fleet Doctrines
-            </a>
-          </Card>
         </section>
 
         {/* Reasons to Join */}
@@ -298,6 +285,208 @@ export default function AboutPage() {
                   ))}
                 </div>
               )}
+            </div>
+          </Card>
+        </section>
+
+        {/* Must Watch Videos */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Must Watch Videos</h2>
+          <div className="grid gap-6 md:grid-cols-2">
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 101</h3>
+              <p className="text-sm text-foreground-muted mb-4">8 minutes - Basic bombing mechanics</p>
+              <a
+                href="https://www.youtube.com/watch?v=dJnJ1BW36I0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 102: Manual</h3>
+              <p className="text-sm text-foreground-muted mb-4">17 minutes - Manual bombing techniques</p>
+              <a
+                href="https://www.youtube.com/watch?v=AUU3SKHn5g0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 103: Anchoring</h3>
+              <p className="text-sm text-foreground-muted mb-4">21 minutes - Advanced anchoring</p>
+              <a
+                href="https://www.youtube.com/watch?v=RblTJ0zydXU"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 201: Torpedoes</h3>
+              <p className="text-sm text-foreground-muted mb-4">21 minutes - Torpedo mechanics</p>
+              <a
+                href="https://www.youtube.com/watch?v=Oqoe0nWJDrk"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">FC&apos;ing 101: Intro</h3>
+              <p className="text-sm text-foreground-muted mb-4">27 minutes - Introduction to fleet commanding</p>
+              <a
+                href="https://www.youtube.com/watch?v=gOtp3CJrofw"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">FC&apos;ing 102: Scouting</h3>
+              <p className="text-sm text-foreground-muted mb-4">31 minutes - Scouting techniques</p>
+              <a
+                href="https://www.youtube.com/watch?v=tSuvBNvhWo0"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+
+            <Card className="p-6">
+              <h3 className="text-lg font-bold text-foreground mb-2">FC&apos;ing 103: Wormholes</h3>
+              <p className="text-sm text-foreground-muted mb-4">28 minutes - Wormhole fleet tactics</p>
+              <a
+                href="https://www.youtube.com/watch?v=64cOOGO3DEI"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 text-primary hover:underline"
+              >
+                Watch on YouTube →
+              </a>
+            </Card>
+          </div>
+        </section>
+
+        {/* Terminology */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Common Terminology</h2>
+          <Card className="p-6">
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">BB</h4>
+                <p className="text-sm text-foreground-muted">Bombers Bar</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">X up</h4>
+                <p className="text-sm text-foreground-muted">Sign up for a fleet / add your ship to the spreadsheet</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">SB</h4>
+                <p className="text-sm text-foreground-muted">Stealth Bomber</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Cov Ops</h4>
+                <p className="text-sm text-foreground-muted">Covert Ops cloak</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">7o</h4>
+                <p className="text-sm text-foreground-muted">Greeting</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Pew</h4>
+                <p className="text-sm text-foreground-muted">Shooting ships</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Dank / Gucci / GF</h4>
+                <p className="text-sm text-foreground-muted">Positive adjectives, good fight</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Gate Cloak</h4>
+                <p className="text-sm text-foreground-muted">Cloak you get when jumping through a gate</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Prop Mod</h4>
+                <p className="text-sm text-foreground-muted">Afterburner or Microwarpdrive</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Sebo / Sebos</h4>
+                <p className="text-sm text-foreground-muted">Sensor Booster</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Point / Scram</h4>
+                <p className="text-sm text-foreground-muted">Warp disruptor / warp scrambler</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Web / Webs</h4>
+                <p className="text-sm text-foreground-muted">Stasis Webifier</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Align</h4>
+                <p className="text-sm text-foreground-muted">Get into warp alignment without activating warp drive</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Anchor</h4>
+                <p className="text-sm text-foreground-muted">Get close to a specific person</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Broadcast</h4>
+                <p className="text-sm text-foreground-muted">Send a message to the fleet via the fleet interface</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Cyno</h4>
+                <p className="text-sm text-foreground-muted">Cynosural Field Generator</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">GTFO</h4>
+                <p className="text-sm text-foreground-muted">Warp out immediately</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Heat / Overheat</h4>
+                <p className="text-sm text-foreground-muted">Use modules on overheat</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Hold Cloak</h4>
+                <p className="text-sm text-foreground-muted">Use your natural 60 second cloak when jumping gates/wormholes</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">NPSI</h4>
+                <p className="text-sm text-foreground-muted">Not Purple Shoot It (anyone without excellent standings is fair game)</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Ping</h4>
+                <p className="text-sm text-foreground-muted">Message sent out to all BB channel members</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Primary</h4>
+                <p className="text-sm text-foreground-muted">The target you&apos;re supposed to shoot first</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Recon</h4>
+                <p className="text-sm text-foreground-muted">Recon ship - Force Recon or Combat Recon</p>
+              </div>
+              <div>
+                <h4 className="font-semibold text-foreground mb-1">Warp to me</h4>
+                <p className="text-sm text-foreground-muted">Warp to the person talking</p>
+              </div>
             </div>
           </Card>
         </section>
