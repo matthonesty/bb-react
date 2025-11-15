@@ -225,7 +225,9 @@ export default function FCsPage() {
                               ? 'info'
                               : fc.rank === 'JFC'
                               ? 'warning'
-                              : 'default'
+                              : fc.rank === 'FC'
+                              ? 'default'
+                              : 'secondary'
                           }
                         >
                           {fc.rank}
