@@ -335,16 +335,31 @@ export default function ResourcesPage() {
 
                       {/* Content display or edit mode */}
                       {editMode[resource.filename] ? (
-                        <textarea
-                          value={editedContent[resource.filename]}
-                          onChange={(e) =>
-                            setEditedContent((prev) => ({
-                              ...prev,
-                              [resource.filename]: e.target.value,
-                            }))
-                          }
-                          className="w-full min-h-[500px] p-4 font-mono text-sm bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-                        />
+                        <>
+                          <div className="flex items-center justify-between mb-2">
+                            <label className="block text-sm font-medium text-foreground-muted">
+                              Content (Markdown)
+                            </label>
+                            <a
+                              href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs text-primary hover:underline"
+                            >
+                              Markdown syntax guide ↗
+                            </a>
+                          </div>
+                          <textarea
+                            value={editedContent[resource.filename]}
+                            onChange={(e) =>
+                              setEditedContent((prev) => ({
+                                ...prev,
+                                [resource.filename]: e.target.value,
+                              }))
+                            }
+                            className="w-full min-h-[500px] p-4 font-mono text-sm bg-background border border-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                          />
+                        </>
                       ) : (
                         <div className="prose">
                           <ReactMarkdown
