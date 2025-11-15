@@ -65,7 +65,7 @@ export default function FleetDetailPage() {
   const [fleet, setFleet] = useState<FleetManagement | null>(null);
   const [participants, setParticipants] = useState<FleetParticipant[]>([]);
   const [kills, setKills] = useState<FleetKill[]>([]);
-  const [killStats, setKillStats] = useState<{ total_kills: number; total_value: number; total_drops: number } | null>(null);
+  const [killStats, setKillStats] = useState<{ total_kills: number; total_value: number; total_dropped: number; total_drops: number } | null>(null);
   const [fleetTypes, setFleetTypes] = useState<FleetType[]>([]);
   const [fcs, setFCs] = useState<FleetCommander[]>([]);
   const [loading, setLoading] = useState(true);
@@ -374,7 +374,7 @@ export default function FleetDetailPage() {
           {/* Fleet Stats */}
           {killStats && (
             <div className="mt-6 pt-6 border-t border-border">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2 text-foreground-muted text-sm">
                     <Target size={16} className="text-primary" />
@@ -392,6 +392,16 @@ export default function FleetDetailPage() {
                   </div>
                   <div className="text-2xl font-bold text-foreground">
                     {formatISK(killStats.total_value)}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2 text-foreground-muted text-sm">
+                    <TrendingUp size={16} className="text-primary" />
+                    <span>Total Dropped</span>
+                  </div>
+                  <div className="text-2xl font-bold text-foreground">
+                    {formatISK(killStats.total_dropped)}
                   </div>
                 </div>
 

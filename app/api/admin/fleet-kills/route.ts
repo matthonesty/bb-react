@@ -93,6 +93,7 @@ export async function GET(request: NextRequest) {
       `SELECT
         COUNT(*) as total_kills,
         COALESCE(SUM(zkb_total_value), 0) as total_value,
+        COALESCE(SUM(zkb_dropped_value), 0) as total_dropped,
         COUNT(DISTINCT drop_number) as total_drops
       FROM fleet_kills
       WHERE fleet_id = $1`,
