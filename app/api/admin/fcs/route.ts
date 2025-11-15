@@ -58,17 +58,13 @@ function canManageFC(userRoles: string[], targetFC: any | null = null): boolean 
   return false;
 }
 
-// Helper to get admin character IDs from database
-async function getAdminCharacterIds(): Promise<number[]> {
-  try {
-    const result = await pool.query(
-      `SELECT character_id FROM admin_members WHERE is_active = true`
-    );
-    return result.rows.map((row) => row.character_id);
-  } catch (error) {
-    console.error('[FCS] Error fetching admin IDs:', error);
-    return [];
-  }
+// Helper to get admin character IDs from environment
+function getAdminCharacterIds(): number[] {
+  const adminIds = process.env.ADMIN_CHARACTER_IDS || '';
+  return adminIds
+    .split(',')
+    .map((id) => parseInt(id.trim()))
+    .filter((id) => !isNaN(id));
 }
 
 // GET - List all FCs
@@ -141,7 +137,7 @@ export async function GET(request: NextRequest) {
     const result = await pool.query(query, params);
 
     // Get admin character IDs
-    const adminIds = await getAdminCharacterIds();
+    const adminIds = getAdminCharacterIds();
 
     // Add is_admin flag to each FC
     const fcs = result.rows.map((fc) => ({
@@ -257,7 +253,7 @@ export async function POST(request: NextRequest) {
     );
 
     // Add is_admin flag
-    const adminIds = await getAdminCharacterIds();
+    const adminIds = getAdminCharacterIds();
     const fc = {
       ...result.rows[0],
       is_admin: adminIds.includes(result.rows[0].main_character_id),
@@ -323,7 +319,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Add is_admin flag to existing FC
-    const adminIds = await getAdminCharacterIds();
+    const adminIds = getAdminCharacterIds();
     const targetFC = {
       ...existingFC.rows[0],
       is_admin: adminIds.includes(existingFC.rows[0].main_character_id),
