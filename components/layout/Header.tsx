@@ -150,16 +150,6 @@ export function Header() {
           {/* Desktop User Menu */}
           {isAuthenticated && user ? (
             <div className="hidden md:flex md:items-center md:space-x-2">
-              {/* System Link (Admin Only) */}
-              {user.roles.includes('admin') && (
-                <Link
-                  href="/system"
-                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
-                >
-                  System
-                </Link>
-              )}
-
               {/* User Menu */}
               <div className="relative">
                 <button
@@ -183,9 +173,19 @@ export function Header() {
                       onClick={() => setUserMenuOpen(false)}
                     />
                     <div className="absolute right-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                      {/* System Link (Admin Only) */}
+                      {user.roles.includes('admin') && (
+                        <Link
+                          href="/system"
+                          onClick={() => setUserMenuOpen(false)}
+                          className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors rounded-t-md"
+                        >
+                          System
+                        </Link>
+                      )}
                       <button
                         onClick={logout}
-                        className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors"
+                        className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors rounded-b-md"
                       >
                         <LogOut size={16} />
                         <span>Logout</span>

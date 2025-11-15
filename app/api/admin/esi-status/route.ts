@@ -43,7 +43,7 @@ export async function GET() {
   }
 
   try {
-    const statusData = await getESIStatus();
+    const statusData = await getESIStatus() as { routes?: any[] } | null;
     const compatDate = getCompatibilityDateSync();
 
     if (!statusData || !statusData.routes || !Array.isArray(statusData.routes)) {
@@ -59,7 +59,7 @@ export async function GET() {
 
     // Check critical routes status
     const criticalRouteStatus = CRITICAL_ROUTES.map((criticalRoute) => {
-      const routeStatus = statusData.routes.find(
+      const routeStatus = statusData.routes!.find(
         (r: any) =>
           r.method === criticalRoute.method &&
           r.path === criticalRoute.path
