@@ -77,53 +77,40 @@ export function ShipTypeModal({ isOpen, onClose, onSuccess, shipType }: ShipType
     try {
       // Search for the type
       const searchResponse = await fetch(
-        `https://esi.evetech.net/latest/search/?categories=inventory_type&datasource=tranquility&language=en&search=${encodeURIComponent(
-          shipLookup.trim()
-        )}&strict=true`
+        `/api/esi/ship-info?search=${encodeURIComponent(shipLookup.trim())}`
       );
-
-      if (!searchResponse.ok) {
-        throw new Error('Ship type not found');
-      }
 
       const searchData = await searchResponse.json();
 
-      if (!searchData.inventory_type || searchData.inventory_type.length === 0) {
+      if (!searchData.success) {
+        throw new Error(searchData.error || 'Ship type not found');
+      }
+
+      if (!searchData.type_ids || searchData.type_ids.length === 0) {
         throw new Error(`Ship type "${shipLookup}" not found`);
       }
 
-      const typeId = searchData.inventory_type[0];
+      const typeId = searchData.type_ids[0];
 
-      // Get type details
-      const typeResponse = await fetch(
-        `https://esi.evetech.net/latest/universe/types/${typeId}/?datasource=tranquility`
-      );
-
-      if (!typeResponse.ok) {
-        throw new Error('Failed to fetch ship type details');
-      }
+      // Get type and group details
+      const typeResponse = await fetch(`/api/admin/type-info?type_id=${typeId}`);
 
       const typeData = await typeResponse.json();
 
-      // Get group details
-      const groupResponse = await fetch(
-        `https://esi.evetech.net/latest/universe/groups/${typeData.group_id}/?datasource=tranquility`
-      );
-
-      if (!groupResponse.ok) {
-        throw new Error('Failed to fetch ship group details');
+      if (!typeData.success) {
+        throw new Error(typeData.error || 'Failed to fetch ship type details');
       }
 
-      const groupData = await groupResponse.json();
+      const typeInfo = typeData.type_info;
 
       setFormData({
         ...formData,
-        type_id: typeId,
-        type_name: typeData.name,
-        group_id: typeData.group_id,
-        group_name: groupData.name,
+        type_id: typeInfo.type_id,
+        type_name: typeInfo.type_name,
+        group_id: typeInfo.group_id,
+        group_name: typeInfo.group_name,
       });
-      setShipLookup(typeData.name);
+      setShipLookup(typeInfo.type_name);
     } catch (err: any) {
       setError(err.message || 'Failed to lookup ship type');
     } finally {
