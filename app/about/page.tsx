@@ -221,7 +221,7 @@ export default function AboutPage() {
         </div>
 
         {/* How to Join */}
-        <section className="mb-16">
+        <section id="how-to-join" className="mb-16 scroll-mt-20">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">How to Join a Fleet?</h2>
           <div className="relative space-y-8">
             {/* Connecting Line */}
@@ -293,7 +293,7 @@ export default function AboutPage() {
         </section>
 
         {/* Reasons to Join */}
-        <section className="mb-16">
+        <section id="reasons-to-join" className="mb-16 scroll-mt-20">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
             Reasons To Join Bombers Bar Fleets
           </h2>
@@ -423,7 +423,7 @@ export default function AboutPage() {
         </section>
 
         {/* Video Resources */}
-        <section className="mb-16">
+        <section id="video-resources" className="mb-16 scroll-mt-20">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Video Resources</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <a
@@ -597,7 +597,7 @@ export default function AboutPage() {
         </section>
 
         {/* Terminology */}
-        <section className="mb-16">
+        <section id="terminology" className="mb-16 scroll-mt-20">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Common Terminology</h2>
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
@@ -771,7 +771,7 @@ export default function AboutPage() {
         </section>
 
         {/* FAQ */}
-        <section className="mb-16">
+        <section id="faq" className="mb-16 scroll-mt-20">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Frequently Asked Questions</h2>
           <div className="space-y-2">
             {faqs.map((faq, index) => (

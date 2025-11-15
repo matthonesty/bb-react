@@ -13,6 +13,16 @@ const FORM_ITEMS = [
   { label: 'Bombing Intel', href: '/bombing-intel' },
 ];
 
+const ABOUT_ITEMS = [
+  { label: 'About Bombers Bar', href: '/about' },
+  { label: 'How to Join', href: '/about#how-to-join' },
+  { label: 'Reasons to Join', href: '/about#reasons-to-join' },
+  { label: 'O\'bombercare (SRP)', href: '/about#obombercare' },
+  { label: 'Video Resources', href: '/about#video-resources' },
+  { label: 'Common Terminology', href: '/about#terminology' },
+  { label: 'FAQ', href: '/about#faq' },
+];
+
 /**
  * Header component with navigation and user menu
  * Includes mobile responsive hamburger menu
@@ -22,10 +32,12 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [formsMenuOpen, setFormsMenuOpen] = useState(false);
+  const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
   const [navDropdownOpen, setNavDropdownOpen] = useState<string | null>(null);
 
   // Refs for click-outside detection
   const formsMenuRef = useRef<HTMLDivElement>(null);
+  const aboutMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navDropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
 
@@ -35,6 +47,11 @@ export function Header() {
       // Close forms menu if clicked outside
       if (formsMenuRef.current && !formsMenuRef.current.contains(event.target as Node)) {
         setFormsMenuOpen(false);
+      }
+
+      // Close about menu if clicked outside
+      if (aboutMenuRef.current && !aboutMenuRef.current.contains(event.target as Node)) {
+        setAboutMenuOpen(false);
       }
 
       // Close user menu if clicked outside
@@ -52,13 +69,13 @@ export function Header() {
     }
 
     // Only add listener if any menu is open
-    if (formsMenuOpen || userMenuOpen || navDropdownOpen) {
+    if (formsMenuOpen || aboutMenuOpen || userMenuOpen || navDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [formsMenuOpen, userMenuOpen, navDropdownOpen]);
+  }, [formsMenuOpen, aboutMenuOpen, userMenuOpen, navDropdownOpen]);
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (!item.roles) return true;
@@ -105,13 +122,31 @@ export function Header() {
               Home
             </Link>
 
-            {/* About Link - Always visible */}
-            <Link
-              href="/about"
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
-            >
-              About
-            </Link>
+            {/* About Dropdown - Always visible */}
+            <div className="relative" ref={aboutMenuRef}>
+              <button
+                onClick={() => setAboutMenuOpen(!aboutMenuOpen)}
+                className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors flex items-center space-x-1"
+              >
+                <span>About</span>
+                <ChevronDown size={16} />
+              </button>
+
+              {aboutMenuOpen && (
+                <div className="absolute left-0 mt-2 w-56 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                  {ABOUT_ITEMS.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setAboutMenuOpen(false)}
+                      className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Forms Dropdown - Always visible */}
             <div className="relative" ref={formsMenuRef}>
@@ -278,14 +313,22 @@ export function Header() {
               Home
             </Link>
 
-            {/* About Link - Always visible */}
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
-            >
-              About
-            </Link>
+            {/* About section - Always visible */}
+            <div className="mb-2">
+              <p className="px-3 py-2 text-xs font-semibold text-foreground-muted uppercase">
+                About
+              </p>
+              {ABOUT_ITEMS.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
 
             {/* Forms section - Always visible */}
             <div className="mb-2">
