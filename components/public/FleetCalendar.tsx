@@ -69,20 +69,22 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
                     e.stopPropagation();
                     const element = document.getElementById(`fleet-type-${fleet.fleet_type_id}`);
                     if (element) {
-                      // Scroll with offset for sticky header
-                      const yOffset = -80;
-                      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
-                      window.scrollTo({ top: y, behavior: 'smooth' });
+                      // First, check if we need to expand
+                      const header = element.querySelector('[role="button"]') as HTMLElement;
+                      const shipsContainer = element.querySelector('.border-t');
+                      const needsExpanding = !shipsContainer;
 
-                      // Trigger click on the header to expand it if not already expanded
+                      // If collapsed, expand first
+                      if (header && needsExpanding) {
+                        header.click();
+                      }
+
+                      // Then scroll (with slight delay if we just expanded)
                       setTimeout(() => {
-                        const header = element.querySelector('[role="button"]') as HTMLElement;
-                        // Check if the ships list is not visible (meaning it's collapsed)
-                        const shipsContainer = element.querySelector('.border-t');
-                        if (header && !shipsContainer) {
-                          header.click();
-                        }
-                      }, 500);
+                        const yOffset = -80;
+                        const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                      }, needsExpanding ? 100 : 0);
                     }
                   }}
                   className="text-foreground-muted font-normal hover:text-primary hover:underline transition-colors cursor-pointer"
