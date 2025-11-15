@@ -31,9 +31,11 @@ if (!secretKey) {
 }
 
 // Export singleton instance
-export default new BaseSso({
+const mailerSso = new BaseSso({
   clientId,
   secretKey,
   callbackUrl,
   label: 'Mailer SSO',
 });
+
+export default mailerSso;

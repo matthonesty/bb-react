@@ -28,6 +28,24 @@ interface SRPTableProps {
   isAdmin: boolean;
 }
 
+// Sort icon component - defined outside to avoid recreation on every render
+function SortIcon({
+  column,
+  sortBy,
+  sortDirection,
+}: {
+  column: string;
+  sortBy: string;
+  sortDirection: 'asc' | 'desc';
+}) {
+  if (sortBy !== column) return null;
+  return sortDirection === 'asc' ? (
+    <ChevronUp size={14} className="inline ml-1" />
+  ) : (
+    <ChevronDown size={14} className="inline ml-1" />
+  );
+}
+
 /**
  * SRP Table component with sorting, pagination, and admin actions
  */
@@ -65,15 +83,6 @@ export function SRPTable({
     }
   };
 
-  const SortIcon = ({ column }: { column: string }) => {
-    if (sortBy !== column) return null;
-    return sortDirection === 'asc' ? (
-      <ChevronUp size={14} className="inline ml-1" />
-    ) : (
-      <ChevronDown size={14} className="inline ml-1" />
-    );
-  };
-
   if (isLoading) {
     return (
       <div className="p-12 text-center">
@@ -109,22 +118,22 @@ export function SRPTable({
           <TableHeader>
             <TableRow>
               <TableHead sortable onClick={() => handleSort('submitted_at')}>
-                Submitted <SortIcon column="submitted_at" />
+                Submitted <SortIcon column="submitted_at" sortBy={sortBy} sortDirection={sortDirection} />
               </TableHead>
               <TableHead sortable onClick={() => handleSort('character_name')}>
-                Character <SortIcon column="character_name" />
+                Character <SortIcon column="character_name" sortBy={sortBy} sortDirection={sortDirection} />
               </TableHead>
               <TableHead sortable onClick={() => handleSort('ship_name')}>
-                Ship <SortIcon column="ship_name" />
+                Ship <SortIcon column="ship_name" sortBy={sortBy} sortDirection={sortDirection} />
               </TableHead>
               <TableHead sortable onClick={() => handleSort('solar_system_name')}>
-                Location <SortIcon column="solar_system_name" />
+                Location <SortIcon column="solar_system_name" sortBy={sortBy} sortDirection={sortDirection} />
               </TableHead>
               <TableHead sortable onClick={() => handleSort('payout_amount')}>
-                Payout <SortIcon column="payout_amount" />
+                Payout <SortIcon column="payout_amount" sortBy={sortBy} sortDirection={sortDirection} />
               </TableHead>
               <TableHead sortable onClick={() => handleSort('status')}>
-                Status <SortIcon column="status" />
+                Status <SortIcon column="status" sortBy={sortBy} sortDirection={sortDirection} />
               </TableHead>
               <TableHead>Killmail</TableHead>
             </TableRow>
