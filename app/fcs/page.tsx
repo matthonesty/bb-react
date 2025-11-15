@@ -17,7 +17,7 @@ import {
 import { Badge } from '@/components/ui/Badge';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { PageHeader } from '@/components/layout/PageHeader';
-import { X, Plus, Pencil, Trash2 } from 'lucide-react';
+import { X, Plus, Pencil } from 'lucide-react';
 import { FCModal } from '@/components/fcs/FCModal';
 import type { FleetCommander } from '@/types';
 
@@ -96,28 +96,6 @@ export default function FCsPage() {
     loadFCs();
   }
 
-  async function deleteFC(id: number, name: string) {
-    if (!confirm(`Are you sure you want to delete FC "${name}"?`)) {
-      return;
-    }
-
-    try {
-      const response = await fetch(`/api/admin/fcs?id=${id}`, {
-        method: 'DELETE',
-      });
-
-      const data = await response.json();
-
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to delete FC');
-      }
-
-      loadFCs();
-    } catch (err: any) {
-      setError(err.message);
-    }
-  }
-
   // Check if user can edit a specific FC
   function canEdit(fc: FleetCommander): boolean {
     if (isAdmin) return true;
@@ -128,9 +106,6 @@ export default function FCsPage() {
     // Election Officer can edit non-admin
     return !fc.is_admin;
   }
-
-  // Only Admin and Council can delete
-  const canDelete = hasRole(['admin', 'Council']);
 
   return (
     <RequireAuth requireFCRole>
@@ -297,27 +272,15 @@ export default function FCsPage() {
                       </TableCell>
                       {canManage && (
                         <TableCell>
-                          <div className="flex gap-2">
-                            {canEdit(fc) && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => openEditModal(fc)}
-                              >
-                                <Pencil size={14} />
-                              </Button>
-                            )}
-                            {canDelete && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => deleteFC(fc.id, fc.main_character_name)}
-                                className="text-error hover:text-error hover:bg-error/10"
-                              >
-                                <Trash2 size={14} />
-                              </Button>
-                            )}
-                          </div>
+                          {canEdit(fc) && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEditModal(fc)}
+                            >
+                              <Pencil size={14} />
+                            </Button>
+                          )}
                         </TableCell>
                       )}
                     </TableRow>
