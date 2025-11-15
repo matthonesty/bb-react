@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
@@ -18,58 +18,13 @@ import { canViewPrivateResources, canEditResources } from '@/lib/auth/roleConsta
 interface Resource {
   title: string;
   filename: string;
-  content: string;
-  isPrivate: boolean;
+  is_private: boolean;
 }
-
-// This will be populated by the API
-const RESOURCES: Resource[] = [
-  {
-    title: 'Bombers Bar Governance Constitution',
-    filename: 'bombersbargovernanceconstitutionpublic.md',
-    content: '',
-    isPrivate: false,
-  },
-  {
-    title: 'Bombers Bar Code of Conduct',
-    filename: 'bombersbarcodeofconductpublic.md',
-    content: '',
-    isPrivate: false,
-  },
-  {
-    title: 'Fleet and Roles Guide',
-    filename: 'fleetandrolesguidepublic.md',
-    content: '',
-    isPrivate: false,
-  },
-  {
-    title: 'Parliamentary Procedures',
-    filename: 'parliamentaryprocprivate.md',
-    content: '',
-    isPrivate: true,
-  },
-  {
-    title: 'FC Applicant Onboarding',
-    filename: 'fcapplicantonboardingprivate.md',
-    content: '',
-    isPrivate: true,
-  },
-  {
-    title: 'Support Staff Job Description',
-    filename: 'supportstaffjobdescprivate.md',
-    content: '',
-    isPrivate: true,
-  },
-  {
-    title: 'Delegated Duties',
-    filename: 'delegateddutiesprivate.md',
-    content: '',
-    isPrivate: true,
-  },
-];
 
 export default function ResourcesPage() {
   const { user, isAuthenticated } = useAuth();
+  const [resources, setResources] = useState<Resource[]>([]);
+  const [isLoadingResources, setIsLoadingResources] = useState(true);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
   const [resourceContents, setResourceContents] = useState<Record<string, string>>({});
   const [editMode, setEditMode] = useState<Record<string, boolean>>({});
@@ -93,9 +48,30 @@ export default function ResourcesPage() {
   // Check if user can edit resources (admin or election officer)
   const canEdit = user?.roles ? canEditResources(user.roles) : false;
 
+  // Fetch resources from API
+  const loadResources = async () => {
+    try {
+      setIsLoadingResources(true);
+      const response = await fetch('/api/resources/list');
+      if (response.ok) {
+        const data = await response.json();
+        setResources(data.documents || []);
+      }
+    } catch (error) {
+      console.error('Failed to load resources:', error);
+    } finally {
+      setIsLoadingResources(false);
+    }
+  };
+
+  // Load resources on mount
+  useEffect(() => {
+    loadResources();
+  }, []);
+
   // Filter resources based on permissions
-  const visibleResources = RESOURCES.filter((resource) => {
-    if (!resource.isPrivate) return true;
+  const visibleResources = resources.filter((resource) => {
+    if (!resource.is_private) return true;
     return isAuthenticated && hasActiveFCRole;
   });
 
@@ -177,11 +153,6 @@ export default function ResourcesPage() {
       return;
     }
 
-    // Ensure filename ends with .md
-    const filename = newResource.filename.endsWith('.md')
-      ? newResource.filename
-      : `${newResource.filename}.md`;
-
     setIsCreating(true);
 
     try {
@@ -189,27 +160,20 @@ export default function ResourcesPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          filename,
+          title: newResource.title,
+          filename: newResource.filename,
           content: newResource.content,
           isPrivate: newResource.isPrivate,
         }),
       });
 
       if (response.ok) {
-        // Add to resources list
-        RESOURCES.push({
-          title: newResource.title,
-          filename,
-          content: '',
-          isPrivate: newResource.isPrivate,
-        });
-
         // Reset form and close modal
         setNewResource({ title: '', filename: '', content: '', isPrivate: false });
         setIsAddModalOpen(false);
 
-        // Reload page to show new resource
-        window.location.reload();
+        // Reload resources list
+        await loadResources();
       } else {
         const error = await response.json();
         alert(`Failed to create resource: ${error.error}`);
@@ -236,8 +200,8 @@ export default function ResourcesPage() {
       if (response.ok) {
         setIsDeleteModalOpen(false);
         setResourceToDelete(null);
-        // Reload page to update list
-        window.location.reload();
+        // Reload resources list
+        await loadResources();
       } else {
         const error = await response.json();
         alert(`Failed to delete resource: ${error.error}`);
@@ -279,31 +243,36 @@ export default function ResourcesPage() {
 
         {/* Resources List */}
         <div className="space-y-3">
-          {visibleResources.map((resource, index) => (
-            <Card key={resource.filename} className="overflow-hidden">
-              <button
-                onClick={() => handleToggle(index, resource.filename)}
-                className="flex w-full items-center justify-between p-6 text-left transition-colors hover:bg-surface-secondary"
-              >
-                <div className="flex items-center gap-3">
-                  {resource.isPrivate ? (
-                    <div className="rounded-lg bg-amber-500/10 p-2">
-                      <Lock className="h-5 w-5 text-amber-500" />
-                    </div>
-                  ) : (
-                    <div className="rounded-lg bg-primary/10 p-2">
-                      <FileText className="h-5 w-5 text-primary" />
-                    </div>
-                  )}
-                  <div>
-                    <h3 className="text-lg font-semibold text-foreground">{resource.title}</h3>
-                    {resource.isPrivate && (
-                      <p className="text-xs text-amber-600 dark:text-amber-400">
-                        Active FC+ Only
-                      </p>
+          {isLoadingResources ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+            </div>
+          ) : (
+            visibleResources.map((resource, index) => (
+              <Card key={resource.filename} className="overflow-hidden">
+                <button
+                  onClick={() => handleToggle(index, resource.filename)}
+                  className="flex w-full items-center justify-between p-6 text-left transition-colors hover:bg-surface-secondary"
+                >
+                  <div className="flex items-center gap-3">
+                    {resource.is_private ? (
+                      <div className="rounded-lg bg-amber-500/10 p-2">
+                        <Lock className="h-5 w-5 text-amber-500" />
+                      </div>
+                    ) : (
+                      <div className="rounded-lg bg-primary/10 p-2">
+                        <FileText className="h-5 w-5 text-primary" />
+                      </div>
                     )}
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground">{resource.title}</h3>
+                      {resource.is_private && (
+                        <p className="text-xs text-amber-600 dark:text-amber-400">
+                          Active FC+ Only
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </div>
                 {openIndex === index ? (
                   <ChevronDown className="h-5 w-5 shrink-0 text-primary" />
                 ) : (
@@ -393,13 +362,14 @@ export default function ResourcesPage() {
                     </div>
                   )}
                 </div>
-              )}
-            </Card>
-          ))}
+                )}
+              </Card>
+            ))
+          )}
         </div>
 
         {/* No Access Message */}
-        {!isAuthenticated && RESOURCES.some((r) => r.isPrivate) && (
+        {!isAuthenticated && resources.some((r) => r.is_private) && (
           <div className="mt-8 rounded-lg bg-amber-500/10 border border-amber-500/20 p-6 text-center">
             <Lock className="h-8 w-8 text-amber-500 mx-auto mb-3" />
             <p className="text-foreground-muted">

@@ -25,10 +25,10 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the new document data from request body
-    const { filename, content, isPrivate } = await request.json();
+    const { title, filename, content, isPrivate } = await request.json();
 
-    if (!filename || typeof content !== 'string') {
-      return NextResponse.json({ error: 'Invalid filename or content' }, { status: 400 });
+    if (!title || !filename || typeof content !== 'string') {
+      return NextResponse.json({ error: 'Invalid title, filename, or content' }, { status: 400 });
     }
 
     // Validate filename to prevent SQL injection
@@ -50,8 +50,8 @@ export async function POST(request: NextRequest) {
 
     // Insert new document
     await pool.query(
-      'INSERT INTO documents (filename, content, is_private, updated_by) VALUES ($1, $2, $3, $4)',
-      [finalFilename, content, isPrivate || false, session.character_id]
+      'INSERT INTO documents (title, filename, content, is_private, updated_by) VALUES ($1, $2, $3, $4, $5)',
+      [title, finalFilename, content, isPrivate || false, session.character_id]
     );
 
     return NextResponse.json({ success: true, filename: finalFilename });
