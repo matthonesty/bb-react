@@ -23,7 +23,7 @@ function SRPContent() {
   const [searchQuery, setSearchQuery] = useState(idFromUrl || '');
   const [currentPage, setCurrentPage] = useState(1);
 
-  const isAdmin = hasRole(['admin', 'Council', 'Accountant']);
+  const isAdmin = hasRole(['admin', 'Council', 'OBomberCare']);
 
   return (
     <PageContainer>

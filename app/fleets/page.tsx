@@ -47,7 +47,7 @@ export default function FleetsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedFleet, setSelectedFleet] = useState<FleetManagement | null>(null);
 
-  const canManage = hasRole(['admin', 'Council', 'FC', 'OBomberCare']);
+  const canManage = hasRole(['admin', 'Council', 'FC', 'OBomberCare', 'Accountant', 'Election Officer']);
 
   const loadFleets = useCallback(async () => {
     setLoading(true);

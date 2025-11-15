@@ -51,7 +51,14 @@ export const NAV_ITEMS: NavItem[] = [
       {
         label: 'SRP Config',
         href: '/srp-config',
-        roles: [ROLES.ADMIN, ROLES.COUNCIL],
+        roles: [
+          ROLES.ADMIN,
+          ROLES.COUNCIL,
+          ROLES.ACCOUNTANT,
+          ROLES.OBOMBERCARE,
+          ROLES.FC,
+          ROLES.ELECTION_OFFICER,
+        ],
       },
     ],
   },
