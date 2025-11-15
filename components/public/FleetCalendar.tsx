@@ -63,8 +63,33 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
           <div className="mb-5">
             <h3 className="text-2xl font-bold text-foreground mb-2">
               {fleet.title || fleet.fleet_type_name}
-              {fleet.fleet_type_name && (
-                <span className="text-foreground-muted font-normal"> ({fleet.fleet_type_name})</span>
+              {fleet.fleet_type_name && fleet.fleet_type_id && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    const element = document.getElementById(`fleet-type-${fleet.fleet_type_id}`);
+                    if (element) {
+                      // Scroll with offset for sticky header
+                      const yOffset = -80;
+                      const y = element.getBoundingClientRect().top + window.pageYOffset + yOffset;
+                      window.scrollTo({ top: y, behavior: 'smooth' });
+
+                      // Trigger click on the header to expand it if not already expanded
+                      setTimeout(() => {
+                        const header = element.querySelector('[role="button"]') as HTMLElement;
+                        // Check if the ships list is not visible (meaning it's collapsed)
+                        const shipsContainer = element.querySelector('.border-t');
+                        if (header && !shipsContainer) {
+                          header.click();
+                        }
+                      }, 500);
+                    }
+                  }}
+                  className="text-foreground-muted font-normal hover:text-primary hover:underline transition-colors cursor-pointer"
+                >
+                  {' '}
+                  ({fleet.fleet_type_name})
+                </button>
               )}
             </h3>
             {fleet.description && (

@@ -39,7 +39,10 @@ export function DoctrinesDisplay({ fleetTypes }: DoctrinesDisplayProps) {
   return (
     <div className="space-y-4">
       {fleetTypes.map((fleetType) => (
-        <FleetTypeSection key={fleetType.fleet_type_id} fleetType={fleetType} />
+        <FleetTypeSection
+          key={fleetType.fleet_type_id}
+          fleetType={fleetType}
+        />
       ))}
     </div>
   );
@@ -66,9 +69,10 @@ function FleetTypeSection({ fleetType }: { fleetType: FleetTypeWithDoctrines }) 
   );
 
   return (
-    <Card className="overflow-hidden">
+    <Card className="overflow-hidden" id={`fleet-type-${fleetType.fleet_type_id}`}>
       {/* Fleet Type Header - Clickable */}
       <div
+        role="button"
         className="flex cursor-pointer items-center justify-between p-4 transition-colors hover:bg-surface-secondary"
         onClick={() => setIsExpanded(!isExpanded)}
       >
