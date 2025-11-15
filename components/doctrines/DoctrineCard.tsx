@@ -4,18 +4,21 @@ import { useState } from 'react';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
-import { Copy, Trash2 } from 'lucide-react';
+import { Copy, Trash2, Edit2 } from 'lucide-react';
 import { FittingDisplay } from './FittingDisplay';
+import { EditDoctrineModal } from './EditDoctrineModal';
 import type { Doctrine, ModuleItem } from '@/types';
 
 interface DoctrineCardProps {
   doctrine: Doctrine;
   canManage: boolean;
   onDelete: () => void;
+  onUpdate: () => void;
 }
 
-export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProps) {
+export function DoctrineCard({ doctrine, canManage, onDelete, onUpdate }: DoctrineCardProps) {
   const [copied, setCopied] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Parse JSON strings if needed
   const parseModules = (modules: ModuleItem[] | string): ModuleItem[] => {
@@ -102,7 +105,9 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-lg font-semibold text-foreground">{doctrine.name}</h4>
+            <h4 className="text-lg font-semibold text-foreground">
+              {doctrine.name}
+            </h4>
             {!doctrine.is_active && (
               <Badge
                 variant="default"
@@ -112,7 +117,9 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
               </Badge>
             )}
           </div>
-          <p className="text-sm text-foreground-muted">{doctrine.ship_name}</p>
+          {doctrine.ship_group_name && (
+            <p className="text-sm text-foreground-muted">{doctrine.ship_group_name}</p>
+          )}
         </div>
 
         <div className="flex gap-2">
@@ -121,14 +128,24 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
             {copied ? 'Copied!' : 'Copy Fitting'}
           </Button>
           {canManage && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onDelete}
-              className="text-error hover:text-error hover:bg-error/10"
-            >
-              <Trash2 size={14} />
-            </Button>
+            <>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsEditModalOpen(true)}
+                className="text-primary hover:text-primary hover:bg-primary/10"
+              >
+                <Edit2 size={14} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onDelete}
+                className="text-error hover:text-error hover:bg-error/10"
+              >
+                <Trash2 size={14} />
+              </Button>
+            </>
           )}
         </div>
       </div>
@@ -149,6 +166,19 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
         cargoItems={cargoItems}
         notes={doctrine.notes}
       />
+
+      {/* Edit Modal */}
+      {canManage && (
+        <EditDoctrineModal
+          doctrine={doctrine}
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSuccess={() => {
+            setIsEditModalOpen(false);
+            onUpdate();
+          }}
+        />
+      )}
     </Card>
   );
 }

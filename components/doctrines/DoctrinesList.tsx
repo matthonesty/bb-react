@@ -138,6 +138,7 @@ export function DoctrinesList({ fleetTypeId, canManage, onReload }: DoctrinesLis
             doctrine={doctrine}
             canManage={canManage}
             onDelete={() => deleteDoctrine(doctrine.id, doctrine.name)}
+            onUpdate={loadDoctrines}
           />
         ))}
       </div>

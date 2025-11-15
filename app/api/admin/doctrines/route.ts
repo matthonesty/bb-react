@@ -127,22 +127,25 @@ export async function POST(request: NextRequest) {
       display_order,
     } = body;
 
-    if (!fleet_type_id || !name || !ship_type_id) {
+    if (!fleet_type_id || !name || !ship_type_id || !ship_name) {
       return NextResponse.json(
-        { success: false, error: 'fleet_type_id, name, and ship_type_id are required' },
+        { success: false, error: 'fleet_type_id, name, ship_type_id, and ship_name are required' },
         { status: 400 }
       );
     }
 
+    // Format name as "Ship Name (Preset)"
+    const formattedName = `${ship_name} (${name.trim()})`;
+
     // Check for duplicate name within fleet type
     const checkResult = await pool.query(
       'SELECT id FROM doctrines WHERE fleet_type_id = $1 AND name = $2',
-      [fleet_type_id, name.trim()]
+      [fleet_type_id, formattedName]
     );
 
     if (checkResult.rows.length > 0) {
       return NextResponse.json(
-        { success: false, error: 'Doctrine with this name already exists in this fleet type' },
+        { success: false, error: 'A doctrine with this configuration already exists in this fleet type' },
         { status: 409 }
       );
     }
@@ -159,7 +162,7 @@ export async function POST(request: NextRequest) {
       RETURNING *`,
       [
         fleet_type_id,
-        name.trim(),
+        formattedName,
         ship_type_id,
         ship_name,
         ship_group_id || null,
@@ -184,8 +187,22 @@ export async function POST(request: NextRequest) {
       success: true,
       doctrine: result.rows[0],
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error creating doctrine:', error);
+
+    // Handle specific database errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      const dbError = error as { code: string; detail?: string };
+
+      // Duplicate key violation
+      if (dbError.code === '23505') {
+        return NextResponse.json(
+          { success: false, error: 'A doctrine with this configuration already exists in this fleet type' },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { success: false, error: 'Failed to create doctrine' },
       { status: 500 }
@@ -233,14 +250,28 @@ export async function PUT(request: NextRequest) {
       display_order,
     } = body;
 
+    // Get the existing doctrine to retrieve ship_name
+    const existingResult = await pool.query(
+      'SELECT ship_name FROM doctrines WHERE id = $1',
+      [id]
+    );
+
+    if (existingResult.rows.length === 0) {
+      return NextResponse.json({ success: false, error: 'Doctrine not found' }, { status: 404 });
+    }
+
+    const shipName = existingResult.rows[0].ship_name;
+
     // Build dynamic update query
     const updates = [];
     const values = [];
     let paramCount = 1;
 
+    // Format name as "Ship Name (Preset)" if provided
     if (name !== undefined) {
+      const formattedName = `${shipName} (${name.trim()})`;
       updates.push(`name = $${paramCount++}`);
-      values.push(name.trim());
+      values.push(formattedName);
     }
     if (high_slot_modules !== undefined) {
       updates.push(`high_slot_modules = $${paramCount++}`);
@@ -300,8 +331,22 @@ export async function PUT(request: NextRequest) {
       success: true,
       doctrine: result.rows[0],
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating doctrine:', error);
+
+    // Handle specific database errors
+    if (error && typeof error === 'object' && 'code' in error) {
+      const dbError = error as { code: string; detail?: string };
+
+      // Duplicate key violation
+      if (dbError.code === '23505') {
+        return NextResponse.json(
+          { success: false, error: 'A doctrine with this configuration already exists in this fleet type' },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { success: false, error: 'Failed to update doctrine' },
       { status: 500 }

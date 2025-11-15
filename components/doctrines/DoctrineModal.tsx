@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import { Modal, ModalFooter } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/Input';
 import { FittingWheel } from './FittingWheel';
 import type { FittingImport } from '@/types';
 
@@ -14,10 +13,13 @@ interface DoctrineModalProps {
   fleetTypeId: number;
 }
 
+const DOCTRINE_NAME_OPTIONS = ['Tech 1', 'Tech 2', 'Polarized', 'Other'] as const;
+
 export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: DoctrineModalProps) {
   const [fittingText, setFittingText] = useState('');
   const [importedFitting, setImportedFitting] = useState<FittingImport | null>(null);
   const [doctrineName, setDoctrineName] = useState('');
+  const [customDoctrineName, setCustomDoctrineName] = useState('');
   const [doctrineNotes, setDoctrineNotes] = useState('');
 
   const [importing, setImporting] = useState(false);
@@ -30,6 +32,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
       setFittingText('');
       setImportedFitting(null);
       setDoctrineName('');
+      setCustomDoctrineName('');
       setDoctrineNotes('');
       setError(null);
     }
@@ -80,9 +83,17 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
     setError(null);
 
     try {
+      // Use custom name if "Other" is selected, otherwise use preset
+      const finalName = doctrineName === 'Other' ? customDoctrineName.trim() : doctrineName;
+
+      if (!finalName) {
+        setError('Please enter a doctrine name');
+        return;
+      }
+
       const payload = {
         fleet_type_id: fleetTypeId,
-        name: doctrineName,
+        name: finalName,
         ship_type_id: importedFitting.ship_type_id,
         ship_name: importedFitting.ship_name,
         ship_group_id: importedFitting.ship_group_id,
@@ -231,16 +242,39 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
-                  Doctrine Name <span className="text-error">*</span>
+                  Doctrine Type <span className="text-error">*</span>
                 </label>
-                <Input
-                  type="text"
+                <select
                   value={doctrineName}
                   onChange={(e) => setDoctrineName(e.target.value)}
-                  placeholder="e.g., Manticore - Polarized Torpedoes"
                   required
-                />
+                  className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                >
+                  <option value="">Select type...</option>
+                  {DOCTRINE_NAME_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
               </div>
+
+              {/* Custom Name Input - Show when "Other" is selected */}
+              {doctrineName === 'Other' && (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">
+                    Custom Type Name <span className="text-error">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={customDoctrineName}
+                    onChange={(e) => setCustomDoctrineName(e.target.value)}
+                    placeholder="e.g., Faction, Officer Fit, Budget..."
+                    required
+                    className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  />
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">
