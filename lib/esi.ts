@@ -37,7 +37,11 @@ const ESI_BASE_URL = 'https://esi.evetech.net';
  * When a newer date is available, changelog is displayed for developer review.
  * Update this date manually after reviewing breaking changes.
  */
-let cachedCompatibilityDate = {
+let cachedCompatibilityDate: {
+  date: string;
+  lastFetched: number | null;
+  cacheDuration: number;
+} = {
   date: '2025-11-06', // Current compatibility date (update manually after reviewing changelog)
   lastFetched: null,
   cacheDuration: 3600000, // 1 hour - check for updates hourly
@@ -73,9 +77,8 @@ const ESI_CONFIG = {
  * Mailer service account character ID (sender of mails)
  * This is the character that performs ESI mail operations
  * Should match MAILER_CHARACTER_ID used for OAuth validation
- * @constant {number}
  */
-const MAILER_CHARACTER_ID = parseInt(process.env.MAILER_CHARACTER_ID) || null;
+const MAILER_CHARACTER_ID = parseInt(process.env.MAILER_CHARACTER_ID || '') || null;
 
 /**
  * Wallet division to check (1 = Master Wallet)
@@ -128,7 +131,11 @@ const CRITICAL_ROUTES = [
  * Global ESI error limit state (legacy system)
  * Tracks the error budget across all requests
  */
-const esiErrorState = {
+const esiErrorState: {
+  errorsRemaining: number | null;
+  resetTime: number | null;
+  lastUpdated: number | null;
+} = {
   errorsRemaining: null,
   resetTime: null,
   lastUpdated: null,
@@ -139,7 +146,13 @@ const esiErrorState = {
  * Tracks token consumption across all requests
  * Note: ESI uses per-route-group/application/character buckets, but we track global state for monitoring
  */
-const esiRateLimitState = {
+const esiRateLimitState: {
+  tokensRemaining: number | null;
+  tokensLimit: number | null;
+  resetTime: number | null;
+  lastUpdated: number | null;
+  retryAfter: number | null;
+} = {
   tokensRemaining: null,
   tokensLimit: null,
   resetTime: null,
@@ -163,7 +176,11 @@ const requestStats = {
 /**
  * Cached status data (for ESI health checks)
  */
-let cachedStatus = {
+let cachedStatus: {
+  data: any | null;
+  lastFetched: number | null;
+  cacheDuration: number;
+} = {
   data: null,
   lastFetched: null,
   cacheDuration: 60000, // 1 minute cache
@@ -190,7 +207,7 @@ const ITEM_EFFECTS_CACHE_DURATION = 24 * 60 * 60 * 1000; // 24 hours
  *
  * @param {Object} headers - Response headers from ESI
  */
-function updateErrorLimitState(headers) {
+function updateErrorLimitState(headers: any) {
   const errorLimitRemain = headers['x-esi-error-limit-remain'];
   const errorLimitReset = headers['x-esi-error-limit-reset'];
 
@@ -216,7 +233,7 @@ function updateErrorLimitState(headers) {
  * @param {Object} headers - Response headers from ESI
  * @param {number} status - HTTP status code
  */
-function updateRateLimitState(headers, status) {
+function updateRateLimitState(headers: any, status: any) {
   // Check various possible header names (ESI might use different formats)
   const rateLimitRemain =
     headers['x-ratelimit-remaining'] ||
@@ -334,7 +351,7 @@ function getThrottleDelay() {
  * @param {Error} error - Error from axios
  * @returns {boolean} True if error is retryable
  */
-function isRetryableError(error) {
+function isRetryableError(error: any) {
   // Network errors
   const retryableNetworkErrors = [
     'ECONNABORTED',
@@ -395,7 +412,7 @@ function isRetryableError(error) {
  * @param {Object} [error] - Error from previous attempt
  * @returns {number} Delay in milliseconds
  */
-function calculateRetryDelay(attemptNumber, error = null) {
+function calculateRetryDelay(attemptNumber: any, error: any = null) {
   let baseDelay = ESI_CONFIG.INITIAL_RETRY_DELAY;
 
   // Check for MailStopSpamming error with remainingTime
@@ -426,7 +443,7 @@ function calculateRetryDelay(attemptNumber, error = null) {
             return delayMs;
           }
         }
-      } catch (parseError) {
+      } catch (parseError: any) {
         console.warn('[ESI] Failed to parse MailStopSpamming remainingTime:', parseError.message);
       }
     }
@@ -457,7 +474,7 @@ function calculateRetryDelay(attemptNumber, error = null) {
  * @param {string} currentDate - Current compatibility date (YYYY-MM-DD)
  * @returns {Promise<Object>} Filtered changelog with only relevant changes
  */
-async function fetchRelevantChangelog(currentDate) {
+async function fetchRelevantChangelog(currentDate: any) {
   try {
     const url = 'https://esi.evetech.net/meta/changelog';
 
@@ -478,7 +495,7 @@ async function fetchRelevantChangelog(currentDate) {
     }
 
     // Filter changelog to only dates after our current date
-    const filteredChangelog = {};
+    const filteredChangelog: Record<string, any> = {};
     const currentDateObj = new Date(currentDate);
 
     for (const [changeDate, changes] of Object.entries(response.data.changelog)) {
@@ -491,7 +508,7 @@ async function fetchRelevantChangelog(currentDate) {
     }
 
     return filteredChangelog;
-  } catch (error) {
+  } catch (error: any) {
     console.warn('[ESI] Failed to fetch changelog:', error.message);
     return null;
   }
@@ -504,7 +521,7 @@ async function fetchRelevantChangelog(currentDate) {
  * @param {string} currentDate - Current compatibility date
  * @param {string} latestDate - Latest available compatibility date
  */
-function displayChangelog(changelog, currentDate, latestDate) {
+function displayChangelog(changelog: any, currentDate: any, latestDate: any) {
   console.log('\n' + '='.repeat(80));
   console.log('[ESI] NEW COMPATIBILITY DATE AVAILABLE');
   console.log('='.repeat(80));
@@ -590,7 +607,7 @@ async function refreshCompatibilityDate() {
         // cachedCompatibilityDate.date = latestDate; // REMOVED
       }
     }
-  } catch (error) {
+  } catch (error: any) {
     console.warn('[ESI] Failed to check for compatibility date updates:', error.message);
   }
 }
@@ -631,8 +648,8 @@ function getCompatibilityDateSync() {
  * const postHeaders = buildEsiHeaders(token, true);
  * const publicHeaders = buildEsiHeaders(); // For public endpoints
  */
-function buildEsiHeaders(accessToken = null, includeContentType = false) {
-  const headers = {
+function buildEsiHeaders(accessToken: any = null, includeContentType: any = false) {
+  const headers: Record<string, string> = {
     Accept: 'application/json',
     'X-Compatibility-Date': getCompatibilityDateSync(),
     'User-Agent': process.env.ESI_USER_AGENT || 'bb-esi-client/1.0',
@@ -673,7 +690,7 @@ refreshCompatibilityDate().catch((err) =>
  * @returns {Promise<any>} Response data
  * @throws {Error} If request fails after all retries
  */
-async function esiRequest(method, url, options = {}) {
+async function esiRequest(method: any, url: any, options: any = {}) {
   const {
     accessToken = null,
     params = {},
@@ -722,7 +739,7 @@ async function esiRequest(method, url, options = {}) {
 
       // Check for error status codes
       if (response.status >= 400) {
-        const error = new Error(
+        const error: any = new Error(
           `ESI returned ${response.status}: ${response.data?.error || 'Unknown error'}`
         );
         error.response = response;
@@ -739,7 +756,7 @@ async function esiRequest(method, url, options = {}) {
       // Success!
       requestStats.successfulRequests++;
       return response.data;
-    } catch (error) {
+    } catch (error: any) {
       lastError = error;
 
       // Update error limit and rate limit state if available
@@ -802,7 +819,7 @@ async function esiRequest(method, url, options = {}) {
  * const data = await esiGet(`${ESI_BASE_URL}/characters/123`, token);
  * const publicData = await esiGet(`${ESI_BASE_URL}/characters/123`); // Public endpoint
  */
-async function esiGet(url, accessToken = null, params = {}, options = {}) {
+async function esiGet(url: any, accessToken: any = null, params: any = {}, options: any = {}) {
   return esiRequest('GET', url, {
     accessToken,
     params,
@@ -824,7 +841,7 @@ async function esiGet(url, accessToken = null, params = {}, options = {}) {
  * const mailId = await esiPost(`${ESI_BASE_URL}/characters/123/mail`, mailData, token);
  * const names = await esiPost(`${ESI_BASE_URL}/universe/names`, [123, 456]); // Public endpoint
  */
-async function esiPost(url, payload, accessToken = null, options = {}) {
+async function esiPost(url: any, payload: any, accessToken: any = null, options: any = {}) {
   return esiRequest('POST', url, {
     accessToken,
     data: payload,
@@ -927,7 +944,7 @@ function resetRequestStats() {
  * @param {Error} error - Error from ESI request
  * @returns {Object|null} { isMailSpam: true, retryAfterMs: number, retryAfterDate: Date } or null if not a mail spam error
  */
-function parseMailStopSpammingError(error) {
+function parseMailStopSpammingError(error: any) {
   if (!error?.response?.data?.error) {
     return null;
   }
@@ -955,7 +972,7 @@ function parseMailStopSpammingError(error) {
         };
       }
     }
-  } catch (parseError) {
+  } catch (parseError: any) {
     console.warn('[ESI] Failed to parse MailStopSpamming error:', parseError.message);
   }
 
@@ -969,7 +986,7 @@ function parseMailStopSpammingError(error) {
  * @param {Error} error - Error from ESI request
  * @returns {boolean} True if this is a MailStopSpamming error
  */
-function isMailStopSpammingError(error) {
+function isMailStopSpammingError(error: any) {
   return parseMailStopSpammingError(error) !== null;
 }
 
@@ -995,7 +1012,7 @@ function isMailStopSpammingError(error) {
  * //   group_name: "Mobile Cyno Inhibitor"
  * // }
  */
-async function getTypeInfo(typeId) {
+async function getTypeInfo(typeId: any) {
   // Get type details
   const typeInfo = await esiGet(`${ESI_BASE_URL}/universe/types/${typeId}`);
 
@@ -1029,7 +1046,7 @@ async function getTypeInfo(typeId) {
  * //   { id: 34, name: "Tritanium", category: "inventory_type" }
  * // ]
  */
-async function resolveNames(ids) {
+async function resolveNames(ids: any) {
   if (!ids || ids.length === 0) {
     return [];
   }
@@ -1072,7 +1089,7 @@ async function resolveNames(ids) {
  * //   corporations: [{ id: 98815119, name: "ECTrade" }]
  * // }
  */
-async function resolveIds(names) {
+async function resolveIds(names: any) {
   if (!names || names.length === 0) {
     return {};
   }
@@ -1090,7 +1107,7 @@ async function resolveIds(names) {
     `[ESI] Resolving ${names.length} names in ${Math.ceil(names.length / CHUNK_SIZE)} chunks`
   );
 
-  const mergedResults = {};
+  const mergedResults: Record<string, any> = {};
   for (let i = 0; i < names.length; i += CHUNK_SIZE) {
     const chunk = names.slice(i, i + CHUNK_SIZE);
     const chunkResults = await esiPost(url, chunk, null);
@@ -1100,7 +1117,7 @@ async function resolveIds(names) {
       if (!mergedResults[category]) {
         mergedResults[category] = [];
       }
-      mergedResults[category].push(...items);
+      mergedResults[category].push(...(items as any[]));
     }
   }
 
@@ -1131,7 +1148,7 @@ async function resolveIds(names) {
  *   recipients: [{ recipient_id: 123456, recipient_type: 'character' }]
  * });
  */
-async function sendMail(accessToken, senderCharacterId, { subject, body, recipients }) {
+async function sendMail(accessToken: any, senderCharacterId: any, { subject, body, recipients }: any) {
   const url = `${ESI_BASE_URL}/characters/${senderCharacterId}/mail`;
 
   const payload = {
@@ -1160,14 +1177,14 @@ async function sendMail(accessToken, senderCharacterId, { subject, body, recipie
  * @returns {Promise<number>} Mail ID
  */
 async function sendSRPConfirmationMail(
-  accessToken,
-  senderCharacterId,
-  recipientCharacterId,
-  recipientCharacterName,
-  shipName,
-  lossDate,
-  payoutAmount,
-  killmailUrl
+  accessToken: any,
+  senderCharacterId: any,
+  recipientCharacterId: any,
+  recipientCharacterName: any,
+  shipName: any,
+  lossDate: any,
+  payoutAmount: any,
+  killmailUrl: any
 ) {
   const subject = "O'Bomber-care - SRP Request Received";
 
@@ -1226,12 +1243,12 @@ Fly safe.
  * @returns {Promise<number>} Mail ID
  */
 async function sendSRPRejectionMail(
-  accessToken,
-  mailSenderCharacterId,
-  rejectedCharacterId,
-  rejectedCharacterName,
-  victimCharacterName,
-  killmailUrl
+  accessToken: any,
+  mailSenderCharacterId: any,
+  rejectedCharacterId: any,
+  rejectedCharacterName: any,
+  victimCharacterName: any,
+  killmailUrl: any
 ) {
   const subject = "O'Bomber-care - SRP Request Rejected (Pilot Mismatch)";
 
@@ -1285,13 +1302,13 @@ Fly safe.
  * @returns {Promise<number>} Mail ID
  */
 async function sendUnapprovedShipMail(
-  accessToken,
-  mailSenderCharacterId,
-  rejectedCharacterId,
-  rejectedCharacterName,
-  shipName,
-  killmailUrl,
-  approvedShipsMap
+  accessToken: any,
+  mailSenderCharacterId: any,
+  rejectedCharacterId: any,
+  rejectedCharacterName: any,
+  shipName: any,
+  killmailUrl: any,
+  approvedShipsMap: any
 ) {
   const subject = "O'Bomber-care - SRP Request Rejected (Ship Not Covered)";
 
@@ -1359,7 +1376,7 @@ Fly safe.
  * @param {number} [delayMs=15000] - Delay between mails in milliseconds (default: 15s for 4/minute)
  * @returns {Promise<Array>} Results array with success/error status
  */
-async function sendMailsWithRateLimit(accessToken, mailBatch, delayMs = 15000) {
+async function sendMailsWithRateLimit(accessToken: any, mailBatch: any, delayMs: any = 15000) {
   const results = [];
 
   for (let i = 0; i < mailBatch.length; i++) {
@@ -1381,7 +1398,7 @@ async function sendMailsWithRateLimit(accessToken, mailBatch, delayMs = 15000) {
         console.log(`[MAIL RATE LIMIT] Waiting ${delayMs}ms before next mail...`);
         await sleep(delayMs);
       }
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         index: i,
         status: 'error',
@@ -1421,9 +1438,9 @@ async function sendMailsWithRateLimit(accessToken, mailBatch, delayMs = 15000) {
  * const mailHeaders = await getMailHeaders(accessToken, 90504880);
  * // Returns: [{ mail_id, subject, from, timestamp, is_read, recipients, labels }, ...]
  */
-async function getMailHeaders(accessToken, characterId, options = {}) {
+async function getMailHeaders(accessToken: any, characterId: any, options: any = {}) {
   const url = `${ESI_BASE_URL}/characters/${characterId}/mail`;
-  const params = {};
+  const params: Record<string, any> = {};
 
   if (options.lastMailId) {
     params.last_mail_id = options.lastMailId;
@@ -1450,7 +1467,7 @@ async function getMailHeaders(accessToken, characterId, options = {}) {
  * const mail = await getMailContent(accessToken, 90504880, 123456);
  * // Returns: { mail_id, subject, from, timestamp, body, recipients, labels, is_read }
  */
-async function getMailContent(accessToken, characterId, mailId) {
+async function getMailContent(accessToken: any, characterId: any, mailId: any) {
   const url = `${ESI_BASE_URL}/characters/${characterId}/mail/${mailId}`;
   return await esiGet(url, accessToken);
 }
@@ -1468,7 +1485,7 @@ async function getMailContent(accessToken, characterId, mailId) {
  * const labelsData = await getMailLabels(accessToken, 90504880);
  * // Returns: { labels: [{ label_id, name, unread_count, color }], total_unread_count }
  */
-async function getMailLabels(accessToken, characterId) {
+async function getMailLabels(accessToken: any, characterId: any) {
   const url = `${ESI_BASE_URL}/characters/${characterId}/mail/labels`;
   return await esiGet(url, accessToken);
 }
@@ -1483,13 +1500,14 @@ async function getMailLabels(accessToken, characterId) {
  * @param {boolean} [forceRefresh=false] - Force refresh cache
  * @returns {Promise<Object>} ESI status data
  */
-async function getESIStatus(forceRefresh = false) {
+async function getESIStatus(forceRefresh: any = false) {
   const now = Date.now();
 
   // Return cached data if still valid
   if (
     !forceRefresh &&
     cachedStatus.data &&
+    cachedStatus.lastFetched !== null &&
     now - cachedStatus.lastFetched < cachedStatus.cacheDuration
   ) {
     return cachedStatus.data;
@@ -1504,7 +1522,7 @@ async function getESIStatus(forceRefresh = false) {
     cachedStatus.lastFetched = now;
 
     return status;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[ESI STATUS] Failed to fetch status:', error.message);
 
     // If we have cached data, return it even if stale
@@ -1529,7 +1547,11 @@ async function getESIStatus(forceRefresh = false) {
 async function checkESIHealth() {
   const statusData = await getESIStatus();
 
-  const result = {
+  const result: {
+    healthy: boolean;
+    issues: string[];
+    warnings: string[];
+  } = {
     healthy: true,
     issues: [],
     warnings: [],
@@ -1544,7 +1566,7 @@ async function checkESIHealth() {
   // Check critical routes
   for (const criticalRoute of CRITICAL_ROUTES) {
     const routeStatus = statusData.routes.find(
-      (r) => r.method === criticalRoute.method && r.path === criticalRoute.path
+      (r: any) => r.method === criticalRoute.method && r.path === criticalRoute.path
     );
 
     if (!routeStatus) {
@@ -1626,7 +1648,7 @@ async function getHealthSummary() {
   // Get status of critical routes
   const routes = CRITICAL_ROUTES.map((criticalRoute) => {
     const routeStatus = statusData?.routes?.find(
-      (r) => r.method === criticalRoute.method && r.path === criticalRoute.path
+      (r: any) => r.method === criticalRoute.method && r.path === criticalRoute.path
     );
 
     return {
@@ -1653,7 +1675,7 @@ async function getHealthSummary() {
  * @param {number} characterId - Character ID
  * @returns {Promise<number>} Corporation ID
  */
-async function getCharacterCorporation(characterId) {
+async function getCharacterCorporation(characterId: any) {
   const url = `${ESI_BASE_URL}/characters/${characterId}`;
   const data = await esiGet(url);
   return data.corporation_id;
@@ -1685,14 +1707,14 @@ async function getCharacterCorporation(characterId) {
  * // Returns: [{ id: 123, amount: 300000000, ref_type: "player_donation", ... }]
  */
 async function getWalletJournal(
-  accessToken,
-  corporationId,
-  division = WALLET_DIVISION,
-  page = null
+  accessToken: any,
+  corporationId: any,
+  division: any = WALLET_DIVISION,
+  page: any = null
 ) {
   const url = `${ESI_BASE_URL}/corporations/${corporationId}/wallets/${division}/journal`;
 
-  const params = {};
+  const params: Record<string, any> = {};
   if (page && page > 1) {
     params.page = page;
   }
@@ -1726,14 +1748,14 @@ async function getWalletJournal(
  * // Returns: [{ transaction_id: 123, type_id: 34, quantity: 10, unit_price: 1000000, ... }]
  */
 async function getWalletTransactions(
-  accessToken,
-  corporationId,
-  division = WALLET_DIVISION,
-  fromId = null
+  accessToken: any,
+  corporationId: any,
+  division: any = WALLET_DIVISION,
+  fromId: any = null
 ) {
   const url = `${ESI_BASE_URL}/corporations/${corporationId}/wallets/${division}/transactions`;
 
-  const params = {};
+  const params: Record<string, any> = {};
 
   if (fromId) {
     params.from_id = fromId;
@@ -1751,12 +1773,12 @@ async function getWalletTransactions(
  * @param {Object} esiData - Raw ESI data
  * @returns {Object} Parsed ship info
  */
-function parseShipInfo(esiData) {
+function parseShipInfo(esiData: any) {
   const dogmaAttrs = esiData.dogma_attributes || [];
 
   // Extract slot counts from dogma attributes
-  const getAttribute = (attrId) => {
-    const attr = dogmaAttrs.find((a) => a.attribute_id === attrId);
+  const getAttribute = (attrId: any) => {
+    const attr = dogmaAttrs.find((a: any) => a.attribute_id === attrId);
     return attr ? Math.floor(attr.value) : 0;
   };
 
@@ -1791,7 +1813,7 @@ function parseShipInfo(esiData) {
  * @param {number} typeId - EVE type ID
  * @returns {Promise<Object>} Ship information
  */
-async function getShipInfo(typeId) {
+async function getShipInfo(typeId: any) {
   // Check cache first
   const cached = shipInfoCache.get(typeId);
   if (cached && Date.now() - cached.timestamp < SHIP_INFO_CACHE_DURATION) {
@@ -1815,7 +1837,7 @@ async function getShipInfo(typeId) {
     });
 
     return shipInfo;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error fetching ship info for type ${typeId}:`, error);
     throw error;
   }
@@ -1826,7 +1848,7 @@ async function getShipInfo(typeId) {
  * @param {number} groupId - EVE group ID
  * @returns {Promise<Object>} Group information
  */
-async function getGroupInfo(groupId) {
+async function getGroupInfo(groupId: any) {
   try {
     const data = await esiGet(`${ESI_BASE_URL}/universe/groups/${groupId}`);
 
@@ -1835,7 +1857,7 @@ async function getGroupInfo(groupId) {
     }
 
     return data;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error fetching group info for ${groupId}:`, error);
     return { name: 'Unknown Group', group_id: groupId };
   }
@@ -1846,9 +1868,9 @@ async function getGroupInfo(groupId) {
  * @param {Array<number>} typeIds - Array of type IDs
  * @returns {Promise<Array>} Array of ship info objects
  */
-async function getMultipleShipInfo(typeIds) {
-  const promises = typeIds.map((id) =>
-    getShipInfo(id).catch((err) => {
+async function getMultipleShipInfo(typeIds: any) {
+  const promises = typeIds.map((id: any) =>
+    getShipInfo(id).catch((err: any) => {
       console.error(`Failed to fetch ship ${id}:`, err);
       return null;
     })
@@ -1885,7 +1907,7 @@ function getShipInfoCacheStats() {
  * @param {string} fittingText - Full fitting text including URL tags
  * @returns {Object} Parsed fitting data
  */
-function parseFittingURL(fittingText) {
+function parseFittingURL(fittingText: any) {
   // Extract fitting data from URL tag
   const urlMatch = fittingText.match(/<url=fitting:([^>]+)>([^<]+)<\/url>/);
 
@@ -1936,7 +1958,7 @@ function parseFittingURL(fittingText) {
  * @param {string} fittingText - Fitting text
  * @returns {Object} Parsed fitting
  */
-function parseFitting(fittingText) {
+function parseFitting(fittingText: any) {
   // Try URL format first
   if (fittingText.includes('<url=fitting:')) {
     return parseFittingURL(fittingText);
@@ -1955,7 +1977,7 @@ function parseFitting(fittingText) {
  * @param {number} typeId - Item type ID
  * @returns {Promise<Array>} Array of effect objects
  */
-async function getItemEffects(typeId) {
+async function getItemEffects(typeId: any) {
   // Check cache
   const cached = itemEffectsCache.get(typeId);
   if (cached && Date.now() - cached.timestamp < ITEM_EFFECTS_CACHE_DURATION) {
@@ -1974,7 +1996,7 @@ async function getItemEffects(typeId) {
     });
 
     return effects;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`Error fetching effects for type ${typeId}:`, error);
     return [];
   }
@@ -1985,9 +2007,9 @@ async function getItemEffects(typeId) {
  * @param {number} typeId - Module type ID
  * @returns {Promise<string>} Slot type: 'high', 'mid', 'low', 'rig', 'subsystem', or 'cargo'
  */
-async function determineSlotType(typeId) {
+async function determineSlotType(typeId: any) {
   const effects = await getItemEffects(typeId);
-  const effectIds = effects.map((e) => e.effect_id);
+  const effectIds = effects.map((e: any) => e.effect_id);
 
   if (effectIds.includes(DOGMA_EFFECTS.HIGH_SLOT)) return 'high';
   if (effectIds.includes(DOGMA_EFFECTS.MID_SLOT)) return 'mid';
@@ -2004,8 +2026,8 @@ async function determineSlotType(typeId) {
  * @param {Array} modules - Array of {type_id, quantity}
  * @returns {Promise<Object>} Categorized modules
  */
-async function categorizeModules(modules) {
-  const categorized = {
+async function categorizeModules(modules: any) {
+  const categorized: Record<string, any[]> = {
     high: [],
     mid: [],
     low: [],
@@ -2051,7 +2073,7 @@ async function categorizeModules(modules) {
  * @param {string} fittingText - EVE fitting text
  * @returns {Promise<Object>} Complete fitting with categorized modules
  */
-async function parseAndCategorizeFitting(fittingText) {
+async function parseAndCategorizeFitting(fittingText: any) {
   // Parse the fitting format
   const parsed = parseFitting(fittingText);
 
@@ -2077,8 +2099,8 @@ async function parseAndCategorizeFitting(fittingText) {
  * @param {Object} shipSpecs - Ship specifications (slot counts)
  * @returns {Object} JSONB-ready fitting data
  */
-function formatForDatabase(categorized, shipSpecs) {
-  const padArray = (arr, length) => {
+function formatForDatabase(categorized: any, shipSpecs: any) {
+  const padArray = (arr: any, length: any) => {
     const padded = [...arr];
     while (padded.length < length) {
       padded.push(null);
@@ -2100,13 +2122,13 @@ function formatForDatabase(categorized, shipSpecs) {
  * @param {Object} doctrine - Doctrine with modules
  * @returns {string} EVE fitting URL format
  */
-function generateFittingLink(doctrine) {
+function generateFittingLink(doctrine: any) {
   const parts = [doctrine.ship_type_id];
 
   // Helper to add modules
-  const addModules = (modules) => {
+  const addModules = (modules: any) => {
     if (!modules) return;
-    modules.forEach((mod) => {
+    modules.forEach((mod: any) => {
       if (mod && mod.type_id) {
         parts.push(`${mod.type_id};${mod.quantity || 1}`);
       } else {
