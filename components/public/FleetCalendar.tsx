@@ -35,6 +35,13 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
   const scheduledDate = parseISO(fleet.scheduled_at);
   const formattedTime = format(scheduledDate, 'HH:mm');
 
+  // Get browser's timezone abbreviation
+  const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+  const timezoneAbbr = new Date().toLocaleTimeString('en-US', {
+    timeZoneName: 'short',
+    timeZone: browserTimezone
+  }).split(' ').pop() || browserTimezone;
+
   return (
     <Card className="overflow-hidden transition-all hover:shadow-lg hover:border-primary/50">
       <div className="flex flex-col sm:flex-row">
@@ -58,7 +65,7 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
               <span className="font-semibold text-foreground">
                 {formattedTime}
               </span>
-              <span className="text-xs text-foreground-muted">{fleet.timezone}</span>
+              <span className="text-xs text-foreground-muted">{timezoneAbbr}</span>
             </div>
           )}
         </div>

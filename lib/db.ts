@@ -11,7 +11,7 @@ const pool = new Pool({
   ssl: {
     rejectUnauthorized: false, // Required for managed PostgreSQL services
   },
-  max: 20,
+  max: 5, // Reduced to prevent connection exhaustion with multiple instances
   idleTimeoutMillis: 30000,
   connectionTimeoutMillis: 10000,
 });
