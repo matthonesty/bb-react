@@ -191,20 +191,14 @@ export default function AboutPage() {
 
         {/* Fittings Section */}
         <section id="fittings" className="mb-16 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Ship Fittings & Doctrines</h2>
-          <Card className="p-8">
-            <p className="text-foreground-muted mb-6 text-center">
-              All our approved ship fittings and doctrines are available for authenticated members. You&apos;ll find detailed fits for bombers, recons, hunters, and support ships optimized for each fleet type.
-            </p>
-            <div className="flex justify-center">
-              <a
-                href="/"
-                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
-              >
-                <Target className="h-5 w-5" />
-                View Doctrines on Homepage
-              </a>
-            </div>
+          <Card className="p-6 text-center">
+            <a
+              href="/#doctrines"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
+            >
+              <Target className="h-5 w-5" />
+              View Fleet Doctrines
+            </a>
           </Card>
         </section>
 

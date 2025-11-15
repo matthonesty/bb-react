@@ -83,7 +83,7 @@ export default function Home() {
         </section>
 
         {/* Doctrines Section */}
-        <section>
+        <section id="doctrines">
           <div className="mb-6 flex items-center gap-3">
             <Target className="h-6 w-6 text-primary" />
             <div>
