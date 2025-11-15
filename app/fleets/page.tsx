@@ -39,7 +39,7 @@ export default function FleetsPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState('scheduled');
+  const [statusFilter, setStatusFilter] = useState('');
   const [fleetTypeFilter, setFleetTypeFilter] = useState('');
   const [fcFilter, setFCFilter] = useState('');
 

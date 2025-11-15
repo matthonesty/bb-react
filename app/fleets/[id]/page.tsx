@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 import { PageContainer } from '@/components/layout/PageContainer';
-import { PageHeader } from '@/components/layout/PageHeader';
 import {
   ArrowLeft,
   Calendar,
@@ -64,7 +63,7 @@ export default function FleetDetailPage() {
   const [fleet, setFleet] = useState<FleetManagement | null>(null);
   const [participants, setParticipants] = useState<FleetParticipant[]>([]);
   const [kills, setKills] = useState<FleetKill[]>([]);
-  const [killStats, setKillStats] = useState<any>(null);
+  const [killStats, setKillStats] = useState<{ total_kills: number; total_value: number; total_drops: number } | null>(null);
   const [fleetTypes, setFleetTypes] = useState<FleetType[]>([]);
   const [fcs, setFCs] = useState<FleetCommander[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,13 +75,7 @@ export default function FleetDetailPage() {
 
   const canManage = hasRole(['admin', 'Council', 'FC', 'OBomberCare']);
 
-  useEffect(() => {
-    loadFleetData();
-    loadFleetTypes();
-    loadFCs();
-  }, [params.id]);
-
-  async function loadFleetData() {
+  const loadFleetData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -116,36 +109,42 @@ export default function FleetDetailPage() {
         setKills(killsData.kills);
         setKillStats(killsData.stats);
       }
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Unknown error');
     } finally {
       setLoading(false);
     }
-  }
+  }, [params.id]);
 
-  async function loadFleetTypes() {
+  const loadFleetTypes = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/fleet-types');
       const data = await response.json();
       if (data.success) {
         setFleetTypes(data.fleet_types);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load fleet types:', err);
     }
-  }
+  }, []);
 
-  async function loadFCs() {
+  const loadFCs = useCallback(async () => {
     try {
       const response = await fetch('/api/admin/fcs?status=Active&limit=500');
       const data = await response.json();
       if (data.success) {
         setFCs(data.fcs);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Failed to load FCs:', err);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    loadFleetData();
+    loadFleetTypes();
+    loadFCs();
+  }, [loadFleetData, loadFleetTypes, loadFCs]);
 
   function getStatusBadgeVariant(status: string) {
     switch (status) {
@@ -390,7 +389,7 @@ export default function FleetDetailPage() {
                 <p className="text-foreground-muted text-lg mb-2">No hunters or support yet</p>
                 {canManage && (
                   <p className="text-foreground-muted/70 text-sm">
-                    Click "Add Hunter/Support" to add fleet members
+                    Click &ldquo;Add Hunter/Support&rdquo; to add fleet members
                   </p>
                 )}
               </div>
@@ -496,7 +495,7 @@ export default function FleetDetailPage() {
                 <p className="text-foreground-muted text-lg mb-2">No kills yet</p>
                 {canManage && (
                   <p className="text-foreground-muted/70 text-sm">
-                    Click "Add Kills" to record fleet kills
+                    Click &ldquo;Add Kills&rdquo; to record fleet kills
                   </p>
                 )}
               </div>
