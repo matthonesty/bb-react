@@ -42,12 +42,14 @@ function formatFleetTime(scheduled_at: string, timezone: string = 'UTC'): string
   });
 }
 
-function formatISK(value: number | null): string {
+function formatISK(value: number | string | null): string {
   if (!value) return '0 ISK';
-  if (value >= 1e9) return `${(value / 1e9).toFixed(2)}B ISK`;
-  if (value >= 1e6) return `${(value / 1e6).toFixed(2)}M ISK`;
-  if (value >= 1e3) return `${(value / 1e3).toFixed(2)}K ISK`;
-  return `${value.toFixed(0)} ISK`;
+  const numValue = typeof value === 'string' ? parseFloat(value) : value;
+  if (isNaN(numValue) || numValue === 0) return '0 ISK';
+  if (numValue >= 1e9) return `${(numValue / 1e9).toFixed(2)}B ISK`;
+  if (numValue >= 1e6) return `${(numValue / 1e6).toFixed(2)}M ISK`;
+  if (numValue >= 1e3) return `${(numValue / 1e3).toFixed(2)}K ISK`;
+  return `${numValue.toFixed(0)} ISK`;
 }
 
 export default function FleetDetailPage() {
