@@ -23,6 +23,19 @@ interface DoctrinesResponse {
   fleet_types: FleetTypeWithDoctrines[];
 }
 
+interface SRPShipType {
+  type_name: string;
+  group_name: string;
+  base_payout: number;
+  polarized_payout: number | null;
+  fc_discretion: boolean;
+}
+
+interface SRPConfigResponse {
+  success: boolean;
+  ship_types: SRPShipType[];
+}
+
 export const publicApi = {
   // Get upcoming fleets
   getFleets: async (
@@ -34,5 +47,10 @@ export const publicApi = {
   // Get active doctrines grouped by fleet type
   getDoctrines: async (params?: { fleet_type_id?: number }): Promise<DoctrinesResponse> => {
     return await apiClient.get<DoctrinesResponse>('/api/public/doctrines', { params });
+  },
+
+  // Get active SRP configuration
+  getSRPConfig: async (): Promise<SRPConfigResponse> => {
+    return await apiClient.get<SRPConfigResponse>('/api/public/srp-config');
   },
 };

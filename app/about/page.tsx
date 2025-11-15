@@ -1,7 +1,9 @@
 'use client';
 
+import { useQuery } from '@tanstack/react-query';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
+import { publicApi } from '@/lib/api/public';
 import {
   Users,
   Target,
@@ -17,6 +19,17 @@ import {
 } from 'lucide-react';
 
 export default function AboutPage() {
+  // Fetch SRP configuration
+  const {
+    data: srpData,
+    isLoading: srpLoading,
+  } = useQuery({
+    queryKey: ['public', 'srp-config'],
+    queryFn: () => publicApi.getSRPConfig(),
+  });
+
+  const shipTypes = srpData?.ship_types || [];
+
   const reasons = [
     {
       icon: Users,
@@ -111,13 +124,13 @@ export default function AboutPage() {
               Discord
             </a>
             <a
-              href="/doctrines"
+              href="#fittings"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
             >
               Fittings
             </a>
             <a
-              href="/srp"
+              href="#obombercare"
               className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
             >
               O&apos;bombercare (SRP)
@@ -176,6 +189,25 @@ export default function AboutPage() {
           </div>
         </section>
 
+        {/* Fittings Section */}
+        <section id="fittings" className="mb-16 scroll-mt-20">
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Ship Fittings & Doctrines</h2>
+          <Card className="p-8">
+            <p className="text-foreground-muted mb-6 text-center">
+              All our approved ship fittings and doctrines are available for authenticated members. You&apos;ll find detailed fits for bombers, recons, hunters, and support ships optimized for each fleet type.
+            </p>
+            <div className="flex justify-center">
+              <a
+                href="/"
+                className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl"
+              >
+                <Target className="h-5 w-5" />
+                View Doctrines on Homepage
+              </a>
+            </div>
+          </Card>
+        </section>
+
         {/* Reasons to Join */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
@@ -197,6 +229,83 @@ export default function AboutPage() {
               );
             })}
           </div>
+        </section>
+
+        {/* O'bombercare (SRP) Section */}
+        <section id="obombercare" className="mb-16 scroll-mt-20">
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
+            O&apos;bombercare (Ship Replacement Program)
+          </h2>
+
+          <Card className="p-8">
+            <div className="mb-6">
+              <h3 className="text-xl font-bold text-foreground mb-4">How to Submit for SRP</h3>
+              <p className="text-foreground-muted mb-4">
+                Search <span className="font-semibold text-foreground">&quot;Vova Nalentis&quot;</span> in-game and send her an EVE mail with:
+              </p>
+              <ul className="space-y-2 ml-6 list-disc text-foreground-muted">
+                <li>Name of your FC</li>
+                <li>The killmail link</li>
+                <li>For T3 or expensive hunter ships: Amount of donations received from the fleet</li>
+              </ul>
+              <div className="mt-4 rounded-md bg-background-secondary p-4 text-sm">
+                <strong className="text-foreground">Important:</strong> Killmails older than 1 week are no longer eligible for SRP. Submit on time!
+              </div>
+            </div>
+
+            <div className="border-t border-border pt-6">
+              <h3 className="text-xl font-bold text-foreground mb-4">SRP Payouts</h3>
+
+              {srpLoading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+                </div>
+              ) : (
+                <>
+                  {Object.entries(
+                    shipTypes.reduce((acc, ship) => {
+                      if (!acc[ship.group_name]) {
+                        acc[ship.group_name] = [];
+                      }
+                      acc[ship.group_name].push(ship);
+                      return acc;
+                    }, {} as Record<string, typeof shipTypes>)
+                  ).map(([groupName, ships]) => (
+                    <div key={groupName} className="mb-6 last:mb-0">
+                      <h4 className="font-semibold text-foreground mb-3">{groupName}</h4>
+                      <div className="space-y-2 text-sm">
+                        {ships.map((ship) => (
+                          <div
+                            key={ship.type_name}
+                            className="flex justify-between items-center p-2 rounded bg-background-secondary"
+                          >
+                            <span className="text-foreground-muted">{ship.type_name}</span>
+                            <div className="flex items-center gap-2">
+                              <span className="font-semibold text-foreground">
+                                {(ship.base_payout / 1000000).toFixed(0)}m ISK
+                              </span>
+                              {ship.polarized_payout && (
+                                <span className="text-xs text-foreground-muted">
+                                  ({(ship.polarized_payout / 1000000).toFixed(0)}m polarized)
+                                </span>
+                              )}
+                              {ship.fc_discretion && (
+                                <span className="text-xs text-foreground-muted">(FC discretion)</span>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </>
+              )}
+
+              <div className="mt-6 rounded-md bg-primary/10 border border-primary/20 p-4 text-sm text-foreground-muted">
+                <strong className="text-foreground">Note:</strong> Capsules are not covered. You typically receive ISK directly to your account without a reply mail.
+              </div>
+            </div>
+          </Card>
         </section>
 
         {/* Call to Action */}
