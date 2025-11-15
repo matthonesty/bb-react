@@ -21,10 +21,27 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [formsMenuOpen, setFormsMenuOpen] = useState(false);
+  const [navDropdownOpen, setNavDropdownOpen] = useState<string | null>(null);
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (!item.roles) return true;
     return user?.roles.some((role) => item.roles?.includes(role));
+  }).map((item) => {
+    // Filter children by roles
+    if (item.children) {
+      const visibleChildren = item.children.filter((child) => {
+        if (!child.roles) return true;
+        return user?.roles.some((role) => child.roles?.includes(role));
+      });
+      return { ...item, children: visibleChildren };
+    }
+    return item;
+  }).filter((item) => {
+    // Remove dropdown if no visible children
+    if (item.children) {
+      return item.children.length > 0;
+    }
+    return true;
   });
 
   return (
@@ -80,15 +97,54 @@ export function Header() {
             </div>
 
             {/* Authenticated user nav items */}
-            {isAuthenticated && visibleNavItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
-              >
-                {item.label}
-              </Link>
-            ))}
+            {isAuthenticated && visibleNavItems.map((item) => {
+              // Dropdown menu
+              if (item.children) {
+                return (
+                  <div key={item.label} className="relative">
+                    <button
+                      onClick={() => setNavDropdownOpen(navDropdownOpen === item.label ? null : item.label)}
+                      className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors flex items-center space-x-1"
+                    >
+                      <span>{item.label}</span>
+                      <ChevronDown size={16} />
+                    </button>
+
+                    {navDropdownOpen === item.label && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setNavDropdownOpen(null)}
+                        />
+                        <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href!}
+                              onClick={() => setNavDropdownOpen(null)}
+                              className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </>
+                    )}
+                  </div>
+                );
+              }
+
+              // Regular link
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href!}
+                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
+                >
+                  {item.label}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Desktop User Menu */}
@@ -187,16 +243,40 @@ export function Header() {
             {/* Authenticated user nav items */}
             {isAuthenticated && visibleNavItems.length > 0 && (
               <div className="border-t border-border pt-2">
-                {visibleNavItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ))}
+                {visibleNavItems.map((item) => {
+                  // Dropdown menu
+                  if (item.children) {
+                    return (
+                      <div key={item.label}>
+                        <p className="px-3 py-2 text-xs font-semibold text-foreground-muted uppercase">
+                          {item.label}
+                        </p>
+                        {item.children.map((child) => (
+                          <Link
+                            key={child.href}
+                            href={child.href!}
+                            onClick={() => setMobileMenuOpen(false)}
+                            className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+                          >
+                            {child.label}
+                          </Link>
+                        ))}
+                      </div>
+                    );
+                  }
+
+                  // Regular link
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href!}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+                    >
+                      {item.label}
+                    </Link>
+                  );
+                })}
               </div>
             )}
           </nav>

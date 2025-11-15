@@ -7,40 +7,59 @@ import { ROLES } from '@/lib/auth/roleConstants';
 
 export interface NavItem {
   label: string;
-  href: string;
+  href?: string;
   roles?: string[];
+  children?: NavItem[];
 }
 
 export const NAV_ITEMS: NavItem[] = [
   {
     label: 'SRP',
-    href: '/srp',
     roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+    children: [
+      {
+        label: 'SRP Management',
+        href: '/srp',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+      },
+      {
+        label: 'SRP Mail',
+        href: '/mail',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+      },
+      {
+        label: 'SRP Config',
+        href: '/srp-config',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL],
+      },
+    ],
   },
   {
-    label: 'Bans',
-    href: '/bans',
+    label: 'Administration',
     roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+    children: [
+      {
+        label: 'Fleet Commanders',
+        href: '/fcs',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+      },
+      {
+        label: 'Ban Management',
+        href: '/bans',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+      },
+    ],
   },
   {
-    label: 'FCs',
-    href: '/fcs',
+    label: 'Finances',
     roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
-  },
-  {
-    label: 'SRP Config',
-    href: '/srp-config',
-    roles: [ROLES.ADMIN, ROLES.COUNCIL],
-  },
-  {
-    label: 'Mail',
-    href: '/mail',
-    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
-  },
-  {
-    label: 'Wallet',
-    href: '/wallet',
-    roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+    children: [
+      {
+        label: 'Corporate Wallet',
+        href: '/wallet',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+      },
+    ],
   },
 ];
 
