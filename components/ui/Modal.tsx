@@ -77,13 +77,14 @@ export function Modal({
 
   const modalContent = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 overflow-y-auto"
       onClick={handleOverlayClick}
     >
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full bg-card-bg border border-card-border rounded-lg shadow-xl',
+          'relative w-full bg-card-bg border border-card-border rounded-lg shadow-xl my-auto',
+          'max-h-[90vh] flex flex-col',
           sizes[size]
         )}
         role="dialog"
@@ -92,7 +93,7 @@ export function Modal({
       >
         {/* Header */}
         {(title || showCloseButton) && (
-          <div className="flex items-center justify-between border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between border-b border-border px-6 py-4 flex-shrink-0">
             {title && (
               <h2 id="modal-title" className="text-xl font-semibold text-foreground">
                 {title}
@@ -110,8 +111,8 @@ export function Modal({
           </div>
         )}
 
-        {/* Content */}
-        <div className="px-6 py-4">{children}</div>
+        {/* Content - Scrollable */}
+        <div className="px-6 py-4 overflow-y-auto flex-1 min-h-0">{children}</div>
       </div>
     </div>
   );
@@ -122,12 +123,15 @@ export function Modal({
 
 /**
  * Modal Footer component for action buttons
+ * Sticky footer that stays visible at the bottom when content scrolls
  */
 export function ModalFooter({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div
       className={cn(
-        'flex items-center justify-end gap-3 border-t border-border px-6 py-4 -mx-6 -mb-4 mt-4',
+        'sticky bottom-0 flex items-center justify-end gap-3',
+        'border-t border-border px-6 py-4 -mx-6 -mb-4 mt-4',
+        'bg-card-bg',
         className
       )}
     >
