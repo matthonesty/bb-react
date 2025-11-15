@@ -2039,8 +2039,15 @@ async function categorizeModules(modules: any) {
   for (const item of modules) {
     const slotType = await determineSlotType(item.type_id);
 
-    // Get cached name if available
-    const cached = itemEffectsCache.get(item.type_id);
+    // Get cached name if available, otherwise fetch it
+    let cached = itemEffectsCache.get(item.type_id);
+
+    // If not cached (rare case for cargo items), fetch it now
+    if (!cached) {
+      await getItemEffects(item.type_id);
+      cached = itemEffectsCache.get(item.type_id);
+    }
+
     const name = cached ? cached.name : `Type ${item.type_id}`;
 
     const moduleData = {
