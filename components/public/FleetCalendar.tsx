@@ -62,7 +62,7 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
           {/* Fleet Title & Description */}
           <div className="mb-5">
             <h3 className="text-2xl font-bold text-foreground mb-2">
-              {fleet.title || fleet.fleet_type_name}
+              {fleet.title || fleet.fleet_type_name}{' '}
               {fleet.fleet_type_name && fleet.fleet_type_id && (
                 <button
                   onClick={(e) => {
@@ -87,7 +87,6 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
                   }}
                   className="text-foreground-muted font-normal hover:text-primary hover:underline transition-colors cursor-pointer"
                 >
-                  {' '}
                   ({fleet.fleet_type_name})
                 </button>
               )}
