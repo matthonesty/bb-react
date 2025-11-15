@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useQuery } from '@tanstack/react-query';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
@@ -806,8 +807,8 @@ export default function AboutPage() {
 
           <div className="relative z-10">
             <div className="flex flex-col items-center mb-4">
-              <div className="mb-3 rounded-2xl bg-primary/20 p-4">
-                <Bomb className="h-10 w-10 text-primary" />
+              <div className="mb-3">
+                <Image src="/logo.png" alt="Bombers Bar" width={80} height={80} className="h-20 w-20" />
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-foreground">Ready to Join?</h2>
             </div>
