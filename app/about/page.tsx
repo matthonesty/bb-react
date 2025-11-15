@@ -233,11 +233,10 @@ export default function AboutPage() {
 
         {/* O'bombercare (SRP) Section */}
         <section id="obombercare" className="mb-16 scroll-mt-20">
-          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
-            O&apos;bombercare (Ship Replacement Program)
-          </h2>
-
           <Card className="p-8">
+            <h2 className="text-3xl font-bold text-foreground mb-6 text-center">
+              O&apos;bombercare (Ship Replacement Program)
+            </h2>
             <div className="mb-6">
               <p className="text-foreground-muted mb-6 text-center">
                 O&apos;bombercare is our Ship Replacement Program (SRP) that reimburses pilots for ship losses during Bombers Bar fleets.
