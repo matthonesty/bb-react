@@ -122,16 +122,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has any authorized role
-    const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
-
-    if (!hasAuthorizedRole) {
-      return NextResponse.json(
-        { error: 'Forbidden', message: 'Authorized role required' },
-        { status: 403 }
-      );
-    }
-
     const body = await request.json();
     const { fleet_id, hunter_id, drop_number, zkill_urls } = body;
 
@@ -149,11 +139,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verify fleet exists
-    const fleetCheck = await pool.query('SELECT id FROM fleets WHERE id = $1', [fleet_id]);
+    // Check if fleet exists and get FC info
+    const fleetCheck = await pool.query(
+      `SELECT f.id, fc.main_character_id as fc_character_id
+       FROM fleets f
+       JOIN fleet_commanders fc ON f.fc_id = fc.id
+       WHERE f.id = $1`,
+      [fleet_id]
+    );
 
     if (fleetCheck.rows.length === 0) {
       return NextResponse.json({ success: false, error: 'Fleet not found' }, { status: 404 });
+    }
+
+    const fleet = fleetCheck.rows[0];
+
+    // Check if user is Admin/Council or the fleet's FC
+    const isAdminOrCouncil = user.roles?.some((role: string) =>
+      role === 'admin' || role === 'Council'
+    );
+    const isFleetFC = user.character_id === fleet.fc_character_id;
+
+    if (!isAdminOrCouncil && !isFleetFC) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Only the fleet FC or Council can add kills' },
+        { status: 403 }
+      );
     }
 
     // Verify hunter exists if provided

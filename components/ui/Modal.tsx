@@ -130,7 +130,7 @@ export function ModalFooter({ children, className }: { children: ReactNode; clas
     <div
       className={cn(
         'sticky bottom-0 flex items-center justify-end gap-3',
-        'border-t border-border px-6 py-4 -mx-6 -mb-4 mt-4',
+        'border-t border-border px-6 py-4 -mx-6 -mb-4 mt-10',
         'bg-card-bg',
         className
       )}

@@ -105,9 +105,15 @@ export default function FleetsPage() {
 
   useEffect(() => {
     loadFleets();
-    loadFleetTypes();
-    loadFCs();
-  }, [loadFleets, loadFleetTypes, loadFCs]);
+    loadFleetTypes(); // Needed for filters
+  }, [loadFleets, loadFleetTypes]);
+
+  // Lazy load FCs only when modal opens
+  useEffect(() => {
+    if (isModalOpen && fcs.length === 0) {
+      loadFCs();
+    }
+  }, [isModalOpen, fcs.length, loadFCs]);
 
   function openAddModal() {
     setSelectedFleet(null);

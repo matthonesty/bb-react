@@ -7,6 +7,7 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { PageContainer } from '@/components/layout/PageContainer';
 import {
   ArrowLeft,
@@ -19,6 +20,7 @@ import {
   TrendingUp,
   Plus,
   UserPlus,
+  Trash2,
 } from 'lucide-react';
 import { FleetModal } from '@/components/fleets/FleetModal';
 import { AddParticipantModal } from '@/components/fleets/AddParticipantModal';
@@ -58,7 +60,7 @@ function formatISK(value: number | string | null): string {
 export default function FleetDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const { hasRole } = useAuth();
+  const { hasRole, user } = useAuth();
 
   const [fleet, setFleet] = useState<FleetManagement | null>(null);
   const [participants, setParticipants] = useState<FleetParticipant[]>([]);
@@ -72,17 +74,33 @@ export default function FleetDetailPage() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddParticipantModalOpen, setIsAddParticipantModalOpen] = useState(false);
   const [isAddKillsModalOpen, setIsAddKillsModalOpen] = useState(false);
+  const [isDeleteParticipantModalOpen, setIsDeleteParticipantModalOpen] = useState(false);
+  const [participantToDelete, setParticipantToDelete] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const canManage = hasRole(['admin', 'Council', 'FC', 'OBomberCare']);
+  // Only the fleet's FC or Admin/Council can manage this fleet
+  const canManage = hasRole(['admin', 'Council']) || (fleet && user?.character_id === fleet.fc_character_id);
 
   const loadFleetData = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      // Load fleet details
-      const fleetResponse = await fetch(`/api/admin/fleets/${params.id}`);
-      const fleetData = await fleetResponse.json();
+      // Load all data in parallel for faster performance
+      const [fleetResponse, participantsResponse, killsResponse] = await Promise.all([
+        fetch(`/api/admin/fleets/${params.id}`),
+        fetch(`/api/admin/fleet-participants?fleet_id=${params.id}`),
+        fetch(`/api/admin/fleet-kills?fleet_id=${params.id}`),
+      ]);
+
+      const [fleetData, participantsData, killsData] = await Promise.all([
+        fleetResponse.json(),
+        participantsResponse.json(),
+        killsResponse.json(),
+      ]);
 
       if (!fleetData.success) {
         throw new Error(fleetData.error || 'Failed to load fleet');
@@ -91,19 +109,9 @@ export default function FleetDetailPage() {
       setFleet(fleetData.fleet);
       document.title = `${fleetData.fleet.title || fleetData.fleet.fleet_type_name} - Bombers Bar`;
 
-      // Load participants
-      const participantsResponse = await fetch(
-        `/api/admin/fleet-participants?fleet_id=${params.id}`
-      );
-      const participantsData = await participantsResponse.json();
-
       if (participantsData.success) {
         setParticipants(participantsData.participants);
       }
-
-      // Load kills
-      const killsResponse = await fetch(`/api/admin/fleet-kills?fleet_id=${params.id}`);
-      const killsData = await killsResponse.json();
 
       if (killsData.success) {
         setKills(killsData.kills);
@@ -140,11 +148,75 @@ export default function FleetDetailPage() {
     }
   }, []);
 
+  const loadParticipants = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/admin/fleet-participants?fleet_id=${params.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setParticipants(data.participants);
+      }
+    } catch (err: unknown) {
+      console.error('Failed to load participants:', err);
+    }
+  }, [params.id]);
+
+  const loadKills = useCallback(async () => {
+    try {
+      const response = await fetch(`/api/admin/fleet-kills?fleet_id=${params.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setKills(data.kills);
+        setKillStats(data.stats);
+      }
+    } catch (err: unknown) {
+      console.error('Failed to load kills:', err);
+    }
+  }, [params.id]);
+
+  const openDeleteParticipantModal = (id: number, name: string) => {
+    setParticipantToDelete({ id, name });
+    setIsDeleteParticipantModalOpen(true);
+  };
+
+  const handleDeleteParticipantConfirm = async () => {
+    if (!participantToDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/admin/fleet-participants?id=${participantToDelete.id}`, {
+        method: 'DELETE',
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to delete participant');
+      }
+
+      setIsDeleteParticipantModalOpen(false);
+      setParticipantToDelete(null);
+      loadParticipants();
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   useEffect(() => {
     loadFleetData();
-    loadFleetTypes();
-    loadFCs();
-  }, [loadFleetData, loadFleetTypes, loadFCs]);
+  }, [loadFleetData]);
+
+  // Lazy load fleet types and FCs only when edit modal opens
+  useEffect(() => {
+    if (isEditModalOpen && fleetTypes.length === 0) {
+      loadFleetTypes();
+    }
+    if (isEditModalOpen && fcs.length === 0) {
+      loadFCs();
+    }
+  }, [isEditModalOpen, fleetTypes.length, fcs.length, loadFleetTypes, loadFCs]);
 
   function getStatusBadgeVariant(status: string) {
     switch (status) {
@@ -365,6 +437,11 @@ export default function FleetDetailPage() {
                       <th className="text-right py-3 px-4 text-foreground-muted font-medium text-sm">
                         Kills
                       </th>
+                      {canManage && (
+                        <th className="text-right py-3 px-4 text-foreground-muted font-medium text-sm">
+                          Actions
+                        </th>
+                      )}
                     </tr>
                   </thead>
                   <tbody>
@@ -377,6 +454,23 @@ export default function FleetDetailPage() {
                         <td className="py-3 px-4 text-right text-foreground">
                           {participant.kill_count || 0}
                         </td>
+                        {canManage && (
+                          <td className="py-3 px-4 text-right">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                openDeleteParticipantModal(
+                                  participant.id,
+                                  participant.character_name
+                                )
+                              }
+                              className="text-error hover:text-error hover:bg-error/10"
+                            >
+                              <Trash2 size={14} />
+                            </Button>
+                          </td>
+                        )}
                       </tr>
                     ))}
                   </tbody>
@@ -524,7 +618,7 @@ export default function FleetDetailPage() {
             onClose={() => setIsAddParticipantModalOpen(false)}
             onSuccess={() => {
               setIsAddParticipantModalOpen(false);
-              loadFleetData();
+              loadParticipants();
             }}
           />
         )}
@@ -537,10 +631,29 @@ export default function FleetDetailPage() {
             onClose={() => setIsAddKillsModalOpen(false)}
             onSuccess={() => {
               setIsAddKillsModalOpen(false);
-              loadFleetData();
+              loadKills();
             }}
           />
         )}
+
+        {/* Delete Participant Confirmation Modal */}
+        <ConfirmModal
+          isOpen={isDeleteParticipantModalOpen}
+          onClose={() => {
+            setIsDeleteParticipantModalOpen(false);
+            setParticipantToDelete(null);
+          }}
+          onConfirm={handleDeleteParticipantConfirm}
+          title="Remove Hunter/Support"
+          message={
+            participantToDelete
+              ? `Are you sure you want to remove "${participantToDelete.name}" from this fleet? This action cannot be undone.`
+              : ''
+          }
+          confirmText="Remove"
+          confirmVariant="danger"
+          isLoading={isDeleting}
+        />
       </PageContainer>
     </RequireAuth>
   );

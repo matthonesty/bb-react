@@ -78,22 +78,40 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has any authorized role
-    const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
-
-    if (!hasAuthorizedRole) {
-      return NextResponse.json(
-        { error: 'Forbidden', message: 'Authorized role required' },
-        { status: 403 }
-      );
-    }
-
     const { id } = await params;
 
     if (!id) {
       return NextResponse.json(
         { success: false, error: 'Missing required parameter: id' },
         { status: 400 }
+      );
+    }
+
+    // Check if fleet exists and get FC info
+    const existingFleetCheck = await pool.query(
+      `SELECT f.*, fc.main_character_id as fc_character_id
+       FROM fleets f
+       JOIN fleet_commanders fc ON f.fc_id = fc.id
+       WHERE f.id = $1`,
+      [id]
+    );
+
+    if (existingFleetCheck.rows.length === 0) {
+      return NextResponse.json({ success: false, error: 'Fleet not found' }, { status: 404 });
+    }
+
+    const existingFleet = existingFleetCheck.rows[0];
+
+    // Check if user is Admin/Council or the fleet's FC
+    const isAdminOrCouncil = user.roles?.some((role: string) =>
+      role === 'admin' || role === 'Council'
+    );
+    const isFleetFC = user.character_id === existingFleet.fc_character_id;
+
+    if (!isAdminOrCouncil && !isFleetFC) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Only the fleet FC or Council can edit this fleet' },
+        { status: 403 }
       );
     }
 
@@ -113,13 +131,6 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
       actual_end_time,
       participant_count,
     } = body;
-
-    // Check if fleet exists
-    const existingFleet = await pool.query('SELECT * FROM fleets WHERE id = $1', [id]);
-
-    if (existingFleet.rows.length === 0) {
-      return NextResponse.json({ success: false, error: 'Fleet not found' }, { status: 404 });
-    }
 
     // Validate scheduled_at if provided
     if (scheduled_at) {
@@ -258,16 +269,6 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Check if user has any authorized role
-    const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
-
-    if (!hasAuthorizedRole) {
-      return NextResponse.json(
-        { error: 'Forbidden', message: 'Authorized role required' },
-        { status: 403 }
-      );
-    }
-
     const { id } = await params;
 
     if (!id) {
@@ -277,14 +278,33 @@ export async function DELETE(
       );
     }
 
-    // Check if fleet exists
-    const existingFleet = await pool.query('SELECT * FROM fleets WHERE id = $1', [id]);
+    // Check if fleet exists and get FC info
+    const existingFleetCheck = await pool.query(
+      `SELECT f.*, fc.main_character_id as fc_character_id
+       FROM fleets f
+       JOIN fleet_commanders fc ON f.fc_id = fc.id
+       WHERE f.id = $1`,
+      [id]
+    );
 
-    if (existingFleet.rows.length === 0) {
+    if (existingFleetCheck.rows.length === 0) {
       return NextResponse.json({ success: false, error: 'Fleet not found' }, { status: 404 });
     }
 
-    const fleet = existingFleet.rows[0];
+    const fleet = existingFleetCheck.rows[0];
+
+    // Check if user is Admin/Council or the fleet's FC
+    const isAdminOrCouncil = user.roles?.some((role: string) =>
+      role === 'admin' || role === 'Council'
+    );
+    const isFleetFC = user.character_id === fleet.fc_character_id;
+
+    if (!isAdminOrCouncil && !isFleetFC) {
+      return NextResponse.json(
+        { error: 'Forbidden', message: 'Only the fleet FC or Council can delete this fleet' },
+        { status: 403 }
+      );
+    }
 
     // If fleet is already completed, don't allow deletion
     if (fleet.status === 'completed') {
