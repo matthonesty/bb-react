@@ -4,9 +4,19 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/Table';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { apiClient } from '@/lib/api/client';
+import { formatISK, formatDate } from '@/lib/utils/format';
 import type { WalletJournalEntry } from '@/types';
 import Link from 'next/link';
 
@@ -96,19 +106,12 @@ export default function WalletPage() {
     setCurrentPage(1);
   };
 
-  const formatISK = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(amount) + ' ISK';
-  };
-
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return (
       <div className="flex flex-col text-xs">
-        <span>{date.toLocaleDateString()}</span>
-        <span className="text-foreground-muted">{date.toLocaleTimeString()}</span>
+        <span>{formatDate(date, 'MMM d, yyyy')}</span>
+        <span className="text-foreground-muted">{formatDate(date, 'HH:mm:ss')}</span>
       </div>
     );
   };
@@ -128,21 +131,15 @@ export default function WalletPage() {
             const isActive = division === currentDivision;
 
             return (
-              <button
+              <Button
                 key={division}
+                variant={isActive ? 'primary' : 'secondary'}
                 onClick={() => switchDivision(division)}
                 disabled={isLocked}
-                className={`px-4 py-2 rounded-md font-medium transition-colors ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground'
-                    : isLocked
-                    ? 'bg-background-secondary text-foreground-muted cursor-not-allowed opacity-50'
-                    : 'bg-background-secondary text-foreground hover:bg-background-tertiary'
-                }`}
                 title={isLocked ? 'Accountant, Council, or Admin access required' : `Division ${division}`}
               >
                 Division {division}
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -186,12 +183,9 @@ export default function WalletPage() {
           ) : error ? (
             <div className="flex flex-col items-center justify-center p-12">
               <p className="text-error mb-4">{error}</p>
-              <button
-                onClick={loadJournal}
-                className="px-4 py-2 rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-              >
+              <Button onClick={loadJournal}>
                 Retry
-              </button>
+              </Button>
             </div>
           ) : journal.length === 0 ? (
             <div className="flex items-center justify-center p-12">
@@ -199,79 +193,63 @@ export default function WalletPage() {
             </div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-background-secondary border-b border-border">
-                  <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      Type
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-4 py-3 text-right text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      Balance
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      From
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      To
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      Reason
-                    </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-foreground-muted uppercase tracking-wider">
-                      Description
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-border">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead className="text-right">Amount</TableHead>
+                    <TableHead className="text-right">Balance</TableHead>
+                    <TableHead>From</TableHead>
+                    <TableHead>To</TableHead>
+                    <TableHead>Reason</TableHead>
+                    <TableHead>Description</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
                   {journal.map((entry) => {
                     const isCredit = entry.amount > 0;
                     const refTypeLabel = entry.ref_type.replace(/_/g, ' ').toUpperCase();
 
                     return (
-                      <tr key={entry.id} className="hover:bg-background-secondary">
-                        <td className="px-4 py-3 whitespace-nowrap">
+                      <TableRow key={entry.id}>
+                        <TableCell className="whitespace-nowrap">
                           {formatDateTime(entry.date)}
-                        </td>
-                        <td className="px-4 py-3">
+                        </TableCell>
+                        <TableCell>
                           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-tertiary text-foreground">
                             {refTypeLabel}
                           </span>
-                        </td>
-                        <td className={`px-4 py-3 text-right font-mono ${isCredit ? 'text-success' : 'text-error'}`}>
-                          {isCredit ? '+' : ''}{formatISK(Math.abs(entry.amount))}
-                        </td>
-                        <td className="px-4 py-3 text-right font-mono text-purple-400">
-                          {formatISK(entry.balance)}
-                        </td>
-                        <td className="px-4 py-3">
+                        </TableCell>
+                        <TableCell className={`text-right font-mono ${isCredit ? 'text-success' : 'text-error'}`}>
+                          {isCredit ? '+' : ''}{formatISK(Math.abs(entry.amount), 2)}
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-foreground">
+                          {formatISK(entry.balance, 2)}
+                        </TableCell>
+                        <TableCell>
                           {entry.first_party_name || `ID ${entry.first_party_id || 'N/A'}`}
-                        </td>
-                        <td className="px-4 py-3">
+                        </TableCell>
+                        <TableCell>
                           {entry.second_party_name || `ID ${entry.second_party_id || 'N/A'}`}
-                        </td>
-                        <td className="px-4 py-3">
+                        </TableCell>
+                        <TableCell>
                           {entry.reason && /^\d+$/.test(entry.reason) ? (
-                            <Link href={`/srp?id=${entry.reason}`} className="text-primary hover:underline">
+                            <Link href={`/srp?id=${entry.reason}`} className="text-primary hover:text-primary-hover">
                               {entry.reason}
                             </Link>
                           ) : (
                             entry.reason || '-'
                           )}
-                        </td>
-                        <td className="px-4 py-3 max-w-xs truncate">
+                        </TableCell>
+                        <TableCell className="max-w-xs truncate">
                           {entry.description || '-'}
-                        </td>
-                      </tr>
+                        </TableCell>
+                      </TableRow>
                     );
                   })}
-                </tbody>
-              </table>
+                </TableBody>
+              </Table>
             </div>
           )}
         </Card>
@@ -279,23 +257,23 @@ export default function WalletPage() {
         {/* Pagination */}
         {pagination && pagination.total_pages > 1 && (
           <div className="mt-6 flex items-center justify-center gap-2">
-            <button
+            <Button
+              variant="secondary"
               onClick={() => setCurrentPage(currentPage - 1)}
               disabled={!pagination.has_prev}
-              className="px-4 py-2 rounded-md bg-background-secondary text-foreground hover:bg-background-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Previous
-            </button>
+            </Button>
             <span className="px-4 py-2 text-foreground">
               Page {pagination.page} of {pagination.total_pages}
             </span>
-            <button
+            <Button
+              variant="secondary"
               onClick={() => setCurrentPage(currentPage + 1)}
               disabled={!pagination.has_next}
-              className="px-4 py-2 rounded-md bg-background-secondary text-foreground hover:bg-background-tertiary disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Next
-            </button>
+            </Button>
           </div>
         )}
       </PageContainer>

@@ -5,6 +5,16 @@ import Link from 'next/link';
 import { formatDate } from '@/lib/utils/format';
 import { sanitizeMailHtml } from '@/lib/utils/sanitizeMailHtml';
 import { X } from 'lucide-react';
+import { Card } from '@/components/ui/Card';
+import { Button } from '@/components/ui/Button';
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+} from '@/components/ui/Table';
 
 interface ProcessedMail {
   mail_id: number;
@@ -166,102 +176,101 @@ export function ProcessedMailsTable() {
       )}
 
       {/* Table */}
-      <div className="rounded-lg border border-border overflow-hidden">
+      <Card variant="bordered" padding="none">
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-background-secondary border-b border-border">
-              <tr>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Sender</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Subject</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Status</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">Processed At</th>
-                <th className="px-4 py-3 text-left text-sm font-semibold text-foreground-muted">SRP Request</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Sender</TableHead>
+                <TableHead>Subject</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Processed At</TableHead>
+                <TableHead>SRP Request</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {loading && (
-                <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-foreground-muted">
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-12 text-foreground-muted">
                     Loading processed mails...
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
 
               {!loading && filteredMails.length === 0 && (
-                <tr>
-                  <td colSpan={5} className="px-4 py-12 text-center text-foreground-muted">
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center py-12 text-foreground-muted">
                     No processed mails found
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               )}
 
               {!loading && filteredMails.map((mail) => (
                 <React.Fragment key={mail.mail_id}>
-                  <tr
-                    className={`hover:bg-background-secondary transition-colors cursor-pointer ${
-                      expandedMailId === mail.mail_id ? 'bg-primary/10' : ''
-                    }`}
+                  <TableRow
+                    clickable
                     onClick={() => toggleMailExpand(mail.mail_id)}
+                    className={expandedMailId === mail.mail_id ? 'bg-primary/10' : ''}
                   >
-                    <td className="px-4 py-3 text-sm text-foreground">{mail.sender_name || '-'}</td>
-                    <td className="px-4 py-3 text-sm text-foreground">{mail.subject || '-'}</td>
-                    <td className="px-4 py-3">
+                    <TableCell>{mail.sender_name || '-'}</TableCell>
+                    <TableCell>{mail.subject || '-'}</TableCell>
+                    <TableCell>
                       <StatusBadge status={mail.status} />
-                    </td>
-                    <td className="px-4 py-3 text-sm text-foreground-muted">
+                    </TableCell>
+                    <TableCell className="text-foreground-muted">
                       {formatDate(mail.processed_at, 'MMM d, yyyy HH:mm')}
-                    </td>
-                    <td className="px-4 py-3 text-sm" onClick={(e) => e.stopPropagation()}>
+                    </TableCell>
+                    <TableCell onClick={(e) => e.stopPropagation()}>
                       {mail.srp_request_id ? (
                         <Link
                           href={`/srp?id=${mail.srp_request_id}`}
-                          className="text-primary hover:underline"
+                          className="text-primary hover:text-primary-hover"
                         >
                           {mail.srp_request_id}
                         </Link>
                       ) : (
                         '-'
                       )}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
 
                   {expandedMailId === mail.mail_id && (
-                    <tr>
-                      <td colSpan={5} className="px-4 py-4 bg-background-secondary/50">
+                    <TableRow>
+                      <TableCell colSpan={5} className="bg-background-secondary/50">
                         <MailDetail
                           mail={expandedMailData[mail.mail_id]}
                           loading={!expandedMailData[mail.mail_id]}
                         />
-                      </td>
-                    </tr>
+                      </TableCell>
+                    </TableRow>
                   )}
                 </React.Fragment>
               ))}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
-      </div>
+      </Card>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex justify-center gap-2">
-          <button
+        <div className="flex justify-center gap-2 items-center">
+          <Button
+            variant="secondary"
             onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
-            className="px-4 py-2 bg-background-secondary border border-border rounded-lg text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-background-tertiary transition-colors"
           >
             Previous
-          </button>
+          </Button>
           <span className="px-4 py-2 text-foreground">
             Page {currentPage} of {totalPages}
           </span>
-          <button
+          <Button
+            variant="secondary"
             onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
-            className="px-4 py-2 bg-background-secondary border border-border rounded-lg text-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:bg-background-tertiary transition-colors"
           >
             Next
-          </button>
+          </Button>
         </div>
       )}
     </div>
