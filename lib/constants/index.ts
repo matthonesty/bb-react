@@ -42,8 +42,8 @@ export const SRP_STATUSES: SRPStatus[] = [
   'denied',
 ];
 
-// FC Ranks in order of seniority
-export const FC_RANKS: FCRank[] = ['Support', 'FC', 'JFC', 'SFC'];
+// FC Ranks in order of seniority (top down: Senior FC, FC, Junior FC, Support)
+export const FC_RANKS: FCRank[] = ['SFC', 'FC', 'JFC', 'Support'];
 
 // Pagination defaults
 export const DEFAULT_PAGE_SIZE = 50;
