@@ -23,9 +23,8 @@ function convertKillReportLinks(html: string): string {
       const esiUrl = `https://esi.evetech.net/v1/killmails/${killmailId}/${hash}/?datasource=tranquility`;
       const zkbUrl = `https://zkillboard.com/kill/${killmailId}/`;
 
-      // Return ESI link + zkillboard icon (ESI link will get target/rel added later)
-      // Using #a855f7 which is the primary purple color
-      return `<a href="${esiUrl}"${attrs}>${linkText}</a> <a href="${zkbUrl}" target="_blank" rel="noopener noreferrer" style="margin-left: 6px; color: #a855f7; text-decoration: none; display: inline-flex; align-items: center;" title="View on zKillboard">${externalLinkIcon}</a>`;
+      // Return ESI link (yellow) + zkillboard icon (purple)
+      return `<a href="${esiUrl}" style="color: #facc15;"${attrs}>${linkText}</a> <a href="${zkbUrl}" target="_blank" rel="noopener noreferrer" style="margin-left: 6px; color: #a855f7; text-decoration: none; display: inline-flex; align-items: center;" title="View on zKillboard">${externalLinkIcon}</a>`;
     }
   );
 }
