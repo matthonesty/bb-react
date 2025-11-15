@@ -165,6 +165,24 @@ export interface Ban {
   updated_at?: string;
 }
 
+// SRP Ship Types
+export interface ShipType {
+  id: number;
+  type_id: number;
+  type_name: string;
+  group_id: number;
+  group_name: string;
+  base_payout: number;
+  polarized_payout: number | null;
+  fc_discretion: boolean;
+  is_active: boolean;
+  notes: string | null;
+  created_at?: string;
+  updated_at?: string;
+  created_by?: number;
+  updated_by?: number;
+}
+
 // UI Component Props Types
 export interface TableColumn<T> {
   key: keyof T | string;
