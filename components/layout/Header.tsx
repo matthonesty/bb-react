@@ -9,9 +9,9 @@ import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 
 const RESOURCE_ITEMS = [
   { label: 'Documents & Guides', href: '/resources' },
-  { label: 'FC Feedback', href: '/fc-feedback' },
-  { label: 'FC Application', href: '/fc-application' },
-  { label: 'Bombing Intel', href: '/bombing-intel' },
+  { label: 'FC Feedback Form', href: '/fc-feedback' },
+  { label: 'FC Application Form', href: '/fc-application' },
+  { label: 'Bombing Intel Form', href: '/bombing-intel' },
 ];
 
 const ABOUT_ITEMS = [
