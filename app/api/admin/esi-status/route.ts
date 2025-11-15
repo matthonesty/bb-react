@@ -13,11 +13,11 @@ import { getESIStatus, getHealthSummary, getCompatibilityDateSync } from '@/lib/
  * Critical routes we depend on for mail processing and operations
  */
 const CRITICAL_ROUTES = [
-  { method: 'GET', path: '/characters/{character_id}/mail/' },
-  { method: 'POST', path: '/characters/{character_id}/mail/' },
-  { method: 'GET', path: '/characters/{character_id}/mail/{mail_id}/' },
-  { method: 'POST', path: '/universe/names/' },
-  { method: 'GET', path: '/corporations/{corporation_id}/wallets/{division}/journal/' },
+  { method: 'GET', path: '/characters/{character_id}/mail' },
+  { method: 'POST', path: '/characters/{character_id}/mail' },
+  { method: 'GET', path: '/characters/{character_id}/mail/{mail_id}' },
+  { method: 'POST', path: '/universe/names' },
+  { method: 'GET', path: '/corporations/{corporation_id}/wallets/{division}/journal' },
 ];
 
 // Removed duplicate functions - now using centralized helpers from lib/esi.js
@@ -46,7 +46,7 @@ export async function GET() {
     const statusData = await getESIStatus();
     const compatDate = getCompatibilityDateSync();
 
-    if (!statusData || !Array.isArray(statusData)) {
+    if (!statusData || !statusData.routes || !Array.isArray(statusData.routes)) {
       return NextResponse.json({
         success: true,
         esi_status: 'UNHEALTHY',
@@ -57,27 +57,17 @@ export async function GET() {
       });
     }
 
-    // Convert status.json status to our format
-    const convertStatus = (esiStatus: string): string => {
-      const statusMap: Record<string, string> = {
-        green: 'ok',
-        yellow: 'degraded',
-        red: 'down',
-      };
-      return statusMap[esiStatus.toLowerCase()] || 'unknown';
-    };
-
     // Check critical routes status
     const criticalRouteStatus = CRITICAL_ROUTES.map((criticalRoute) => {
-      const routeStatus = statusData.find(
+      const routeStatus = statusData.routes.find(
         (r: any) =>
-          r.method.toUpperCase() === criticalRoute.method &&
-          r.route === criticalRoute.path
+          r.method === criticalRoute.method &&
+          r.path === criticalRoute.path
       );
 
       return {
         route: `${criticalRoute.method} ${criticalRoute.path}`,
-        status: routeStatus ? convertStatus(routeStatus.status) : 'unknown',
+        status: routeStatus?.status?.toLowerCase() || 'unknown',
       };
     });
 
