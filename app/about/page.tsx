@@ -804,10 +804,11 @@ export default function AboutPage() {
           <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-gradient-to-tl from-primary/10 to-transparent rounded-full blur-3xl" />
 
           <div className="relative z-10">
-            <div className="inline-flex items-center justify-center gap-2 mb-4">
-              <Bomb className="h-8 w-8 text-primary" />
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground">Ready to Fly?</h2>
-              <Bomb className="h-8 w-8 text-primary" />
+            <div className="flex flex-col items-center mb-4">
+              <div className="mb-3 rounded-2xl bg-primary/20 p-4">
+                <Bomb className="h-10 w-10 text-primary" />
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground">Ready to Join?</h2>
             </div>
             <p className="text-lg text-foreground-muted mb-8 max-w-2xl mx-auto leading-relaxed">
               Join our Discord, check out the fleet schedule, and get ready for some epic bombing runs!
