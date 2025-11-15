@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getMailerAccessToken } from '@/lib/mailerToken';
-import { getMailHeaders, MAILER_CHARACTER_ID, checkESIHealth } from '@/lib/esi.js';
+import { getMailHeaders, MAILER_CHARACTER_ID, checkESIHealth } from '@/lib/esi';
 import { getQueueStats } from '@/lib/pendingMailQueue';
 import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';

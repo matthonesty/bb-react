@@ -8,8 +8,8 @@
  */
 
 import axios from 'axios';
-import { getKillmailFromESI } from './parser.js';
-import { resolveNames } from '../esi.js';
+import { getKillmailFromESI } from './parser';
+import { resolveNames } from '../esi';
 
 export interface ZkbData {
   hash: string;

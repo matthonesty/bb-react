@@ -11,7 +11,7 @@ import {
   formatForDatabase,
   getShipInfo,
   getGroupInfo,
-} from '@/lib/esi.js';
+} from '@/lib/esi';
 
 // POST - Parse EVE fitting and return categorized modules
 export async function POST(request: NextRequest) {

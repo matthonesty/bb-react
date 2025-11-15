@@ -11,9 +11,9 @@
  * - amount: negative value (ISK withdrawn)
  */
 
-import { getWalletJournal } from '../esi.js';
+import { getWalletJournal } from '../esi';
 import { getMailerAccessToken } from '../mailerToken';
-import { resolveNames } from '../esi.js';
+import { resolveNames } from '../esi';
 import { Pool } from 'pg';
 
 interface JournalEntry {

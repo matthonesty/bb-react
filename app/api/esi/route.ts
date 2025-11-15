@@ -4,7 +4,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { resolveIds, getTypeInfo } from '@/lib/esi.js';
+import { resolveIds, getTypeInfo } from '@/lib/esi';
 
 export async function POST(req: NextRequest) {
   try {

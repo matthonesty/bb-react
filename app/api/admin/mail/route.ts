@@ -14,7 +14,7 @@ import {
   getMailLabels,
   MAILER_CHARACTER_ID,
   checkESIHealth,
-} from '@/lib/esi.js';
+} from '@/lib/esi';
 import { processMailsForSRP } from '@/lib/mail/processMailsForSRP';
 import { sendQueuedMails } from '@/lib/mail/sendQueuedMails';
 import { ROLES } from '@/lib/auth/roles';
