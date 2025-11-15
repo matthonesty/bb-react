@@ -78,6 +78,30 @@ export default function SystemPage() {
     setLoading(false);
   }
 
+  async function clearIdleConnections() {
+    try {
+      const response = await fetch('/api/admin/system-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ action: 'clear_idle' }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to clear idle connections');
+      }
+
+      // Reload system status to show updated counts
+      await loadSystemStatus();
+    } catch (err: any) {
+      console.error('Failed to clear idle connections:', err);
+      setError(err.message);
+    }
+  }
+
   useEffect(() => {
     refreshAll();
 
@@ -215,9 +239,21 @@ export default function SystemPage() {
 
           {/* Database Status */}
           <Card variant="bordered" padding="lg">
-            <h2 className="text-xl font-semibold text-primary mb-4">
-              Database Status
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold text-primary">
+                Database Status
+              </h2>
+              {systemStatus && systemStatus.database.idleCount > 0 && (
+                <Button
+                  onClick={clearIdleConnections}
+                  variant="secondary"
+                  size="sm"
+                  className="text-xs"
+                >
+                  Clear Idle
+                </Button>
+              )}
+            </div>
 
             {loading && !systemStatus ? (
               <div className="text-center text-foreground-muted py-8">

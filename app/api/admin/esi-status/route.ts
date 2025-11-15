@@ -51,7 +51,7 @@ async function fetchESIStatus(forceRefresh = false): Promise<any> {
   try {
     const response = await fetch('https://esi.evetech.net/status.json', {
       headers: {
-        'User-Agent': 'Bombers Bar Admin Panel',
+        'User-Agent': process.env.ESI_USER_AGENT || 'Bombers Bar Admin Panel',
       },
     });
 
@@ -86,7 +86,7 @@ async function getCompatibilityDate(): Promise<string | null> {
     const response = await fetch('https://esi.evetech.net/latest/', {
       method: 'HEAD',
       headers: {
-        'User-Agent': 'Bombers Bar Admin Panel',
+        'User-Agent': process.env.ESI_USER_AGENT || 'Bombers Bar Admin Panel',
       },
     });
 
