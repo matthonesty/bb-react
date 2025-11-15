@@ -128,7 +128,8 @@ export interface FleetType {
 // Module Item (for fitting slots)
 export interface ModuleItem {
   type_id: number;
-  type_name: string;
+  type_name: string; // Primary name property
+  name?: string; // Alternative name property (used by ESI parser)
   quantity: number;
 }
 

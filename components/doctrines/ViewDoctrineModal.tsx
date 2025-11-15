@@ -47,16 +47,19 @@ export function ViewDoctrineModal({ isOpen, onClose, doctrine }: ViewDoctrineMod
   }
 
   const renderModuleList = (title: string, modules: ModuleItem[]) => {
-    if (modules.length === 0) return null;
+    // Filter out null/empty slots and modules without type_id
+    const filledModules = modules.filter(m => m !== null && m && m.type_id);
+
+    if (filledModules.length === 0) return null;
 
     return (
       <div className="mb-4">
         <h5 className="text-sm font-semibold text-foreground-muted mb-2">{title}</h5>
         <div className="space-y-1">
-          {modules.map((module, index) => (
+          {filledModules.map((module, index) => (
             <div key={index} className="text-sm text-foreground flex items-center gap-2">
               <span className="text-primary font-mono">{module.quantity}x</span>
-              <span>{module.type_name}</span>
+              <span>{module.type_name || (module as any).name || 'Unknown Module'}</span>
             </div>
           ))}
         </div>
