@@ -163,7 +163,7 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
       {/* Fitting Wheel and Module Lists */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Fitting Wheel */}
-        <div className="lg:col-span-1 flex justify-center items-start">
+        <div className="lg:col-span-1 flex justify-center items-start" style={{ position: 'relative', zIndex: 1 }}>
           <FittingWheel
             highSlotModules={highSlotModules}
             midSlotModules={midSlotModules}
@@ -180,7 +180,7 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
         </div>
 
         {/* Module Lists */}
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" style={{ position: 'relative', zIndex: 2 }}>
           <div className="space-y-3">
             {renderModuleList('High Slots', highSlotModules)}
             {renderModuleList('Mid Slots', midSlotModules)}
