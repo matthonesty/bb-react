@@ -292,97 +292,174 @@ export default function AboutPage() {
         {/* Must Watch Videos */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Must Watch Videos</h2>
-          <div className="grid gap-6 md:grid-cols-2">
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 101</h3>
-              <p className="text-sm text-foreground-muted mb-4">8 minutes - Basic bombing mechanics</p>
-              <a
-                href="https://www.youtube.com/watch?v=dJnJ1BW36I0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <a
+              href="https://youtu.be/EHhOhUhEOAU"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">Fleet Training</h3>
+                    <p className="text-xs text-foreground-muted">Essential fleet mechanics and coordination</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 102: Manual</h3>
-              <p className="text-sm text-foreground-muted mb-4">17 minutes - Manual bombing techniques</p>
-              <a
-                href="https://www.youtube.com/watch?v=AUU3SKHn5g0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+            <a
+              href="https://youtu.be/whw4B4AFwRA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">Pre-Fleet Rules &amp; Instructions</h3>
+                    <p className="text-xs text-foreground-muted">What you need to know before joining</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 103: Anchoring</h3>
-              <p className="text-sm text-foreground-muted mb-4">21 minutes - Advanced anchoring</p>
-              <a
-                href="https://www.youtube.com/watch?v=RblTJ0zydXU"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+            <a
+              href="https://youtu.be/44dWsAbOKw4"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">How to take a BLOPS bridge</h3>
+                    <p className="text-xs text-foreground-muted">Black Ops bridging mechanics</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">Bombing 201: Torpedoes</h3>
-              <p className="text-sm text-foreground-muted mb-4">21 minutes - Torpedo mechanics</p>
-              <a
-                href="https://www.youtube.com/watch?v=Oqoe0nWJDrk"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+            <a
+              href="https://youtu.be/FRiSiD4egXc"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">Newbro speech</h3>
+                    <p className="text-xs text-foreground-muted">Welcome and getting started guide</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">FC&apos;ing 101: Intro</h3>
-              <p className="text-sm text-foreground-muted mb-4">27 minutes - Introduction to fleet commanding</p>
-              <a
-                href="https://www.youtube.com/watch?v=gOtp3CJrofw"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+            <a
+              href="https://youtu.be/SxUS_aAmrF0"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">How to bomb</h3>
+                    <p className="text-xs text-foreground-muted">Bombing mechanics and techniques</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">FC&apos;ing 102: Scouting</h3>
-              <p className="text-sm text-foreground-muted mb-4">31 minutes - Scouting techniques</p>
-              <a
-                href="https://www.youtube.com/watch?v=tSuvBNvhWo0"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+            <a
+              href="https://youtu.be/PYdwWx1Zr8I"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">How to warp off after bombing</h3>
+                    <p className="text-xs text-foreground-muted">Escape tactics post-bombing run</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
 
-            <Card className="p-6">
-              <h3 className="text-lg font-bold text-foreground mb-2">FC&apos;ing 103: Wormholes</h3>
-              <p className="text-sm text-foreground-muted mb-4">28 minutes - Wormhole fleet tactics</p>
-              <a
-                href="https://www.youtube.com/watch?v=64cOOGO3DEI"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 text-primary hover:underline"
-              >
-                Watch on YouTube →
-              </a>
-            </Card>
+            <a
+              href="https://youtu.be/mCLWEA_15Z8"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">Hunter training</h3>
+                    <p className="text-xs text-foreground-muted">Advanced hunting techniques</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
+
+            <a
+              href="https://youtu.be/D5jkmquoQJA"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group"
+            >
+              <Card className="p-4 h-full transition-all hover:border-primary/50 hover:shadow-lg">
+                <div className="flex items-start gap-3">
+                  <div className="rounded-lg bg-red-500/10 p-2 shrink-0">
+                    <svg className="h-5 w-5 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+                    </svg>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">Recon Training</h3>
+                    <p className="text-xs text-foreground-muted">Reconnaissance ship operations</p>
+                  </div>
+                </div>
+              </Card>
+            </a>
           </div>
         </section>
 
