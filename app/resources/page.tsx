@@ -423,9 +423,19 @@ export default function ResourcesPage() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-foreground-muted mb-2">
-                Content (Markdown)
-              </label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium text-foreground-muted">
+                  Content (Markdown)
+                </label>
+                <a
+                  href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-primary hover:underline"
+                >
+                  Markdown syntax guide ↗
+                </a>
+              </div>
               <textarea
                 value={newResource.content}
                 onChange={(e) => setNewResource({ ...newResource, content: e.target.value })}
