@@ -233,7 +233,7 @@ export default function FCsPage() {
                       </TableCell>
                       <TableCell>
                         {fc.is_admin ? (
-                          <Badge variant="error">Admin</Badge>
+                          <Badge variant="info">Admin</Badge>
                         ) : fc.access_level ? (
                           <Badge variant="info">{fc.access_level}</Badge>
                         ) : (
