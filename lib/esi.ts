@@ -2070,7 +2070,7 @@ async function categorizeModules(modules: any) {
       for (let i = 0; i < item.quantity; i++) {
         categorized[slotType].push({
           type_id: item.type_id,
-          name,
+          type_name: name,
           quantity: 1, // Each slot gets quantity 1
         });
       }

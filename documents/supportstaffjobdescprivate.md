@@ -25,7 +25,6 @@ Duties include, but are not limited to:
 ## Drunkenirishman
 
 - **O'bombercare Claims Adjuster**
-- Website GitHub administration
 
 ---
 
@@ -48,7 +47,7 @@ Duties include, but are not limited to:
 
 ## Kirk
 
-- Owner and administrator of the **TeamSpeak server**
+- Owner and administrator of the TeamSpeak server
 - Owner and controller of `bombersbar.org` and `bombers.bar` domains
 - Host & developer of `bombers.bar`
 
