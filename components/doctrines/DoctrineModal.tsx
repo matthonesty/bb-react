@@ -151,7 +151,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
             <textarea
               value={fittingText}
               onChange={(e) => setFittingText(e.target.value)}
-              placeholder="Paste your EVE fitting here (Ctrl+C from in-game fitting window)"
+              placeholder="Link fitting in chat, copy your message, paste here"
               rows={4}
               disabled={!!importedFitting}
               className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
