@@ -511,7 +511,7 @@ export default function FleetDetailPage() {
                 .map((dropNumber) => {
                   const dropKills = killsByDrop[parseInt(dropNumber)];
                   const dropValue = dropKills.reduce(
-                    (sum, k) => sum + (k.zkb_total_value || 0),
+                    (sum, k) => sum + Number(k.zkb_total_value || 0),
                     0
                   );
 
