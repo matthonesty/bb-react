@@ -351,7 +351,7 @@ export default function AboutPage() {
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-foreground mb-2">How to Submit for SRP</h3>
                 <p className="text-foreground-muted">
-                  Send an EVE mail to <span className="font-semibold text-primary">&quot;Bombers Bar SRP&quot;</span> with a link to your zKillboard or in-game loss mail.
+                  Send an EVE mail to <span className="font-semibold text-primary">&quot;Bombers Bar SRP&quot;</span> with your zKillboard loss or in-game loss mail.
                 </p>
               </div>
             </div>
