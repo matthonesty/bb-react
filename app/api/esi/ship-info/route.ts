@@ -1,10 +1,10 @@
 /**
  * @fileoverview Ship Info ESI API Route
- * Search for ships by name using ESI
+ * Resolve ship type names to IDs using exact name matching
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { searchShips } from '@/lib/esi/shipInfo.js';
+import { resolveIds } from '@/lib/esi/universe.js';
 
 export async function GET(req: NextRequest) {
   try {
@@ -18,7 +18,12 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const typeIds = await searchShips(search);
+    // Use resolveIds to get exact name matches
+    // NOTE: This requires EXACT ship type names (e.g., "Manticore" not "manti")
+    const result = await resolveIds([search]) as any;
+
+    // Extract inventory_type IDs if found
+    const typeIds = result?.inventory_types?.map((item: any) => item.id) || [];
 
     return NextResponse.json({
       success: true,
@@ -26,9 +31,9 @@ export async function GET(req: NextRequest) {
     });
 
   } catch (error: any) {
-    console.error('[API] Error searching ships:', error);
+    console.error('[API] Error resolving ship type name:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Failed to search ships' },
+      { success: false, error: error.message || 'Failed to resolve ship type name' },
       { status: 500 }
     );
   }
