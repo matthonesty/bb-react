@@ -97,6 +97,14 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex md:items-center md:space-x-1">
+            {/* Home Link - Always visible */}
+            <Link
+              href="/"
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
+            >
+              Home
+            </Link>
+
             {/* About Link - Always visible */}
             <Link
               href="/about"
@@ -269,6 +277,15 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background-secondary">
           <nav className="px-4 py-3 space-y-1">
+            {/* Home Link - Always visible */}
+            <Link
+              href="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+            >
+              Home
+            </Link>
+
             {/* About Link - Always visible */}
             <Link
               href="/about"
