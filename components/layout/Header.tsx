@@ -93,38 +93,51 @@ export function Header() {
 
           {/* Desktop User Menu */}
           {isAuthenticated && user ? (
-            <div className="hidden md:block relative">
-              <button
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
-                className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-background-secondary transition-colors"
-              >
-                <img
-                  src={`https://images.evetech.net/characters/${user.character_id}/portrait?size=32`}
-                  alt={user.character_name}
-                  className="h-6 w-6 rounded-full"
-                />
-                <span>{user.character_name}</span>
-                <ChevronDown size={16} />
-              </button>
-
-              {/* Dropdown Menu */}
-              {userMenuOpen && (
-                <>
-                  <div
-                    className="fixed inset-0 z-10"
-                    onClick={() => setUserMenuOpen(false)}
-                  />
-                  <div className="absolute right-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
-                    <button
-                      onClick={logout}
-                      className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors"
-                    >
-                      <LogOut size={16} />
-                      <span>Logout</span>
-                    </button>
-                  </div>
-                </>
+            <div className="hidden md:flex md:items-center md:space-x-2">
+              {/* System Link (Admin Only) */}
+              {user.roles.includes('admin') && (
+                <Link
+                  href="/system"
+                  className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
+                >
+                  System
+                </Link>
               )}
+
+              {/* User Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setUserMenuOpen(!userMenuOpen)}
+                  className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-background-secondary transition-colors"
+                >
+                  <img
+                    src={`https://images.evetech.net/characters/${user.character_id}/portrait?size=32`}
+                    alt={user.character_name}
+                    className="h-6 w-6 rounded-full"
+                  />
+                  <span>{user.character_name}</span>
+                  <ChevronDown size={16} />
+                </button>
+
+                {/* Dropdown Menu */}
+                {userMenuOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setUserMenuOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                      <button
+                        onClick={logout}
+                        className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors"
+                      >
+                        <LogOut size={16} />
+                        <span>Logout</span>
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           ) : (
             <div className="hidden md:block">
@@ -206,6 +219,18 @@ export function Header() {
                   </p>
                 </div>
               </div>
+
+              {/* System Link (Admin Only) */}
+              {user.roles.includes('admin') && (
+                <Link
+                  href="/system"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex w-full items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-background-tertiary transition-colors mb-2"
+                >
+                  System
+                </Link>
+              )}
+
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
