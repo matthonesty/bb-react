@@ -12,7 +12,11 @@ export function useAuth() {
     useAuthStore();
 
   // Verify authentication status with React Query
-  const { data, isLoading: isVerifying, error } = useQuery({
+  const {
+    data,
+    isLoading: isVerifying,
+    error,
+  } = useQuery({
     queryKey: ['auth', 'verify'],
     queryFn: authApi.verify,
     retry: false,

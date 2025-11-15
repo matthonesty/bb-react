@@ -131,11 +131,7 @@ export function SRPTable({
           </TableHeader>
           <TableBody>
             {data.data.map((request) => (
-              <TableRow
-                key={request.id}
-                clickable
-                onClick={() => setSelectedRequest(request)}
-              >
+              <TableRow key={request.id} clickable onClick={() => setSelectedRequest(request)}>
                 <TableCell>
                   <div className="flex flex-col">
                     <span className="text-sm text-foreground">

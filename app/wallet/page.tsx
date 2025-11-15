@@ -119,10 +119,7 @@ export default function WalletPage() {
   return (
     <RequireAuth requireFCRole>
       <PageContainer>
-        <PageHeader
-          title="Wallet History"
-          description="View corporation wallet journal entries"
-        />
+        <PageHeader title="Wallet History" description="View corporation wallet journal entries" />
 
         {/* Division Tabs */}
         <div className="mb-6 flex gap-2 flex-wrap">
@@ -136,7 +133,11 @@ export default function WalletPage() {
                 variant={isActive ? 'primary' : 'secondary'}
                 onClick={() => switchDivision(division)}
                 disabled={isLocked}
-                title={isLocked ? 'Accountant, Council, or Admin access required' : `Division ${division}`}
+                title={
+                  isLocked
+                    ? 'Accountant, Council, or Admin access required'
+                    : `Division ${division}`
+                }
               >
                 Division {division}
               </Button>
@@ -183,9 +184,7 @@ export default function WalletPage() {
           ) : error ? (
             <div className="flex flex-col items-center justify-center p-12">
               <p className="text-error mb-4">{error}</p>
-              <Button onClick={loadJournal}>
-                Retry
-              </Button>
+              <Button onClick={loadJournal}>Retry</Button>
             </div>
           ) : journal.length === 0 ? (
             <div className="flex items-center justify-center p-12">
@@ -217,13 +216,14 @@ export default function WalletPage() {
                           {formatDateTime(entry.date)}
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm text-foreground">
-                            {refTypeLabel}
-                          </span>
+                          <span className="text-sm text-foreground">{refTypeLabel}</span>
                         </TableCell>
-                        <TableCell className={`text-right ${isCredit ? 'text-success' : 'text-error'}`}>
+                        <TableCell
+                          className={`text-right ${isCredit ? 'text-success' : 'text-error'}`}
+                        >
                           <span className="text-sm font-medium">
-                            {isCredit ? '+' : ''}{formatISK(Math.abs(entry.amount), 2)}
+                            {isCredit ? '+' : ''}
+                            {formatISK(Math.abs(entry.amount), 2)}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
@@ -243,7 +243,10 @@ export default function WalletPage() {
                         </TableCell>
                         <TableCell>
                           {entry.reason && /^\d+$/.test(entry.reason) ? (
-                            <Link href={`/srp?id=${entry.reason}`} className="text-sm text-primary hover:text-primary-hover">
+                            <Link
+                              href={`/srp?id=${entry.reason}`}
+                              className="text-sm text-primary hover:text-primary-hover"
+                            >
                               {entry.reason}
                             </Link>
                           ) : (

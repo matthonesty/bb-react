@@ -28,19 +28,10 @@ export const ADMIN_ROLES: UserRole[] = [ROLES.ADMIN, ROLES.COUNCIL];
 export const SRP_MANAGER_ROLES: UserRole[] = [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT];
 
 // Roles that can manage fleets
-export const FLEET_MANAGER_ROLES: UserRole[] = [
-  ROLES.ADMIN,
-  ROLES.COUNCIL,
-  ROLES.OBOMBERCARE,
-];
+export const FLEET_MANAGER_ROLES: UserRole[] = [ROLES.ADMIN, ROLES.COUNCIL, ROLES.OBOMBERCARE];
 
 // SRP Status options
-export const SRP_STATUSES: SRPStatus[] = [
-  'pending',
-  'approved',
-  'paid',
-  'denied',
-];
+export const SRP_STATUSES: SRPStatus[] = ['pending', 'approved', 'paid', 'denied'];
 
 // FC Ranks in order of seniority (top down: Senior FC, FC, Junior FC, Support)
 export const FC_RANKS: FCRank[] = ['SFC', 'FC', 'JFC', 'Support'];

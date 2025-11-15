@@ -92,12 +92,7 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
     return (
       <span
         ref={ref}
-        className={cn(
-          baseStyles,
-          variants[autoVariant],
-          sizes[size],
-          className
-        )}
+        className={cn(baseStyles, variants[autoVariant], sizes[size], className)}
         {...props}
       >
         {content}

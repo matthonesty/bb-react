@@ -4,18 +4,13 @@ import { cn } from '@/lib/utils/cn';
 /**
  * Table component with dark theme styling
  */
-export const Table = forwardRef<
-  HTMLTableElement,
-  HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
-  <div className="w-full overflow-auto">
-    <table
-      ref={ref}
-      className={cn('w-full caption-bottom text-sm', className)}
-      {...props}
-    />
-  </div>
-));
+export const Table = forwardRef<HTMLTableElement, HTMLAttributes<HTMLTableElement>>(
+  ({ className, ...props }, ref) => (
+    <div className="w-full overflow-auto">
+      <table ref={ref} className={cn('w-full caption-bottom text-sm', className)} {...props} />
+    </div>
+  )
+);
 Table.displayName = 'Table';
 
 /**
@@ -25,11 +20,7 @@ export const TableHeader = forwardRef<
   HTMLTableSectionElement,
   HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead
-    ref={ref}
-    className={cn('border-b border-border', className)}
-    {...props}
-  />
+  <thead ref={ref} className={cn('border-b border-border', className)} {...props} />
 ));
 TableHeader.displayName = 'TableHeader';
 
@@ -70,8 +61,7 @@ export const TableRow = forwardRef<
     ref={ref}
     className={cn(
       'border-b border-border transition-colors',
-      clickable &&
-        'cursor-pointer hover:bg-background-secondary active:bg-background-tertiary',
+      clickable && 'cursor-pointer hover:bg-background-secondary active:bg-background-tertiary',
       className
     )}
     {...props}
@@ -120,10 +110,6 @@ export const TableCaption = forwardRef<
   HTMLTableCaptionElement,
   HTMLAttributes<HTMLTableCaptionElement>
 >(({ className, ...props }, ref) => (
-  <caption
-    ref={ref}
-    className={cn('mt-4 text-sm text-foreground-muted', className)}
-    {...props}
-  />
+  <caption ref={ref} className={cn('mt-4 text-sm text-foreground-muted', className)} {...props} />
 ));
 TableCaption.displayName = 'TableCaption';

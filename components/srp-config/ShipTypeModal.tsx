@@ -243,14 +243,10 @@ export function ShipTypeModal({ isOpen, onClose, onSuccess, shipType }: ShipType
                 <input
                   type="checkbox"
                   checked={formData.fc_discretion}
-                  onChange={(e) =>
-                    setFormData({ ...formData, fc_discretion: e.target.checked })
-                  }
+                  onChange={(e) => setFormData({ ...formData, fc_discretion: e.target.checked })}
                   className="h-4 w-4 rounded border-input-border bg-input-bg text-primary focus:ring-2 focus:ring-primary focus:ring-offset-0"
                 />
-                <span className="text-sm font-medium text-foreground">
-                  Requires FC Discretion
-                </span>
+                <span className="text-sm font-medium text-foreground">Requires FC Discretion</span>
               </label>
             </div>
 
@@ -259,9 +255,7 @@ export function ShipTypeModal({ isOpen, onClose, onSuccess, shipType }: ShipType
                 <input
                   type="checkbox"
                   checked={formData.is_active}
-                  onChange={(e) =>
-                    setFormData({ ...formData, is_active: e.target.checked })
-                  }
+                  onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                   className="h-4 w-4 rounded border-input-border bg-input-bg text-primary focus:ring-2 focus:ring-primary focus:ring-offset-0"
                 />
                 <span className="text-sm font-medium text-foreground">Active</span>
@@ -271,9 +265,7 @@ export function ShipTypeModal({ isOpen, onClose, onSuccess, shipType }: ShipType
 
           {/* Notes */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">
-              Notes
-            </label>
+            <label className="mb-2 block text-sm font-medium text-foreground">Notes</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -285,12 +277,7 @@ export function ShipTypeModal({ isOpen, onClose, onSuccess, shipType }: ShipType
         </div>
 
         <ModalFooter>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button type="submit" isLoading={loading} disabled={loading}>

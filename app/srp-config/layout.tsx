@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Configure SRP payouts for ship types',
 });
 
-export default function SRPConfigLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SRPConfigLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

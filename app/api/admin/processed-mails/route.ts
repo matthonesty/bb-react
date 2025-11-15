@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
   }
 
-  const isAdmin = session.roles?.some(role => isAuthorizedRole(role));
+  const isAdmin = session.roles?.some((role) => isAuthorizedRole(role));
 
   if (!isAdmin) {
     return NextResponse.json({ error: 'Admin access required' }, { status: 403 });
@@ -43,21 +43,17 @@ export async function GET(request: NextRequest) {
 
     // Get single mail with full details
     if (mail_id) {
-      const result = await pool.query(
-        'SELECT * FROM processed_mails WHERE mail_id = $1',
-        [mail_id]
-      );
+      const result = await pool.query('SELECT * FROM processed_mails WHERE mail_id = $1', [
+        mail_id,
+      ]);
 
       if (result.rows.length === 0) {
-        return NextResponse.json(
-          { success: false, error: 'Mail not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ success: false, error: 'Mail not found' }, { status: 404 });
       }
 
       return NextResponse.json({
         success: true,
-        mail: result.rows[0]
+        mail: result.rows[0],
       });
     }
 
@@ -109,14 +105,10 @@ export async function GET(request: NextRequest) {
       count: result.rows.length,
       total: parseInt(countResult.rows[0].count),
       limit,
-      offset
+      offset,
     });
   } catch (error: any) {
     console.error('[ADMIN] Processed mails error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
-

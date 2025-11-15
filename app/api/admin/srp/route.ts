@@ -13,10 +13,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role
@@ -76,10 +73,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Count total
-    const countResult = await pool.query(
-      `SELECT COUNT(*) FROM (${query}) AS filtered`,
-      params
-    );
+    const countResult = await pool.query(`SELECT COUNT(*) FROM (${query}) AS filtered`, params);
     const total = parseInt(countResult.rows[0].count);
 
     // Add sorting
@@ -89,7 +83,7 @@ export async function GET(request: NextRequest) {
       'ship_name',
       'solar_system_name',
       'final_payout_amount',
-      'status'
+      'status',
     ];
     const sortColumn = allowedSortColumns.includes(sortBy) ? sortBy : 'submitted_at';
     const sortDir = sortDirection === 'asc' ? 'ASC' : 'DESC';
@@ -120,10 +114,7 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error('SRP list error:', error);
-    return NextResponse.json(
-      { error: 'Failed to fetch SRP requests' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to fetch SRP requests' }, { status: 500 });
   }
 }
 

@@ -214,15 +214,18 @@ export default function BansPage() {
                   {bans.map((ban) => (
                     <TableRow key={ban.id}>
                       <TableCell>
-                        <span className="text-sm font-medium text-foreground">
-                          {ban.name}
-                        </span>
+                        <span className="text-sm font-medium text-foreground">{ban.name}</span>
                       </TableCell>
                       <TableCell>
-                        <Badge variant={
-                          ban.type === 'Character' ? 'default' :
-                          ban.type === 'Corp' ? 'warning' : 'info'
-                        }>
+                        <Badge
+                          variant={
+                            ban.type === 'Character'
+                              ? 'default'
+                              : ban.type === 'Corp'
+                                ? 'warning'
+                                : 'info'
+                          }
+                        >
                           {ban.type}
                         </Badge>
                       </TableCell>
@@ -246,9 +249,7 @@ export default function BansPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <span className="text-sm text-foreground">
-                          {ban.banned_by || '-'}
-                        </span>
+                        <span className="text-sm text-foreground">{ban.banned_by || '-'}</span>
                       </TableCell>
                       <TableCell className="max-w-xs">
                         <span className="text-sm text-foreground truncate block">
@@ -263,11 +264,7 @@ export default function BansPage() {
                       {canManage && (
                         <TableCell>
                           <div className="flex gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditModal(ban)}
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => openEditModal(ban)}>
                               <Pencil size={14} />
                             </Button>
                             <Button

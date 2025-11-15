@@ -95,7 +95,10 @@ export class BaseSso {
    * @param requestedScopes - Array of scope strings or space-separated string
    * @returns Complete EVE SSO authorization URL
    */
-  getAuthorizationUrl(state: string, requestedScopes: readonly string[] | string[] | string | null = null): string {
+  getAuthorizationUrl(
+    state: string,
+    requestedScopes: readonly string[] | string[] | string | null = null
+  ): string {
     // Default to public data only
     let scopes = 'publicData';
 
@@ -112,7 +115,7 @@ export class BaseSso {
       redirect_uri: this.callbackUrl,
       client_id: this.clientId,
       scope: scopes,
-      state: state
+      state: state,
     });
 
     return `${SSO_BASE_URL}/v2/oauth/authorize/?${params.toString()}`;
@@ -139,21 +142,24 @@ export class BaseSso {
 
     const data = new URLSearchParams({
       grant_type: 'authorization_code',
-      code: code
+      code: code,
     });
 
     try {
       const response = await axios.post(`${SSO_BASE_URL}/v2/oauth/token`, data.toString(), {
         headers: {
-          'Authorization': `Basic ${auth}`,
+          Authorization: `Basic ${auth}`,
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Host': 'login.eveonline.com'
-        }
+          Host: 'login.eveonline.com',
+        },
       });
 
       return response.data;
     } catch (error: any) {
-      console.error(`[${this.label}] Error exchanging code for token:`, error.response?.data || error.message);
+      console.error(
+        `[${this.label}] Error exchanging code for token:`,
+        error.response?.data || error.message
+      );
       throw new Error('Failed to exchange authorization code for token');
     }
   }
@@ -174,7 +180,10 @@ export class BaseSso {
       const payload = await jwks.verifyJWT(accessToken, this.clientId);
       return payload;
     } catch (jwksError: any) {
-      console.warn(`[${this.label}] JWKS verification failed, falling back to basic validation:`, jwksError.message);
+      console.warn(
+        `[${this.label}] JWKS verification failed, falling back to basic validation:`,
+        jwksError.message
+      );
 
       // Fallback to basic validation without signature verification
       try {
@@ -200,21 +209,24 @@ export class BaseSso {
 
     const data = new URLSearchParams({
       grant_type: 'refresh_token',
-      refresh_token: refreshToken
+      refresh_token: refreshToken,
     });
 
     try {
       const response = await axios.post(`${SSO_BASE_URL}/v2/oauth/token`, data.toString(), {
         headers: {
-          'Authorization': `Basic ${auth}`,
+          Authorization: `Basic ${auth}`,
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Host': 'login.eveonline.com'
-        }
+          Host: 'login.eveonline.com',
+        },
       });
 
       return response.data;
     } catch (error: any) {
-      console.error(`[${this.label}] Error refreshing token:`, error.response?.data || error.message);
+      console.error(
+        `[${this.label}] Error refreshing token:`,
+        error.response?.data || error.message
+      );
       throw new Error('Failed to refresh access token');
     }
   }
@@ -230,13 +242,16 @@ export class BaseSso {
     try {
       const response = await axios.get(`${SSO_BASE_URL}/oauth/verify`, {
         headers: {
-          'Authorization': `Bearer ${accessToken}`
-        }
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
 
       return response.data;
     } catch (error: any) {
-      console.error(`[${this.label}] Error getting character info:`, error.response?.data || error.message);
+      console.error(
+        `[${this.label}] Error getting character info:`,
+        error.response?.data || error.message
+      );
       throw new Error('Failed to get character information');
     }
   }
@@ -254,16 +269,16 @@ export class BaseSso {
 
     const data = new URLSearchParams({
       token_type_hint: 'refresh_token',
-      token: refreshToken
+      token: refreshToken,
     });
 
     try {
       await axios.post(`${SSO_BASE_URL}/v2/oauth/revoke`, data.toString(), {
         headers: {
-          'Authorization': `Basic ${auth}`,
+          Authorization: `Basic ${auth}`,
           'Content-Type': 'application/x-www-form-urlencoded',
-          'Host': 'login.eveonline.com'
-        }
+          Host: 'login.eveonline.com',
+        },
       });
     } catch (error: any) {
       console.error(`[${this.label}] Error revoking token:`, error.response?.data || error.message);

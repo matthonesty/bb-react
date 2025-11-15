@@ -16,14 +16,14 @@ const eveSso = new BaseSso({
   clientId: process.env.EVE_CLIENT_ID || '',
   secretKey: process.env.EVE_SECRET_KEY || '',
   callbackUrl: process.env.EVE_CALLBACK_URL || '',
-  label: 'Regular SSO'
+  label: 'Regular SSO',
 });
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 const ADMIN_CHARACTER_IDS = (process.env.ADMIN_CHARACTER_IDS || '')
   .split(',')
-  .map(id => parseInt(id.trim()))
-  .filter(id => !isNaN(id));
+  .map((id) => parseInt(id.trim()))
+  .filter((id) => !isNaN(id));
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,10 +31,7 @@ export async function GET(request: NextRequest) {
     const state = request.nextUrl.searchParams.get('state');
 
     if (!code || !state) {
-      return NextResponse.json(
-        { error: 'Missing code or state parameter' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing code or state parameter' }, { status: 400 });
     }
 
     // Verify CSRF state token
@@ -86,13 +83,15 @@ export async function GET(request: NextRequest) {
     const characterInfo = await ssoService.getCharacterInfo(tokens.access_token);
 
     if (!characterInfo || !characterInfo.CharacterID) {
-      return NextResponse.json(
-        { error: 'Failed to get character information' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Failed to get character information' }, { status: 401 });
     }
 
-    console.log('[CALLBACK] Character authenticated:', characterInfo.CharacterName, '(ID:', characterInfo.CharacterID + ')');
+    console.log(
+      '[CALLBACK] Character authenticated:',
+      characterInfo.CharacterName,
+      '(ID:',
+      characterInfo.CharacterID + ')'
+    );
 
     // Handle mailer flow differently from regular login
     if (isMailerFlow) {
@@ -110,13 +109,14 @@ export async function GET(request: NextRequest) {
       if (characterInfo.CharacterID !== expectedMailerCharacterId) {
         console.error(
           `[CALLBACK] SECURITY: Wrong character attempted mailer login. ` +
-          `Expected: ${expectedMailerCharacterId}, Got: ${characterInfo.CharacterID} (${characterInfo.CharacterName})`
+            `Expected: ${expectedMailerCharacterId}, Got: ${characterInfo.CharacterID} (${characterInfo.CharacterName})`
         );
         return NextResponse.json(
           {
             error: 'Security Error',
-            message: `This character (${characterInfo.CharacterName}) is not authorized as the mailer service account. ` +
-              `Only the designated mailer character can be authorized. Please log in with the correct character.`
+            message:
+              `This character (${characterInfo.CharacterName}) is not authorized as the mailer service account. ` +
+              `Only the designated mailer character can be authorized. Please log in with the correct character.`,
           },
           { status: 403 }
         );
@@ -133,8 +133,15 @@ export async function GET(request: NextRequest) {
 
       try {
         await storeMailerRefreshToken(tokens.refresh_token);
-        console.log('[CALLBACK] Mailer refresh token stored in database for persistent ESI operations');
-        console.log('[CALLBACK] Authorized Character:', characterInfo.CharacterName, '(ID:', characterInfo.CharacterID + ')');
+        console.log(
+          '[CALLBACK] Mailer refresh token stored in database for persistent ESI operations'
+        );
+        console.log(
+          '[CALLBACK] Authorized Character:',
+          characterInfo.CharacterName,
+          '(ID:',
+          characterInfo.CharacterID + ')'
+        );
 
         // Clear state cookie and redirect to home
         const successUrl = new URL(returnUrl || '/', request.url);
@@ -194,9 +201,6 @@ export async function GET(request: NextRequest) {
     return response;
   } catch (error) {
     console.error('[CALLBACK] Authentication error:', error);
-    return NextResponse.json(
-      { error: 'Authentication failed' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Authentication failed' }, { status: 500 });
   }
 }

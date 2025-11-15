@@ -26,10 +26,13 @@ export async function GET(request: NextRequest) {
     const session = await getServerSession();
 
     if (!session) {
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication required'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication required',
+        },
+        { status: 401 }
+      );
     }
 
     // Parse query parameters
@@ -42,15 +45,18 @@ export async function GET(request: NextRequest) {
 
     // Check division access - only Accountant, Council, and Admin can access divisions other than 4
     if (division !== 4) {
-      const canAccessAllDivisions = session.roles?.some(role =>
+      const canAccessAllDivisions = session.roles?.some((role) =>
         ['admin', 'Council', 'Accountant'].includes(role)
       );
 
       if (!canAccessAllDivisions) {
-        return NextResponse.json({
-          success: false,
-          error: 'Accountant, Council, or Admin access required for this division'
-        }, { status: 403 });
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'Accountant, Council, or Admin access required for this division',
+          },
+          { status: 403 }
+        );
       }
     }
 
@@ -112,14 +118,17 @@ export async function GET(request: NextRequest) {
         total_entries: totalCount,
         total_pages: totalPages,
         has_next: page < totalPages,
-        has_prev: page > 1
-      }
+        has_prev: page > 1,
+      },
     });
   } catch (error: any) {
     console.error('[WALLET] Error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to fetch wallet history'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to fetch wallet history',
+      },
+      { status: 500 }
+    );
   }
 }

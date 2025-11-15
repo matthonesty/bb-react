@@ -38,18 +38,17 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
       <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">
-            <h4 className="text-lg font-semibold text-foreground">
-              {doctrine.name}
-            </h4>
+            <h4 className="text-lg font-semibold text-foreground">{doctrine.name}</h4>
             {!doctrine.is_active && (
-              <Badge variant="default" className="bg-foreground-muted/20 text-foreground-muted text-xs">
+              <Badge
+                variant="default"
+                className="bg-foreground-muted/20 text-foreground-muted text-xs"
+              >
                 Inactive
               </Badge>
             )}
           </div>
-          <p className="text-sm text-foreground-muted">
-            {doctrine.ship_name}
-          </p>
+          <p className="text-sm text-foreground-muted">{doctrine.ship_name}</p>
         </div>
 
         {canManage && (

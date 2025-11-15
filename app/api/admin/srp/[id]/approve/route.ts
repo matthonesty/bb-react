@@ -8,10 +8,7 @@ import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
 import { verifyAuth } from '@/lib/auth/apiAuth';
 
-export async function POST(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const user = await verifyAuth(request);
@@ -20,9 +17,7 @@ export async function POST(
     }
 
     // Check if user has admin role
-    const hasAuthorizedRole = user.roles?.some((role: string) =>
-      isAuthorizedRole(role)
-    );
+    const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
 
     if (!hasAuthorizedRole) {
       return NextResponse.json(
@@ -35,10 +30,7 @@ export async function POST(
     const srpId = parseInt(params.id);
 
     if (isNaN(srpId)) {
-      return NextResponse.json(
-        { error: 'Invalid SRP request ID' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid SRP request ID' }, { status: 400 });
     }
 
     // Get body
@@ -63,10 +55,7 @@ export async function POST(
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'SRP request not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'SRP request not found' }, { status: 404 });
     }
 
     const srpRequest = result.rows[0];
@@ -80,9 +69,6 @@ export async function POST(
     return NextResponse.json(responseData);
   } catch (error) {
     console.error('SRP approve error:', error);
-    return NextResponse.json(
-      { error: 'Failed to approve SRP request' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to approve SRP request' }, { status: 500 });
   }
 }

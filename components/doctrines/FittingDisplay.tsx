@@ -52,7 +52,7 @@ export function FittingDisplay({
     let eft = `[${shipName}, ${fittingName}]\n\n`;
 
     // Low slots
-    lowSlotModules.forEach(mod => {
+    lowSlotModules.forEach((mod) => {
       if (mod && mod.type_id) {
         const name = (mod as any).name || mod.type_name || 'Unknown Module';
         eft += `${name}\n`;
@@ -61,7 +61,7 @@ export function FittingDisplay({
     eft += '\n';
 
     // Mid slots
-    midSlotModules.forEach(mod => {
+    midSlotModules.forEach((mod) => {
       if (mod && mod.type_id) {
         const name = (mod as any).name || mod.type_name || 'Unknown Module';
         eft += `${name}\n`;
@@ -70,7 +70,7 @@ export function FittingDisplay({
     eft += '\n';
 
     // High slots
-    highSlotModules.forEach(mod => {
+    highSlotModules.forEach((mod) => {
       if (mod && mod.type_id) {
         const name = (mod as any).name || mod.type_name || 'Unknown Module';
         eft += `${name}\n`;
@@ -79,7 +79,7 @@ export function FittingDisplay({
     eft += '\n';
 
     // Rigs
-    rigModules.forEach(mod => {
+    rigModules.forEach((mod) => {
       if (mod && mod.type_id) {
         const name = (mod as any).name || mod.type_name || 'Unknown Module';
         eft += `${name}\n`;
@@ -88,7 +88,7 @@ export function FittingDisplay({
     eft += '\n';
 
     // Cargo
-    cargoItems.forEach(item => {
+    cargoItems.forEach((item) => {
       if (item && item.type_id) {
         const name = (item as any).name || item.type_name || 'Unknown Item';
         eft += `${name} x${item.quantity}\n`;
@@ -110,12 +110,14 @@ export function FittingDisplay({
   };
 
   const renderModuleList = (title: string, modules: ModuleItem[]) => {
-    const filledModules = modules.filter(m => m !== null && m && m.type_id);
+    const filledModules = modules.filter((m) => m !== null && m && m.type_id);
     if (filledModules.length === 0) return null;
 
     return (
       <div className="mb-3">
-        <h5 className="text-xs font-semibold text-foreground-muted mb-1.5 uppercase tracking-wider">{title}</h5>
+        <h5 className="text-xs font-semibold text-foreground-muted mb-1.5 uppercase tracking-wider">
+          {title}
+        </h5>
         <div className="space-y-1">
           {filledModules.map((module, index) => {
             const name = (module as any).name || module.type_name || 'Unknown Module';
@@ -136,11 +138,7 @@ export function FittingDisplay({
       {/* Copy Button */}
       {showCopyButton && (
         <div className="flex justify-end">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={copyFitting}
-          >
+          <Button variant="secondary" size="sm" onClick={copyFitting}>
             <Copy size={14} className="mr-1.5" />
             {copied ? 'Copied!' : 'Copy Fitting'}
           </Button>
@@ -173,7 +171,7 @@ export function FittingDisplay({
       </div>
 
       {/* Cargo */}
-      {cargoItems.filter(c => c !== null && c && c.type_id).length > 0 && (
+      {cargoItems.filter((c) => c !== null && c && c.type_id).length > 0 && (
         <div className="p-3 bg-background-dark rounded-md">
           {renderModuleList('Cargo', cargoItems)}
         </div>
@@ -182,10 +180,10 @@ export function FittingDisplay({
       {/* Notes */}
       {notes && (
         <div className="p-3 bg-background-dark rounded-md border border-border">
-          <h5 className="text-xs font-semibold text-foreground-muted mb-2 uppercase tracking-wider">Notes</h5>
-          <p className="text-sm text-foreground whitespace-pre-wrap">
-            {notes}
-          </p>
+          <h5 className="text-xs font-semibold text-foreground-muted mb-2 uppercase tracking-wider">
+            Notes
+          </h5>
+          <p className="text-sm text-foreground whitespace-pre-wrap">{notes}</p>
         </div>
       )}
     </div>

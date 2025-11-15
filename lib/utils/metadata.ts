@@ -25,13 +25,7 @@ interface PageMetadataOptions {
  * });
  */
 export function generatePageMetadata(options: PageMetadataOptions): Metadata {
-  const {
-    title,
-    description,
-    image = '/logo.png',
-    imageWidth = 512,
-    imageHeight = 512,
-  } = options;
+  const { title, description, image = '/logo.png', imageWidth = 512, imageHeight = 512 } = options;
 
   const fullTitle = `${title} - Bombers Bar`;
 

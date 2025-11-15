@@ -80,12 +80,14 @@ npm install axios
 Your existing API routes should work without modification. The frontend expects these endpoints:
 
 #### Authentication
+
 - `POST /api/auth/login` - Initiate EVE SSO
 - `GET /api/auth/callback` - EVE SSO callback
 - `GET /api/auth/verify` - Verify auth status
 - `POST /api/auth/logout` - Logout
 
 #### SRP
+
 - `GET /api/admin/srp` - List SRP requests (with pagination, filtering)
 - `POST /api/srp/submit` - Submit new SRP request
 - `GET /api/admin/srp/:id` - Get single SRP request
@@ -103,6 +105,7 @@ Your existing API routes should work without modification. The frontend expects 
 Ensure your PostgreSQL database has the required tables. The frontend expects:
 
 #### srp_requests table
+
 ```sql
 CREATE TABLE srp_requests (
   id SERIAL PRIMARY KEY,
@@ -142,6 +145,7 @@ CREATE TABLE srp_requests (
 ### Step 6: Test the Integration
 
 1. **Start the development server:**
+
    ```bash
    npm run dev
    ```
@@ -170,6 +174,7 @@ The backend middleware should already handle CORS from the original implementati
 The frontend expects API responses in this format:
 
 ### Success Response
+
 ```json
 {
   "data": { ... },
@@ -178,6 +183,7 @@ The frontend expects API responses in this format:
 ```
 
 ### Paginated Response
+
 ```json
 {
   "data": [ ... ],
@@ -191,6 +197,7 @@ The frontend expects API responses in this format:
 ```
 
 ### Error Response
+
 ```json
 {
   "error": "Error message here",
@@ -201,22 +208,26 @@ The frontend expects API responses in this format:
 ## Troubleshooting
 
 ### Issue: Authentication not working
+
 - Verify `EVE_CALLBACK_URL` matches your Next.js dev server URL
 - Check that JWT_SECRET is set
 - Ensure cookies are being set with `httpOnly` flag
 
 ### Issue: API calls failing
+
 - Check that backend routes are in `/api` directory
 - Verify environment variables are loaded
 - Check database connection string
 - Review Vercel function logs
 
 ### Issue: CORS errors
+
 - Ensure CORS middleware is applied to all API routes
 - Check that credentials are included in requests
 - Verify `Access-Control-Allow-Credentials` header is set
 
 ### Issue: Database connection errors
+
 - Verify `DATABASE_URL` format
 - Check PostgreSQL is running and accessible
 - Ensure database user has proper permissions

@@ -94,10 +94,7 @@ export function Modal({
         {(title || showCloseButton) && (
           <div className="flex items-center justify-between border-b border-border px-6 py-4">
             {title && (
-              <h2
-                id="modal-title"
-                className="text-xl font-semibold text-foreground"
-              >
+              <h2 id="modal-title" className="text-xl font-semibold text-foreground">
                 {title}
               </h2>
             )}
@@ -120,21 +117,13 @@ export function Modal({
   );
 
   // Render in portal
-  return typeof document !== 'undefined'
-    ? createPortal(modalContent, document.body)
-    : null;
+  return typeof document !== 'undefined' ? createPortal(modalContent, document.body) : null;
 }
 
 /**
  * Modal Footer component for action buttons
  */
-export function ModalFooter({
-  children,
-  className,
-}: {
-  children: ReactNode;
-  className?: string;
-}) {
+export function ModalFooter({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <div
       className={cn(

@@ -10,9 +10,10 @@ class ApiClient {
   constructor() {
     // Use current origin if in browser, otherwise fall back to env var
     // This ensures HTTPS is used when the page is loaded over HTTPS
-    const baseURL = typeof window !== 'undefined'
-      ? window.location.origin
-      : (process.env.NEXT_PUBLIC_API_URL || '');
+    const baseURL =
+      typeof window !== 'undefined'
+        ? window.location.origin
+        : process.env.NEXT_PUBLIC_API_URL || '';
 
     this.client = axios.create({
       baseURL,
@@ -63,21 +64,13 @@ class ApiClient {
   }
 
   // POST request
-  async post<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async post<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.post<T>(url, data, config);
     return response.data;
   }
 
   // PUT request
-  async put<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async put<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.put<T>(url, data, config);
     return response.data;
   }
@@ -89,11 +82,7 @@ class ApiClient {
   }
 
   // PATCH request
-  async patch<T>(
-    url: string,
-    data?: any,
-    config?: AxiosRequestConfig
-  ): Promise<T> {
+  async patch<T>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
     const response = await this.client.patch<T>(url, data, config);
     return response.data;
   }

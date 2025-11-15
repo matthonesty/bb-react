@@ -14,10 +14,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role (FC or higher)
@@ -47,15 +44,12 @@ export async function GET(request: NextRequest) {
       );
 
       if (result.rows.length === 0) {
-        return NextResponse.json(
-          { success: false, error: 'Doctrine not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ success: false, error: 'Doctrine not found' }, { status: 404 });
       }
 
       return NextResponse.json({
         success: true,
-        doctrine: result.rows[0]
+        doctrine: result.rows[0],
       });
     }
 
@@ -84,7 +78,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      doctrines: result.rows
+      doctrines: result.rows,
     });
   } catch (error: any) {
     console.error('Error fetching doctrines:', error);
@@ -101,10 +95,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage fleet composition
@@ -133,7 +124,7 @@ export async function POST(request: NextRequest) {
       rig_modules,
       cargo_items,
       notes,
-      display_order
+      display_order,
     } = body;
 
     if (!fleet_type_id || !name || !ship_type_id) {
@@ -185,13 +176,13 @@ export async function POST(request: NextRequest) {
         notes || null,
         display_order || 0,
         user.character_id,
-        user.character_id
+        user.character_id,
       ]
     );
 
     return NextResponse.json({
       success: true,
-      doctrine: result.rows[0]
+      doctrine: result.rows[0],
     });
   } catch (error: any) {
     console.error('Error creating doctrine:', error);
@@ -208,10 +199,7 @@ export async function PUT(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage fleet composition
@@ -242,7 +230,7 @@ export async function PUT(request: NextRequest) {
       cargo_items,
       notes,
       is_active,
-      display_order
+      display_order,
     } = body;
 
     // Build dynamic update query
@@ -288,10 +276,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (updates.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'No fields to update' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
     }
 
     updates.push(`updated_at = NOW()`);
@@ -308,15 +293,12 @@ export async function PUT(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Doctrine not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Doctrine not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      doctrine: result.rows[0]
+      doctrine: result.rows[0],
     });
   } catch (error: any) {
     console.error('Error updating doctrine:', error);
@@ -333,10 +315,7 @@ export async function DELETE(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage fleet composition
@@ -357,21 +336,15 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const result = await pool.query(
-      'DELETE FROM doctrines WHERE id = $1 RETURNING name',
-      [id]
-    );
+    const result = await pool.query('DELETE FROM doctrines WHERE id = $1 RETURNING name', [id]);
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Doctrine not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Doctrine not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      message: `Doctrine "${result.rows[0].name}" deleted`
+      message: `Doctrine "${result.rows[0].name}" deleted`,
     });
   } catch (error: any) {
     console.error('Error deleting doctrine:', error);

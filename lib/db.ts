@@ -9,7 +9,7 @@ import { Pool, QueryResult } from 'pg';
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // Required for managed PostgreSQL services
+    rejectUnauthorized: false, // Required for managed PostgreSQL services
   },
   max: 20,
   idleTimeoutMillis: 30000,
@@ -110,10 +110,16 @@ export async function initializeTables(): Promise<void> {
     `);
 
     // Create indexes for SRP requests
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_srp_requests_character_id ON srp_requests(character_id)`);
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_srp_requests_character_id ON srp_requests(character_id)`
+    );
     await pool.query(`CREATE INDEX IF NOT EXISTS idx_srp_requests_status ON srp_requests(status)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_srp_requests_killmail_id ON srp_requests(killmail_id)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_srp_requests_submitted_at ON srp_requests(submitted_at DESC)`);
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_srp_requests_killmail_id ON srp_requests(killmail_id)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_srp_requests_submitted_at ON srp_requests(submitted_at DESC)`
+    );
 
     // Create pending mail sends queue
     await pool.query(`
@@ -162,14 +168,30 @@ export async function initializeTables(): Promise<void> {
       )
     `);
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_date ON wallet_journal(date DESC)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_ref_type ON wallet_journal(ref_type)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_context_id ON wallet_journal(context_id)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_reason ON wallet_journal(reason) WHERE reason IS NOT NULL`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_division ON wallet_journal(division)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_division_date ON wallet_journal(division, date DESC)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_division_reftype_date ON wallet_journal(division, ref_type, date DESC)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_wallet_journal_div4_date ON wallet_journal(date DESC) WHERE division = 4`);
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_date ON wallet_journal(date DESC)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_ref_type ON wallet_journal(ref_type)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_context_id ON wallet_journal(context_id)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_reason ON wallet_journal(reason) WHERE reason IS NOT NULL`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_division ON wallet_journal(division)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_division_date ON wallet_journal(division, date DESC)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_division_reftype_date ON wallet_journal(division, ref_type, date DESC)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_wallet_journal_div4_date ON wallet_journal(date DESC) WHERE division = 4`
+    );
 
     // Create fleet commanders table
     await pool.query(`
@@ -189,9 +211,15 @@ export async function initializeTables(): Promise<void> {
       )
     `);
 
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_fleet_commanders_status ON fleet_commanders(status)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_fleet_commanders_rank ON fleet_commanders(rank)`);
-    await pool.query(`CREATE INDEX IF NOT EXISTS idx_fleet_commanders_main_character ON fleet_commanders(main_character_id)`);
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_fleet_commanders_status ON fleet_commanders(status)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_fleet_commanders_rank ON fleet_commanders(rank)`
+    );
+    await pool.query(
+      `CREATE INDEX IF NOT EXISTS idx_fleet_commanders_main_character ON fleet_commanders(main_character_id)`
+    );
 
     console.log('[DB] Tables initialized successfully');
   } catch (error) {

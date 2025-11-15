@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'View corporation wallet journal entries',
 });
 
-export default function WalletLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function WalletLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

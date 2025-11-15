@@ -16,10 +16,7 @@ export async function GET(request: NextRequest) {
     const token = cookieStore.get('auth_token')?.value;
 
     if (!token) {
-      return NextResponse.json(
-        { authenticated: false, user: null },
-        { status: 401 }
-      );
+      return NextResponse.json({ authenticated: false, user: null }, { status: 401 });
     }
 
     // Verify JWT
@@ -52,16 +49,10 @@ export async function GET(request: NextRequest) {
       });
     } catch (jwtError) {
       // Token invalid or expired
-      return NextResponse.json(
-        { authenticated: false, user: null },
-        { status: 401 }
-      );
+      return NextResponse.json({ authenticated: false, user: null }, { status: 401 });
     }
   } catch (error) {
     console.error('Verify error:', error);
-    return NextResponse.json(
-      { authenticated: false, user: null },
-      { status: 500 }
-    );
+    return NextResponse.json({ authenticated: false, user: null }, { status: 500 });
   }
 }

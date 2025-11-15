@@ -10,12 +10,12 @@
  */
 export const ROLES = {
   USER: 'user',
-  ADMIN: 'admin',           // ENV-controlled only
-  COUNCIL: 'Council',       // Database-managed via fleet_commanders
+  ADMIN: 'admin', // ENV-controlled only
+  COUNCIL: 'Council', // Database-managed via fleet_commanders
   ACCOUNTANT: 'Accountant', // Database-managed via fleet_commanders
   OBOMBERCARE: 'OBomberCare', // Database-managed via fleet_commanders
-  FC: 'FC',                 // Database-managed via fleet_commanders
-  ELECTION_OFFICER: 'Election Officer' // Database-managed via fleet_commanders (manual SQL only)
+  FC: 'FC', // Database-managed via fleet_commanders
+  ELECTION_OFFICER: 'Election Officer', // Database-managed via fleet_commanders (manual SQL only)
 } as const;
 
 /**
@@ -32,7 +32,7 @@ export function isAuthorizedRole(role: string): boolean {
     ROLES.ACCOUNTANT,
     ROLES.OBOMBERCARE,
     ROLES.FC,
-    ROLES.ELECTION_OFFICER
+    ROLES.ELECTION_OFFICER,
   ];
   return authorizedRoles.includes(role);
 }

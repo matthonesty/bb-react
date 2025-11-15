@@ -44,7 +44,8 @@ export function ProximityDataDisplay({ proximityData }: ProximityDataProps) {
                 <ExternalLink size={12} />
               </a>
               <span className="text-foreground-muted ml-2">
-                ({km.victim_ship_name || 'Unknown Ship'} / {km.solar_system_name} / {formatDate(km.killmail_time, 'MMM d, HH:mm')})
+                ({km.victim_ship_name || 'Unknown Ship'} / {km.solar_system_name} /{' '}
+                {formatDate(km.killmail_time, 'MMM d, HH:mm')})
               </span>
             </li>
           ))}

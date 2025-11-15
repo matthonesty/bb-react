@@ -18,28 +18,29 @@ Complete OAuth 2.0 implementation for EVE Online Single Sign-On (SSO) authentica
 
 ### Core Files
 
-| File | Purpose |
-|------|---------|
-| `sso.js` | Main EVE SSO service (OAuth 2.0 flow) |
-| `middleware.js` | Authentication middleware for serverless functions |
-| `jwks.js` | JWT signature verification using JWKS |
-| `scopes.js` | Scope management and validation |
-| `roles.js` | Role-Based Access Control (RBAC) system |
-| `EVE_LOGIN_BUTTONS.md` | Official EVE login button guidelines |
+| File                   | Purpose                                            |
+| ---------------------- | -------------------------------------------------- |
+| `sso.js`               | Main EVE SSO service (OAuth 2.0 flow)              |
+| `middleware.js`        | Authentication middleware for serverless functions |
+| `jwks.js`              | JWT signature verification using JWKS              |
+| `scopes.js`            | Scope management and validation                    |
+| `roles.js`             | Role-Based Access Control (RBAC) system            |
+| `EVE_LOGIN_BUTTONS.md` | Official EVE login button guidelines               |
 
 ### API Endpoints
 
-| Endpoint | File | Purpose |
-|----------|------|---------|
-| `/auth/login` | `api/auth/login.js` | Initiate OAuth flow (regular user scopes) |
+| Endpoint            | File                      | Purpose                                     |
+| ------------------- | ------------------------- | ------------------------------------------- |
+| `/auth/login`       | `api/auth/login.js`       | Initiate OAuth flow (regular user scopes)   |
 | `/auth/admin-login` | `api/auth/admin-login.js` | Initiate OAuth flow (admin/extended scopes) |
-| `/auth/callback` | `api/auth/callback.js` | OAuth callback handler |
-| `/auth/verify` | `api/auth/verify.js` | Check auth status |
-| `/auth/logout` | `api/auth/logout.js` | Logout and revoke tokens |
+| `/auth/callback`    | `api/auth/callback.js`    | OAuth callback handler                      |
+| `/auth/verify`      | `api/auth/verify.js`      | Check auth status                           |
+| `/auth/logout`      | `api/auth/logout.js`      | Logout and revoke tokens                    |
 
 ## Authentication Flow
 
 ### 1. Login Initiation (`/auth/login`)
+
 ```javascript
 // User clicks "Login with EVE Online"
 window.location.href = '/auth/login';
@@ -51,6 +52,7 @@ const authUrl = evesso.getAuthorizationUrl(state);
 ```
 
 ### 2. OAuth Callback (`/auth/callback`)
+
 ```javascript
 // EVE SSO redirects back with code and state
 const { code, state } = req.query;
@@ -72,13 +74,14 @@ const roles = getRoles(characterInfo.CharacterID);
 const authData = {
   accessToken: tokens.access_token,
   refreshToken: tokens.refresh_token,
-  expiresAt: Date.now() + (tokens.expires_in * 1000),
+  expiresAt: Date.now() + tokens.expires_in * 1000,
   character: { id, name, ownerHash },
-  roles: roles
+  roles: roles,
 };
 ```
 
 ### 3. Authentication Check (`/auth/verify`)
+
 ```javascript
 // Frontend checks auth status
 const response = await fetch('/auth/verify');
@@ -92,6 +95,7 @@ if (data.authenticated) {
 ```
 
 ### 4. Protected API Requests
+
 ```javascript
 // In API endpoint
 const auth = await requireAuth(req, res);
@@ -104,6 +108,7 @@ const characterId = auth.character.id;
 ```
 
 ### 5. Logout (`/auth/logout`)
+
 ```javascript
 // Revoke refresh token with EVE SSO
 await evesso.revokeRefreshToken(refreshToken);
@@ -115,6 +120,7 @@ res.setHeader('Set-Cookie', cookie.serialize('auth_data', '', { maxAge: 0 }));
 ## JWT Signature Verification
 
 ### JWKS-based Verification
+
 ```javascript
 const jwks = require('./auth/jwks');
 
@@ -127,6 +133,7 @@ const payload = await jwks.verifyJWT(accessToken, clientId);
 ```
 
 ### Fallback Validation
+
 ```javascript
 // If JWKS fails (network issues)
 const payload = jwks.validateTokenBasic(accessToken, clientId);
@@ -134,6 +141,7 @@ const payload = jwks.validateTokenBasic(accessToken, clientId);
 ```
 
 ### JWT Claims Structure
+
 ```javascript
 {
   sub: "CHARACTER:EVE:12345",        // Character ID
@@ -151,12 +159,12 @@ const payload = jwks.validateTokenBasic(accessToken, clientId);
 
 ```javascript
 const {
-  PUBLIC_DATA,           // Basic public info
-  CHARACTER_SCOPES,      // Character-specific data
-  CORPORATION_SCOPES,    // Corporation data
-  FLEET_SCOPES,         // Fleet management
-  UNIVERSE_SCOPES,      // Structure data
-  SCOPE_PRESETS         // Common combinations
+  PUBLIC_DATA, // Basic public info
+  CHARACTER_SCOPES, // Character-specific data
+  CORPORATION_SCOPES, // Corporation data
+  FLEET_SCOPES, // Fleet management
+  UNIVERSE_SCOPES, // Structure data
+  SCOPE_PRESETS, // Common combinations
 } = require('./auth/scopes');
 ```
 
@@ -168,7 +176,7 @@ const { CHARACTER_SCOPES } = require('./auth/scopes');
 const authUrl = evesso.getAuthorizationUrl(state, [
   CHARACTER_SCOPES.WALLET,
   CHARACTER_SCOPES.ASSETS,
-  CHARACTER_SCOPES.MARKET_ORDERS
+  CHARACTER_SCOPES.MARKET_ORDERS,
 ]);
 ```
 
@@ -187,6 +195,7 @@ evesso.getAuthorizationUrl(state, SCOPE_PRESETS.CONTRACT_MANAGER);
 ```
 
 ### Checking Scopes in API
+
 ```javascript
 const { hasRequiredScopes, CHARACTER_SCOPES } = require('./auth/scopes');
 
@@ -199,12 +208,14 @@ if (!hasRequiredScopes(payload.scp, [CHARACTER_SCOPES.WALLET])) {
 ## Security Features
 
 ### CSRF Protection
+
 - State parameter generated per request
 - Stored in httpOnly cookie
 - Validated on callback
 - 10-minute expiration
 
 ### Cookie Security
+
 ```javascript
 {
   httpOnly: true,        // Not accessible to JavaScript
@@ -215,12 +226,14 @@ if (!hasRequiredScopes(payload.scp, [CHARACTER_SCOPES.WALLET])) {
 ```
 
 ### Token Management
+
 - Access tokens: 20 minutes (short-lived)
 - Refresh tokens: Long-lived, automatically rotated
 - Automatic refresh on expiration
 - Token revocation on logout
 
 ### JWT Verification
+
 - Cryptographic signature verification
 - Issuer validation
 - Audience validation
@@ -245,22 +258,25 @@ ADMIN_CHARACTER_IDS=12345,67890,11111
 ## Usage Examples
 
 ### Basic Login (Public Data Only)
+
 ```javascript
 // Default - only publicData scope
 window.location.href = '/auth/login';
 ```
 
 ### Login with Custom Scopes
+
 ```javascript
 // Modify api/auth/login.js to request specific scopes
 const { CHARACTER_SCOPES } = require('../../lib/auth/scopes');
 const authUrl = evesso.getAuthorizationUrl(state, [
   CHARACTER_SCOPES.WALLET,
-  CHARACTER_SCOPES.ASSETS
+  CHARACTER_SCOPES.ASSETS,
 ]);
 ```
 
 ### Protected API Endpoint
+
 ```javascript
 const { requireAuth } = require('../../lib/auth/middleware');
 
@@ -285,6 +301,7 @@ module.exports = async (req, res) => {
 ```
 
 ### Admin-Only API Endpoint
+
 ```javascript
 const { requireAdmin } = require('../../lib/auth/middleware');
 
@@ -295,12 +312,13 @@ module.exports = async (req, res) => {
   // Admin-only logic here
   res.json({
     message: 'Admin access granted',
-    admin: auth.character.name
+    admin: auth.character.name,
   });
 };
 ```
 
 ### Manual Token Refresh
+
 ```javascript
 // Automatic refresh in middleware, but manual option available:
 const newTokens = await evesso.refreshAccessToken(refreshToken);
@@ -326,17 +344,18 @@ See `EVE_LOGIN_BUTTONS.md` for complete button guidelines.
 
 ### Common Errors
 
-| Error | Cause | Solution |
-|-------|-------|----------|
-| Invalid state | CSRF token mismatch | Clear cookies, try again |
-| Token expired | Access token > 20 min old | Automatic refresh triggered |
-| Refresh failed | Refresh token revoked | User must re-login |
-| Invalid signature | JWKS verification failed | Check JWKS endpoint, verify client_id |
-| Insufficient scopes | Missing required scopes | Request additional scopes |
+| Error               | Cause                     | Solution                              |
+| ------------------- | ------------------------- | ------------------------------------- |
+| Invalid state       | CSRF token mismatch       | Clear cookies, try again              |
+| Token expired       | Access token > 20 min old | Automatic refresh triggered           |
+| Refresh failed      | Refresh token revoked     | User must re-login                    |
+| Invalid signature   | JWKS verification failed  | Check JWKS endpoint, verify client_id |
+| Insufficient scopes | Missing required scopes   | Request additional scopes             |
 
 ### Debugging
 
 Enable debug logging:
+
 ```javascript
 // All auth operations log to console
 // Check browser console and server logs
@@ -345,6 +364,7 @@ Enable debug logging:
 ## Testing
 
 ### Test Authentication Flow
+
 ```javascript
 // 1. Navigate to /auth/login
 // 2. Login with EVE credentials
@@ -355,6 +375,7 @@ Enable debug logging:
 ```
 
 ### Test Token Refresh
+
 ```javascript
 // Wait 20+ minutes after login
 // Access protected endpoint
@@ -363,6 +384,7 @@ Enable debug logging:
 ```
 
 ### Test JWKS Verification
+
 ```javascript
 const jwks = require('./lib/auth/jwks');
 
@@ -390,15 +412,17 @@ No code changes required - verification happens automatically in `validateAccess
 ### Adding New Scopes
 
 1. Add to `scopes.js`:
+
 ```javascript
 const NEW_SCOPE = {
-  MY_SCOPE: 'esi-new.scope.v1'
+  MY_SCOPE: 'esi-new.scope.v1',
 };
 ```
 
 2. Add to EVE Developers Portal application
 
 3. Request in login:
+
 ```javascript
 evesso.getAuthorizationUrl(state, [NEW_SCOPE.MY_SCOPE]);
 ```
@@ -414,6 +438,7 @@ evesso.getAuthorizationUrl(state, [NEW_SCOPE.MY_SCOPE]);
 ## Support
 
 For issues or questions:
+
 1. Check server logs for error messages
 2. Verify environment variables are set correctly
 3. Ensure EVE SSO application is configured properly
@@ -425,6 +450,7 @@ For issues or questions:
 ### Admin Configuration
 
 Configure admin character IDs in `.env`:
+
 ```env
 ADMIN_CHARACTER_IDS=12345,67890,11111
 ```
@@ -434,11 +460,13 @@ ADMIN_CHARACTER_IDS=12345,67890,11111
 The system supports two login endpoints with different scope requirements:
 
 **Regular Login** (`/auth/login`):
+
 - Minimal scopes: publicData, location, ship type, skills, assets, wallet
 - Suitable for general users
 - Faster authorization (fewer permissions to consent)
 
 **Admin Login** (`/auth/admin-login`):
+
 - Extended scopes: All enabled scopes from EVE SSO application
 - Required for admin operations that need extended ESI access
 - Users must consent to all requested permissions
@@ -488,6 +516,7 @@ See `api/admin/status.js` for a complete example of an admin-only endpoint.
 For admin users who need extended ESI access:
 
 1. **Navigate to admin login**:
+
    ```javascript
    window.location.href = '/auth/admin-login';
    ```
@@ -503,12 +532,14 @@ For admin users who need extended ESI access:
 ## Changelog
 
 ### v2.1.0 (Current)
+
 - ✅ Added Role-Based Access Control (RBAC) system
 - ✅ Implemented admin role configuration
 - ✅ Added `requireAdmin` middleware for admin-only endpoints
 - ✅ Enhanced authentication response to include roles
 
 ### v2.0.0
+
 - ✅ Added JWT signature verification with JWKS
 - ✅ Implemented comprehensive scope management
 - ✅ Added scope presets for common use cases
@@ -516,6 +547,7 @@ For admin users who need extended ESI access:
 - ✅ Added official EVE login button guidelines
 
 ### v1.0.0
+
 - Initial OAuth 2.0 implementation
 - Basic token validation
 - Cookie-based session management

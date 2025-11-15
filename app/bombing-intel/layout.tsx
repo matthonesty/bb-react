@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Submit Intel to Bombers Bar',
 });
 
-export default function BombingIntelLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function BombingIntelLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

@@ -58,7 +58,11 @@ export function SRPDetailModal({
         {/* Status and Basic Info */}
         <div className="flex items-start justify-between">
           <div>
-            <Badge srpStatus={request.status} size="lg" isAutoRejection={request.is_auto_rejection} />
+            <Badge
+              srpStatus={request.status}
+              size="lg"
+              isAutoRejection={request.is_auto_rejection}
+            />
             {request.is_polarized && (
               <Badge variant="warning" className="ml-2">
                 ⚡ Polarized
@@ -77,9 +81,7 @@ export function SRPDetailModal({
           </div>
           <div className="text-right">
             <div className="text-2xl font-bold text-foreground">
-              {request.status === 'denied'
-                ? '—'
-                : formatISK(request.final_payout_amount, 0)}
+              {request.status === 'denied' ? '—' : formatISK(request.final_payout_amount, 0)}
             </div>
             <div className="text-sm text-foreground-muted">Payout Amount</div>
           </div>
@@ -90,9 +92,7 @@ export function SRPDetailModal({
           <div className="flex items-center gap-2">
             <User size={18} className="text-foreground-muted" />
             <div className="flex-1">
-              <div className="font-medium text-foreground">
-                {request.character_name}
-              </div>
+              <div className="font-medium text-foreground">{request.character_name}</div>
               <div className="text-sm text-foreground-muted">
                 {request.alliance_name || request.corporation_name}
               </div>
@@ -111,17 +111,13 @@ export function SRPDetailModal({
         {/* Copyable SRP Details - Only for pending, approved, and paid */}
         {['pending', 'approved', 'paid'].includes(request.status) && (
           <div className="rounded-lg bg-background-secondary p-4">
-            <div className="text-sm font-medium text-foreground-muted mb-3">SRP Details (Copyable)</div>
+            <div className="text-sm font-medium text-foreground-muted mb-3">
+              SRP Details (Copyable)
+            </div>
             <div className="space-y-2 text-sm">
-              <CopyableField
-                label="Character Name"
-                value={request.character_name}
-              />
+              <CopyableField label="Character Name" value={request.character_name} />
               {request.killmail_id && (
-                <CopyableField
-                  label="Killmail ID"
-                  value={request.killmail_id}
-                />
+                <CopyableField label="Killmail ID" value={request.killmail_id} />
               )}
               <CopyableField
                 label="Payment Amount"
@@ -193,30 +189,22 @@ export function SRPDetailModal({
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
               <span className="text-foreground-muted">Loss:</span>
-              <span className="text-foreground">
-                {formatDate(request.killmail_time)}
-              </span>
+              <span className="text-foreground">{formatDate(request.killmail_time)}</span>
             </div>
             <div className="flex justify-between">
               <span className="text-foreground-muted">Submitted:</span>
-              <span className="text-foreground">
-                {formatDate(request.submitted_at)}
-              </span>
+              <span className="text-foreground">{formatDate(request.submitted_at)}</span>
             </div>
             {request.processed_at && (
               <div className="flex justify-between">
                 <span className="text-foreground-muted">Processed:</span>
-                <span className="text-foreground">
-                  {formatDate(request.processed_at)}
-                </span>
+                <span className="text-foreground">{formatDate(request.processed_at)}</span>
               </div>
             )}
             {request.paid_at && (
               <div className="flex justify-between">
                 <span className="text-foreground-muted">Paid:</span>
-                <span className="text-foreground">
-                  {formatDate(request.paid_at)}
-                </span>
+                <span className="text-foreground">{formatDate(request.paid_at)}</span>
               </div>
             )}
           </div>
@@ -226,9 +214,7 @@ export function SRPDetailModal({
         {request.fleet_description && (
           <div className="rounded-lg bg-background-secondary p-4">
             <div className="text-sm font-medium text-foreground-muted mb-2">Fleet Description</div>
-            <div className="text-foreground">
-              {request.fleet_description}
-            </div>
+            <div className="text-foreground">{request.fleet_description}</div>
           </div>
         )}
 
@@ -236,9 +222,7 @@ export function SRPDetailModal({
         {request.fc_name && (
           <div className="rounded-lg bg-background-secondary p-4">
             <div className="text-sm font-medium text-foreground-muted mb-2">Fleet Commander</div>
-            <div className="text-foreground">
-              {request.fc_name}
-            </div>
+            <div className="text-foreground">{request.fc_name}</div>
           </div>
         )}
 
@@ -274,9 +258,7 @@ export function SRPDetailModal({
       {/* Footer */}
       <ModalFooter>
         <div className="flex gap-2 ml-auto items-center">
-          {isAdmin && (
-            <SRPActionButtons request={request} onUpdate={onUpdate} onClose={onClose} />
-          )}
+          {isAdmin && <SRPActionButtons request={request} onUpdate={onUpdate} onClose={onClose} />}
           <Button variant="secondary" onClick={onClose} className="min-w-[100px]">
             Close
           </Button>

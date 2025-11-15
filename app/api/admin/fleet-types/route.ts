@@ -14,10 +14,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role (FC or higher)
@@ -87,7 +84,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      fleet_types: result.rows
+      fleet_types: result.rows,
     });
   } catch (error: any) {
     console.error('Error fetching fleet types:', error);
@@ -104,10 +101,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage fleet composition
@@ -129,10 +123,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicate name
-    const checkResult = await pool.query(
-      'SELECT id FROM fleet_types WHERE name = $1',
-      [name.trim()]
-    );
+    const checkResult = await pool.query('SELECT id FROM fleet_types WHERE name = $1', [
+      name.trim(),
+    ]);
 
     if (checkResult.rows.length > 0) {
       return NextResponse.json(
@@ -151,13 +144,13 @@ export async function POST(request: NextRequest) {
         description?.trim() || null,
         display_order || 0,
         user.character_id,
-        user.character_id
+        user.character_id,
       ]
     );
 
     return NextResponse.json({
       success: true,
-      fleet_type: result.rows[0]
+      fleet_type: result.rows[0],
     });
   } catch (error: any) {
     console.error('Error creating fleet type:', error);
@@ -174,10 +167,7 @@ export async function PUT(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage fleet composition
@@ -224,10 +214,7 @@ export async function PUT(request: NextRequest) {
     }
 
     if (updates.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'No fields to update' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'No fields to update' }, { status: 400 });
     }
 
     updates.push(`updated_at = NOW()`);
@@ -244,15 +231,12 @@ export async function PUT(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Fleet type not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Fleet type not found' }, { status: 404 });
     }
 
     return NextResponse.json({
       success: true,
-      fleet_type: result.rows[0]
+      fleet_type: result.rows[0],
     });
   } catch (error: any) {
     console.error('Error updating fleet type:', error);
@@ -269,10 +253,7 @@ export async function DELETE(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage fleet composition
@@ -304,10 +285,7 @@ export async function DELETE(request: NextRequest) {
     );
 
     if (checkResult.rows.length === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Fleet type not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ success: false, error: 'Fleet type not found' }, { status: 404 });
     }
 
     const fleetType = checkResult.rows[0];
@@ -318,7 +296,7 @@ export async function DELETE(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: `Fleet type "${fleetType.name}" and ${doctrineCount} doctrine(s) deleted`
+      message: `Fleet type "${fleetType.name}" and ${doctrineCount} doctrine(s) deleted`,
     });
   } catch (error: any) {
     console.error('Error deleting fleet type:', error);

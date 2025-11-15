@@ -12,10 +12,7 @@ export async function POST(req: NextRequest) {
     const { operation, params } = body;
 
     if (!operation) {
-      return NextResponse.json(
-        { success: false, error: 'operation required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ success: false, error: 'operation required' }, { status: 400 });
     }
 
     let result;
@@ -33,10 +30,7 @@ export async function POST(req: NextRequest) {
 
       case 'getTypeInfo':
         if (!params?.typeId) {
-          return NextResponse.json(
-            { success: false, error: 'typeId required' },
-            { status: 400 }
-          );
+          return NextResponse.json({ success: false, error: 'typeId required' }, { status: 400 });
         }
         result = await getTypeInfo(params.typeId);
         break;
@@ -50,9 +44,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      data: result
+      data: result,
     });
-
   } catch (error: any) {
     console.error('[ESI PROXY] Error:', error);
     return NextResponse.json(

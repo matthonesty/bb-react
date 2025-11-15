@@ -40,12 +40,7 @@ export function RejectModal({
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={handleClose}
-      title="Reject SRP Request"
-      size="md"
-    >
+    <Modal isOpen={isOpen} onClose={handleClose} title="Reject SRP Request" size="md">
       <div className="space-y-4">
         {/* Warning message */}
         <div className="rounded-lg bg-error/10 border border-error/20 p-4">
@@ -64,10 +59,7 @@ export function RejectModal({
 
         {/* Reason input */}
         <div>
-          <label
-            htmlFor="reject-reason"
-            className="block text-sm font-medium text-foreground mb-2"
-          >
+          <label htmlFor="reject-reason" className="block text-sm font-medium text-foreground mb-2">
             Rejection Reason <span className="text-error">*</span>
           </label>
           <textarea
@@ -87,11 +79,7 @@ export function RejectModal({
 
       <ModalFooter>
         <div className="flex gap-2 justify-end w-full">
-          <Button
-            variant="secondary"
-            onClick={handleClose}
-            disabled={isLoading}
-          >
+          <Button variant="secondary" onClick={handleClose} disabled={isLoading}>
             Cancel
           </Button>
           <Button

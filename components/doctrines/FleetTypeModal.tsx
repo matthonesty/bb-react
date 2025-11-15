@@ -106,9 +106,7 @@ export function FleetTypeModal({ isOpen, onClose, onSuccess, fleetType }: FleetT
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Description
-            </label>
+            <label className="block text-sm font-medium text-foreground mb-2">Description</label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -119,35 +117,25 @@ export function FleetTypeModal({ isOpen, onClose, onSuccess, fleetType }: FleetT
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground mb-2">
-              Display Order
-            </label>
+            <label className="block text-sm font-medium text-foreground mb-2">Display Order</label>
             <Input
               type="number"
               value={formData.display_order}
-              onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
+              onChange={(e) =>
+                setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })
+              }
               min={0}
             />
-            <p className="mt-1 text-xs text-foreground-muted">
-              Lower numbers appear first
-            </p>
+            <p className="mt-1 text-xs text-foreground-muted">Lower numbers appear first</p>
           </div>
         </div>
 
         <ModalFooter>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            disabled={loading}
-          >
-            {loading ? 'Saving...' : (isEditMode ? 'Update' : 'Create')}
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Saving...' : isEditMode ? 'Update' : 'Create'}
           </Button>
         </ModalFooter>
       </form>

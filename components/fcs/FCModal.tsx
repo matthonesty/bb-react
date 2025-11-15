@@ -170,9 +170,7 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
       const char = await lookupCharacter(additionalAltLookup);
       if (char) {
         // Check if already in list
-        if (
-          formData.additional_alts.some((alt) => alt.character_id === char.id)
-        ) {
+        if (formData.additional_alts.some((alt) => alt.character_id === char.id)) {
           setError('This character is already in the additional alts list');
           return;
         }
@@ -196,9 +194,7 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
   function removeAdditionalAlt(characterId: number) {
     setFormData({
       ...formData,
-      additional_alts: formData.additional_alts.filter(
-        (alt) => alt.character_id !== characterId
-      ),
+      additional_alts: formData.additional_alts.filter((alt) => alt.character_id !== characterId),
     });
   }
 
@@ -274,9 +270,7 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
               </label>
               <select
                 value={formData.status}
-                onChange={(e) =>
-                  setFormData({ ...formData, status: e.target.value as any })
-                }
+                onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
                 className="flex h-10 w-full rounded-md border border-input-border bg-input-bg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 required
               >
@@ -292,9 +286,7 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
               </label>
               <select
                 value={formData.rank}
-                onChange={(e) =>
-                  setFormData({ ...formData, rank: e.target.value as any })
-                }
+                onChange={(e) => setFormData({ ...formData, rank: e.target.value as any })}
                 className="flex h-10 w-full rounded-md border border-input-border bg-input-bg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 required
               >
@@ -427,14 +419,10 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
 
           {/* Access Level */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">
-              Access Level
-            </label>
+            <label className="mb-2 block text-sm font-medium text-foreground">Access Level</label>
             <select
               value={formData.access_level}
-              onChange={(e) =>
-                setFormData({ ...formData, access_level: e.target.value as any })
-              }
+              onChange={(e) => setFormData({ ...formData, access_level: e.target.value as any })}
               className="flex h-10 w-full rounded-md border border-input-border bg-input-bg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             >
               <option value="">None</option>
@@ -448,9 +436,7 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
 
           {/* Notes */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">
-              Notes
-            </label>
+            <label className="mb-2 block text-sm font-medium text-foreground">Notes</label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
@@ -462,12 +448,7 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
         </div>
 
         <ModalFooter>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
           <Button type="submit" isLoading={loading} disabled={loading}>

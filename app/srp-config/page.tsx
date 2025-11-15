@@ -48,7 +48,7 @@ export default function SRPConfigPage() {
   const canManage = hasRole(['admin', 'Council']);
 
   // Get unique groups for filter
-  const uniqueGroups = Array.from(new Set(shipTypes.map(st => st.group_name))).sort();
+  const uniqueGroups = Array.from(new Set(shipTypes.map((st) => st.group_name))).sort();
 
   useEffect(() => {
     loadShipTypes();
@@ -102,7 +102,7 @@ export default function SRPConfigPage() {
 
   // Client-side filter by group
   const filteredShipTypes = groupFilter
-    ? shipTypes.filter(st => st.group_name === groupFilter)
+    ? shipTypes.filter((st) => st.group_name === groupFilter)
     : shipTypes;
 
   return (
@@ -249,11 +249,7 @@ export default function SRPConfigPage() {
                       </TableCell>
                       {canManage && (
                         <TableCell>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => openEditModal(shipType)}
-                          >
+                          <Button variant="ghost" size="sm" onClick={() => openEditModal(shipType)}>
                             <Pencil size={14} />
                           </Button>
                         </TableCell>

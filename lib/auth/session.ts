@@ -22,7 +22,9 @@ export interface Session {
  * Get the current user session from cookies
  * Returns null if not authenticated
  */
-export async function getServerSession(requireAuthorizedRole: boolean = true): Promise<Session | null> {
+export async function getServerSession(
+  requireAuthorizedRole: boolean = true
+): Promise<Session | null> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get('auth_token')?.value;
@@ -49,7 +51,7 @@ export async function getServerSession(requireAuthorizedRole: boolean = true): P
     // Return session with current roles from database
     return {
       ...decoded,
-      roles: currentRoles
+      roles: currentRoles,
     };
   } catch (error) {
     console.error('[AUTH] Session verification failed:', error);
@@ -75,5 +77,5 @@ export async function hasRole(requiredRoles: string[]): Promise<boolean> {
     return false;
   }
 
-  return session.roles.some(role => requiredRoles.includes(role));
+  return session.roles.some((role) => requiredRoles.includes(role));
 }

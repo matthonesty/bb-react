@@ -125,7 +125,7 @@ export async function fetchJWKS(): Promise<JWKS> {
 
     // Cache JWKS with TTL
     jwksCache = jwks;
-    jwksCacheExpiry = Date.now() + (JWKS_CACHE_TTL * 1000);
+    jwksCacheExpiry = Date.now() + JWKS_CACHE_TTL * 1000;
 
     return jwks;
   } catch (error: any) {
@@ -158,9 +158,7 @@ export async function getPublicKey(token: string): Promise<JWKSKey> {
   }
 
   // Find matching key
-  const key = jwks.keys.find(
-    k => k.kid === header.kid && k.alg === header.alg
-  );
+  const key = jwks.keys.find((k) => k.kid === header.kid && k.alg === header.alg);
 
   if (!key) {
     throw new Error(`No matching public key found for kid: ${header.kid}, alg: ${header.alg}`);
@@ -226,7 +224,7 @@ export async function verifyJWT(accessToken: string, clientId: string): Promise<
       issuer: ACCEPTED_ISSUERS as [string, ...string[]],
       // Note: audience verification is more complex for EVE SSO
       // We'll verify it manually after decoding
-      complete: false
+      complete: false,
     }) as unknown as EVEJWTPayload;
 
     // Verify audience manually (must contain both client_id and "EVE Online")

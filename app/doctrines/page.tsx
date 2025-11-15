@@ -81,9 +81,10 @@ export default function DoctrinesPage() {
   }
 
   async function deleteFleetType(id: number, name: string, doctrineCount: number) {
-    const message = doctrineCount > 0
-      ? `Delete "${name}" and its ${doctrineCount} doctrine(s)?`
-      : `Delete "${name}"?`;
+    const message =
+      doctrineCount > 0
+        ? `Delete "${name}" and its ${doctrineCount} doctrine(s)?`
+        : `Delete "${name}"?`;
 
     if (!confirm(message)) {
       return;
@@ -107,13 +108,10 @@ export default function DoctrinesPage() {
   }
 
   // Filter fleet types by search query
-  const filteredFleetTypes = fleetTypes.filter(ft => {
+  const filteredFleetTypes = fleetTypes.filter((ft) => {
     if (!searchQuery) return true;
     const query = searchQuery.toLowerCase();
-    return (
-      ft.name.toLowerCase().includes(query) ||
-      ft.description?.toLowerCase().includes(query)
-    );
+    return ft.name.toLowerCase().includes(query) || ft.description?.toLowerCase().includes(query);
   });
 
   return (
@@ -200,11 +198,9 @@ export default function DoctrinesPage() {
                 fleetType={fleetType}
                 canManage={canManage}
                 onEdit={() => openEditFleetTypeModal(fleetType)}
-                onDelete={() => deleteFleetType(
-                  fleetType.id,
-                  fleetType.name,
-                  fleetType.doctrine_count || 0
-                )}
+                onDelete={() =>
+                  deleteFleetType(fleetType.id, fleetType.name, fleetType.doctrine_count || 0)
+                }
                 onReload={loadFleetTypes}
               />
             ))}

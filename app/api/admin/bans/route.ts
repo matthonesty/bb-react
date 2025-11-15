@@ -14,10 +14,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role (FC or higher)
@@ -132,10 +129,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage bans (Admin & Council only)
@@ -147,23 +141,11 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const {
-      name,
-      type,
-      esi_id,
-      bb_banned,
-      xup_banned,
-      hk_banned,
-      banned_by,
-      reason,
-      ban_date,
-    } = body;
+    const { name, type, esi_id, bb_banned, xup_banned, hk_banned, banned_by, reason, ban_date } =
+      body;
 
     if (!name || !type) {
-      return NextResponse.json(
-        { error: 'Missing required fields: name, type' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required fields: name, type' }, { status: 400 });
     }
 
     const result = await pool.query(
@@ -185,10 +167,13 @@ export async function POST(request: NextRequest) {
       ]
     );
 
-    return NextResponse.json({
-      success: true,
-      ban: result.rows[0],
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        ban: result.rows[0],
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error('[BANS] POST error:', error);
     return NextResponse.json(
@@ -204,10 +189,7 @@ export async function PUT(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage bans
@@ -233,10 +215,7 @@ export async function PUT(request: NextRequest) {
     } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Missing required field: id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required field: id' }, { status: 400 });
     }
 
     const result = await pool.query(
@@ -253,25 +232,11 @@ export async function PUT(request: NextRequest) {
         updated_at = NOW()
       WHERE id = $1
       RETURNING *`,
-      [
-        id,
-        name,
-        esi_id,
-        type,
-        bb_banned,
-        xup_banned,
-        hk_banned,
-        banned_by,
-        reason,
-        ban_date,
-      ]
+      [id, name, esi_id, type, bb_banned, xup_banned, hk_banned, banned_by, reason, ban_date]
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Ban entry not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Ban entry not found' }, { status: 404 });
     }
 
     return NextResponse.json({
@@ -293,10 +258,7 @@ export async function DELETE(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage bans
@@ -311,10 +273,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Missing required parameter: id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required parameter: id' }, { status: 400 });
     }
 
     const result = await pool.query(
@@ -325,10 +284,7 @@ export async function DELETE(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Ban entry not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Ban entry not found' }, { status: 404 });
     }
 
     return NextResponse.json({

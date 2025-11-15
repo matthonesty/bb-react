@@ -3,6 +3,7 @@
 ## Overview
 
 The Bombers Bar SRP system includes automated mail processing that:
+
 1. Monitors EVE in-game mail for SRP submissions
 2. Validates killmail links from zkillboard
 3. Auto-creates SRP requests in the database
@@ -265,6 +266,7 @@ Enable verbose logging by checking console output with `[MAIL CRON]` prefix.
 ### Testing Auto-Rejections
 
 Send test mails to the mailer character with:
+
 - Invalid ship types (not in approved list)
 - Old killmails (>30 days)
 - Wrong sender (different character than victim)

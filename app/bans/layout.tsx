@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Manage banned characters, corporations, and alliances',
 });
 
-export default function BansLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function BansLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

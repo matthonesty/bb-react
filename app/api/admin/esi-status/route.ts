@@ -43,7 +43,7 @@ export async function GET() {
   }
 
   try {
-    const statusData = await getESIStatus() as { routes?: any[] } | null;
+    const statusData = (await getESIStatus()) as { routes?: any[] } | null;
     const compatDate = getCompatibilityDateSync();
 
     if (!statusData || !statusData.routes || !Array.isArray(statusData.routes)) {
@@ -60,9 +60,7 @@ export async function GET() {
     // Check critical routes status
     const criticalRouteStatus = CRITICAL_ROUTES.map((criticalRoute) => {
       const routeStatus = statusData.routes!.find(
-        (r: any) =>
-          r.method === criticalRoute.method &&
-          r.path === criticalRoute.path
+        (r: any) => r.method === criticalRoute.method && r.path === criticalRoute.path
       );
 
       return {
@@ -76,9 +74,7 @@ export async function GET() {
     let message = 'All critical ESI routes operational';
 
     const downRoutes = criticalRouteStatus.filter((r) => r.status === 'down');
-    const degradedRoutes = criticalRouteStatus.filter(
-      (r) => r.status === 'degraded'
-    );
+    const degradedRoutes = criticalRouteStatus.filter((r) => r.status === 'degraded');
 
     if (downRoutes.length > 0) {
       overallStatus = 'DOWN';
@@ -98,9 +94,6 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('[ADMIN] ESI status error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

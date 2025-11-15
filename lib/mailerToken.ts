@@ -29,10 +29,9 @@ const MAILER_TOKEN_KEY = 'mailer_refresh_token';
  * @returns Refresh token or null if not set
  */
 export async function getStoredRefreshToken(): Promise<string | null> {
-  const result = await pool.query(
-    'SELECT token FROM admin_tokens WHERE key = $1',
-    [MAILER_TOKEN_KEY]
-  );
+  const result = await pool.query('SELECT token FROM admin_tokens WHERE key = $1', [
+    MAILER_TOKEN_KEY,
+  ]);
 
   if (result.rows.length === 0) {
     return null;
@@ -49,12 +48,15 @@ export async function getStoredRefreshToken(): Promise<string | null> {
  * @param refreshToken - EVE SSO refresh token
  */
 export async function storeRefreshToken(refreshToken: string): Promise<void> {
-  await pool.query(`
+  await pool.query(
+    `
     INSERT INTO admin_tokens (key, token, updated_at)
     VALUES ($1, $2, NOW())
     ON CONFLICT (key)
     DO UPDATE SET token = $2, updated_at = NOW()
-  `, [MAILER_TOKEN_KEY, refreshToken]);
+  `,
+    [MAILER_TOKEN_KEY, refreshToken]
+  );
 
   console.log('[MAILER TOKEN] Refresh token stored/updated');
 }
@@ -76,7 +78,9 @@ export async function getMailerAccessToken(): Promise<string> {
   const refreshToken = await getStoredRefreshToken();
 
   if (!refreshToken) {
-    throw new Error('No mailer refresh token stored. Admin must login via /api/auth/mailer-login to authorize the service account.');
+    throw new Error(
+      'No mailer refresh token stored. Admin must login via /api/auth/mailer-login to authorize the service account.'
+    );
   }
 
   // Refresh to get access token (also returns NEW refresh token)

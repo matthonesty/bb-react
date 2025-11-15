@@ -60,12 +60,8 @@ export function RequireAuth({ children, requireFCRole = false, requiredRoles }: 
       <div className="flex min-h-screen items-center justify-center px-4">
         <Card className="max-w-md w-full">
           <div className="text-center p-8">
-            <h1 className="text-2xl font-bold text-foreground mb-4">
-              Authentication Required
-            </h1>
-            <p className="text-foreground-muted mb-6">
-              Please log in to continue.
-            </p>
+            <h1 className="text-2xl font-bold text-foreground mb-4">Authentication Required</h1>
+            <p className="text-foreground-muted mb-6">Please log in to continue.</p>
             <img
               src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
               alt="Login with EVE Online"
@@ -98,14 +94,12 @@ export function RequireAuth({ children, requireFCRole = false, requiredRoles }: 
         <div className="flex min-h-screen items-center justify-center px-4">
           <Card className="max-w-md w-full">
             <div className="text-center p-8">
-              <h1 className="text-2xl font-bold text-foreground mb-4">
-                Access Denied
-              </h1>
+              <h1 className="text-2xl font-bold text-foreground mb-4">Access Denied</h1>
               <p className="text-foreground-muted mb-6">
                 You do not have permission to access this page.
               </p>
               <button
-                onClick={() => window.location.href = '/'}
+                onClick={() => (window.location.href = '/')}
                 className="px-4 py-2 bg-primary text-primary-foreground rounded-md hover:bg-primary/90 transition-colors"
               >
                 Go Home

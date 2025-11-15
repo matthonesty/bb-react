@@ -11,6 +11,7 @@ Successfully migrated the Bombers Bar application from vanilla HTML/JavaScript t
 ### 🏗️ Core Infrastructure
 
 **Technology Stack:**
+
 - ✅ Next.js 14+ with App Router
 - ✅ TypeScript for type safety
 - ✅ Tailwind CSS v4 with custom dark theme
@@ -21,6 +22,7 @@ Successfully migrated the Bombers Bar application from vanilla HTML/JavaScript t
 - ✅ date-fns for date formatting
 
 **Project Structure:**
+
 ```
 bb-react/
 ├── app/                    # Next.js pages
@@ -78,6 +80,7 @@ bb-react/
 ## 🎨 Design System
 
 ### Custom EVE Online Dark Theme
+
 - **Background**: Deep space blues (#0a0e1a → #1a2338)
 - **Primary**: EVE blue (#3b82f6)
 - **Accent**: Purple (#8b5cf6)
@@ -101,7 +104,9 @@ bb-react/
 ## 📄 Pages Implemented
 
 ### 1. Home Page (/)
+
 **Features:**
+
 - ✅ Hero section with branding
 - ✅ Feature cards (SRP, Fleets, Doctrines, Intel)
 - ✅ About section
@@ -110,7 +115,9 @@ bb-react/
 - ✅ Fully responsive design
 
 ### 2. SRP Page (/srp)
+
 **Features:**
+
 - ✅ **Data Table** with sorting & pagination
   - Character name & corporation
   - Ship type with polarized indicator
@@ -159,6 +166,7 @@ bb-react/
 ## 🔐 Authentication System
 
 **Features:**
+
 - ✅ EVE SSO integration ready
 - ✅ JWT cookie-based auth
 - ✅ Persistent auth state (Zustand + localStorage)
@@ -168,6 +176,7 @@ bb-react/
 - ✅ Auto-refresh on window focus
 
 **Roles Supported:**
+
 - admin
 - Council
 - Accountant
@@ -180,6 +189,7 @@ bb-react/
 ## 🔌 API Integration
 
 ### API Client (Axios)
+
 - ✅ Request/response interceptors
 - ✅ Automatic 401 handling
 - ✅ Cookie-based authentication
@@ -189,12 +199,14 @@ bb-react/
 ### API Services
 
 **Authentication API** (`lib/api/auth.ts`):
+
 - `verify()` - Check auth status
 - `login()` - Initiate EVE SSO
 - `logout()` - Clear session
 - `getCurrentUser()` - Get user info
 
 **SRP API** (`lib/api/srp.ts`):
+
 - `list()` - Paginated SRP requests with filters
 - `getById()` - Single request details
 - `submit()` - Submit new request
@@ -213,6 +225,7 @@ bb-react/
 ## 🎯 TypeScript Types
 
 **Complete type definitions for:**
+
 - User & Character entities
 - SRP requests & status
 - Fleet management
@@ -223,6 +236,7 @@ bb-react/
 - Form data
 
 **Benefits:**
+
 - Full IntelliSense support
 - Compile-time error checking
 - Better code documentation
@@ -246,6 +260,7 @@ bb-react/
 ## 📱 Responsive Design
 
 **Mobile-First Approach:**
+
 - ✅ Breakpoints: sm, md, lg, xl
 - ✅ Hamburger menu on mobile
 - ✅ Touch-friendly buttons
@@ -254,6 +269,7 @@ bb-react/
 - ✅ Mobile pagination
 
 **Tested Viewports:**
+
 - ✅ Mobile (320px+)
 - ✅ Tablet (768px+)
 - ✅ Desktop (1024px+)
@@ -264,6 +280,7 @@ bb-react/
 ## 📝 Utility Functions (15+)
 
 **Formatting** (`lib/utils/format.ts`):
+
 - `formatISK()` - Currency formatting
 - `formatNumber()` - K/M/B suffixes
 - `formatDate()` - Customizable date formats
@@ -282,6 +299,7 @@ bb-react/
 ## 🔧 Configuration Files
 
 ### Environment Variables (.env.example)
+
 ```env
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_API_URL=http://localhost:3000
@@ -293,12 +311,14 @@ ADMIN_CHARACTER_IDS=...
 ```
 
 ### Vercel Configuration (vercel.json)
+
 - ✅ Build settings
 - ✅ Environment variable mapping
 - ✅ CORS headers
 - ✅ Cron job configuration (mail processing)
 
 ### Package.json Scripts
+
 ```json
 {
   "dev": "next dev --turbopack",
@@ -313,22 +333,26 @@ ADMIN_CHARACTER_IDS=...
 ## 📦 Dependencies
 
 ### Core
+
 - next: 16.0.3
 - react: 19.0.0
 - typescript: 5.7.2
 
 ### State & Data
+
 - @tanstack/react-query: ^5.64.2
 - zustand: ^5.0.2
 - axios: ^1.7.9
 
 ### UI & Styling
+
 - tailwindcss: 4.0.0
 - lucide-react: ^0.469.0
 - clsx: ^2.1.1
 - tailwind-merge: ^2.5.5
 
 ### Utilities
+
 - date-fns: ^4.1.0
 - js-cookie: ^3.0.5
 
@@ -337,6 +361,7 @@ ADMIN_CHARACTER_IDS=...
 ## 🎓 Best Practices Implemented
 
 ### Code Quality
+
 - ✅ TypeScript strict mode
 - ✅ ESLint configuration
 - ✅ Consistent naming conventions
@@ -344,6 +369,7 @@ ADMIN_CHARACTER_IDS=...
 - ✅ DRY principles
 
 ### Performance
+
 - ✅ React Query for server state
 - ✅ Zustand for client state
 - ✅ Memoization where needed
@@ -351,6 +377,7 @@ ADMIN_CHARACTER_IDS=...
 - ✅ Code splitting
 
 ### Security
+
 - ✅ XSS protection (escapeHtml)
 - ✅ CSRF tokens ready
 - ✅ HttpOnly cookies
@@ -358,6 +385,7 @@ ADMIN_CHARACTER_IDS=...
 - ✅ Role-based access
 
 ### Accessibility
+
 - ✅ ARIA labels
 - ✅ Keyboard navigation
 - ✅ Focus states
@@ -369,6 +397,7 @@ ADMIN_CHARACTER_IDS=...
 ## 🔄 Migration Comparison
 
 ### Before (Original bb project)
+
 - ❌ 14 separate HTML files
 - ❌ Vanilla JavaScript with global state
 - ❌ Manual DOM manipulation
@@ -378,6 +407,7 @@ ADMIN_CHARACTER_IDS=...
 - ❌ Hard to maintain
 
 ### After (bb-react)
+
 - ✅ Single-page application
 - ✅ React components with hooks
 - ✅ Virtual DOM
@@ -403,18 +433,21 @@ ADMIN_CHARACTER_IDS=...
 ## 🧪 Testing Checklist
 
 ### Build & Compile
+
 - ✅ TypeScript compilation successful
 - ✅ Next.js build successful
 - ✅ No console errors
 - ✅ No type errors
 
 ### Components
+
 - ✅ All UI components render
 - ✅ Variants work correctly
 - ✅ Props typed properly
 - ✅ Responsive behavior
 
 ### Pages
+
 - ✅ Home page loads
 - ✅ SRP page loads
 - ✅ Navigation works
@@ -425,6 +458,7 @@ ADMIN_CHARACTER_IDS=...
 ## 📖 Documentation
 
 **Created:**
+
 - ✅ README.md - Project overview
 - ✅ BACKEND_INTEGRATION.md - Integration guide
 - ✅ PROJECT_SUMMARY.md - This file
@@ -436,6 +470,7 @@ ADMIN_CHARACTER_IDS=...
 ## 🎯 Next Steps
 
 ### Immediate (To Get Running)
+
 1. **Integrate Backend**
    - Copy `/api`, `/lib`, `/src` from original bb project
    - Configure `.env.local` with your credentials
@@ -449,6 +484,7 @@ ADMIN_CHARACTER_IDS=...
    - Verify pagination
 
 ### Phase 2: Additional Pages
+
 1. **Fleet Management** (/fleet-management)
    - Fleet list table
    - Fleet creation form
@@ -470,6 +506,7 @@ ADMIN_CHARACTER_IDS=...
    - Feedback details
 
 ### Phase 3: Admin Features
+
 1. **Wallet** (/wallet)
    - Transaction journal
    - SRP reconciliation
@@ -486,6 +523,7 @@ ADMIN_CHARACTER_IDS=...
    - Expiration dates
 
 ### Phase 4: Tools
+
 1. **Bombing Intel** (/bombing-intel)
    - Intel tool interface
    - Target tracking
@@ -496,6 +534,7 @@ ADMIN_CHARACTER_IDS=...
    - Statistics
 
 ### Phase 5: Enhancements
+
 1. **Features**
    - Bulk operations UI
    - Export functionality
@@ -530,6 +569,7 @@ ADMIN_CHARACTER_IDS=...
 8. **Production Ready** - Build succeeds, deployable now
 
 ### Developer Experience Improvements
+
 - 🚀 Hot module replacement
 - 🔍 IntelliSense everywhere
 - 🐛 Better debugging with React DevTools
@@ -542,6 +582,7 @@ ADMIN_CHARACTER_IDS=...
 ## 💡 Key Learnings
 
 ### Architecture Decisions
+
 - **Next.js App Router**: Future-proof, better DX
 - **Zustand over Redux**: Simpler, less boilerplate
 - **React Query**: Perfect for server state
@@ -549,6 +590,7 @@ ADMIN_CHARACTER_IDS=...
 - **Component composition**: Better than inheritance
 
 ### Challenges Overcome
+
 - ✅ Tailwind CSS v4 configuration (new syntax)
 - ✅ TypeScript strict mode compliance
 - ✅ React Query v5 API changes
@@ -560,6 +602,7 @@ ADMIN_CHARACTER_IDS=...
 ## 🎬 Getting Started
 
 ### Quick Start
+
 ```bash
 cd bb-react
 npm install
@@ -568,6 +611,7 @@ npm run dev
 ```
 
 ### With Backend Integration
+
 ```bash
 # Copy backend from original project
 cp -r ../bb/api ../bb/lib ../bb/src .
@@ -581,12 +625,14 @@ npm run dev
 ```
 
 ### Production Build
+
 ```bash
 npm run build
 npm start
 ```
 
 ### Deploy to Vercel
+
 ```bash
 # Push to GitHub
 git push
@@ -601,12 +647,14 @@ vercel --prod
 ## 📞 Support & Resources
 
 ### Documentation
+
 - Next.js: https://nextjs.org/docs
 - React Query: https://tanstack.com/query
 - Tailwind CSS: https://tailwindcss.com/docs
 - Zustand: https://github.com/pmndrs/zustand
 
 ### EVE Online
+
 - ESI Docs: https://esi.evetech.net/ui
 - EVE SSO: https://developers.eveonline.com
 - zkillboard API: https://github.com/zKillboard/zKillboard/wiki
@@ -628,4 +676,4 @@ This migration successfully modernizes the Bombers Bar application while maintai
 
 **Built with ❤️ for the Bombers Bar community**
 
-*EVE Online and the EVE logo are the registered trademarks of CCP hf.*
+_EVE Online and the EVE logo are the registered trademarks of CCP hf._

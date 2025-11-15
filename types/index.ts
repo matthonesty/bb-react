@@ -68,12 +68,7 @@ export interface SRPRequest {
   proximity_data?: any;
 }
 
-export type SRPStatus =
-  | 'pending'
-  | 'approved'
-  | 'denied'
-  | 'paid'
-  | 'cancelled';
+export type SRPStatus = 'pending' | 'approved' | 'denied' | 'paid' | 'cancelled';
 
 export type PaymentMethod = 'Contract' | 'Direct';
 

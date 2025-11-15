@@ -100,9 +100,9 @@ export function ProcessedMailsTable() {
           throw new Error(data.error || 'Failed to load mail details');
         }
 
-        setExpandedMailData(prev => ({
+        setExpandedMailData((prev) => ({
           ...prev,
-          [mailId]: data.mail
+          [mailId]: data.mail,
         }));
       } catch (err: any) {
         console.error('Failed to load mail details:', err);
@@ -110,7 +110,7 @@ export function ProcessedMailsTable() {
     }
   }
 
-  const filteredMails = mails.filter(mail =>
+  const filteredMails = mails.filter((mail) =>
     mail.sender_name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
@@ -163,8 +163,12 @@ export function ProcessedMailsTable() {
         </div>
 
         <div className="flex gap-4 text-sm text-foreground-muted">
-          <span>Showing: <strong className="text-foreground">{filteredMails.length}</strong></span>
-          <span>Total: <strong className="text-foreground">{total}</strong></span>
+          <span>
+            Showing: <strong className="text-foreground">{filteredMails.length}</strong>
+          </span>
+          <span>
+            Total: <strong className="text-foreground">{total}</strong>
+          </span>
         </div>
       </div>
 
@@ -205,47 +209,48 @@ export function ProcessedMailsTable() {
                 </TableRow>
               )}
 
-              {!loading && filteredMails.map((mail) => (
-                <React.Fragment key={mail.mail_id}>
-                  <TableRow
-                    clickable
-                    onClick={() => toggleMailExpand(mail.mail_id)}
-                    className={expandedMailId === mail.mail_id ? 'bg-primary/10' : ''}
-                  >
-                    <TableCell>{mail.sender_name || '-'}</TableCell>
-                    <TableCell>{mail.subject || '-'}</TableCell>
-                    <TableCell>
-                      <StatusBadge status={mail.status} />
-                    </TableCell>
-                    <TableCell className="text-foreground-muted">
-                      {formatDate(mail.processed_at, 'MMM d, yyyy HH:mm')}
-                    </TableCell>
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      {mail.srp_request_id ? (
-                        <Link
-                          href={`/srp?id=${mail.srp_request_id}`}
-                          className="text-primary hover:text-primary-hover"
-                        >
-                          {mail.srp_request_id}
-                        </Link>
-                      ) : (
-                        '-'
-                      )}
-                    </TableCell>
-                  </TableRow>
-
-                  {expandedMailId === mail.mail_id && (
-                    <TableRow>
-                      <TableCell colSpan={5} className="bg-background-secondary/50">
-                        <MailDetail
-                          mail={expandedMailData[mail.mail_id]}
-                          loading={!expandedMailData[mail.mail_id]}
-                        />
+              {!loading &&
+                filteredMails.map((mail) => (
+                  <React.Fragment key={mail.mail_id}>
+                    <TableRow
+                      clickable
+                      onClick={() => toggleMailExpand(mail.mail_id)}
+                      className={expandedMailId === mail.mail_id ? 'bg-primary/10' : ''}
+                    >
+                      <TableCell>{mail.sender_name || '-'}</TableCell>
+                      <TableCell>{mail.subject || '-'}</TableCell>
+                      <TableCell>
+                        <StatusBadge status={mail.status} />
+                      </TableCell>
+                      <TableCell className="text-foreground-muted">
+                        {formatDate(mail.processed_at, 'MMM d, yyyy HH:mm')}
+                      </TableCell>
+                      <TableCell onClick={(e) => e.stopPropagation()}>
+                        {mail.srp_request_id ? (
+                          <Link
+                            href={`/srp?id=${mail.srp_request_id}`}
+                            className="text-primary hover:text-primary-hover"
+                          >
+                            {mail.srp_request_id}
+                          </Link>
+                        ) : (
+                          '-'
+                        )}
                       </TableCell>
                     </TableRow>
-                  )}
-                </React.Fragment>
-              ))}
+
+                    {expandedMailId === mail.mail_id && (
+                      <TableRow>
+                        <TableCell colSpan={5} className="bg-background-secondary/50">
+                          <MailDetail
+                            mail={expandedMailData[mail.mail_id]}
+                            loading={!expandedMailData[mail.mail_id]}
+                          />
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </React.Fragment>
+                ))}
             </TableBody>
           </Table>
         </div>
@@ -256,7 +261,7 @@ export function ProcessedMailsTable() {
         <div className="flex justify-center gap-2 items-center">
           <Button
             variant="secondary"
-            onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+            onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
             Previous
@@ -266,7 +271,7 @@ export function ProcessedMailsTable() {
           </span>
           <Button
             variant="secondary"
-            onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+            onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
             Next
@@ -302,7 +307,9 @@ function StatusBadge({ status }: { status: string }) {
   };
 
   return (
-    <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor()}`}>
+    <span
+      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${getStatusColor()}`}
+    >
       {status.replace(/_/g, ' ')}
     </span>
   );
@@ -321,7 +328,9 @@ function MailDetail({ mail, loading }: { mail?: ProcessedMailDetail; loading: bo
     <div className="space-y-4">
       {mail.error_message && (
         <div>
-          <label className="block text-sm font-medium text-foreground-muted mb-2">Error Message</label>
+          <label className="block text-sm font-medium text-foreground-muted mb-2">
+            Error Message
+          </label>
           <div className="bg-background-tertiary border border-border rounded-lg p-3 text-sm text-danger">
             {mail.error_message}
           </div>
@@ -340,7 +349,9 @@ function MailDetail({ mail, loading }: { mail?: ProcessedMailDetail; loading: bo
 
       {mail.killmail_data?.killmail_id && (
         <div>
-          <label className="block text-sm font-medium text-foreground-muted mb-2">ZKillboard Link</label>
+          <label className="block text-sm font-medium text-foreground-muted mb-2">
+            ZKillboard Link
+          </label>
           <div className="bg-background-tertiary border border-border rounded-lg p-3 text-sm">
             <a
               href={`https://zkillboard.com/kill/${mail.killmail_data.killmail_id}/`}
@@ -356,7 +367,9 @@ function MailDetail({ mail, loading }: { mail?: ProcessedMailDetail; loading: bo
 
       {mail.mail_header && (
         <div>
-          <label className="block text-sm font-medium text-foreground-muted mb-2">Mail Header</label>
+          <label className="block text-sm font-medium text-foreground-muted mb-2">
+            Mail Header
+          </label>
           <div className="bg-background-tertiary border border-border rounded-lg p-3 text-xs text-foreground max-h-64 overflow-y-auto">
             <pre>{JSON.stringify(mail.mail_header, null, 2)}</pre>
           </div>

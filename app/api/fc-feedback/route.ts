@@ -15,30 +15,29 @@ export async function POST(request: NextRequest) {
     const session = await getPublicSession();
 
     if (!session) {
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication required'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication required',
+        },
+        { status: 401 }
+      );
     }
 
     // Parse request body
     const body = await request.json();
 
     // Validate required fields
-    const {
-      fc_name,
-      fleet_date,
-      fleet_time,
-      fleet_type,
-      fc_rating,
-      had_fun
-    } = body;
+    const { fc_name, fleet_date, fleet_time, fleet_type, fc_rating, had_fun } = body;
 
     if (!fc_name || !fleet_date || !fleet_time || !fleet_type || !fc_rating || !had_fun) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required fields'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required fields',
+        },
+        { status: 400 }
+      );
     }
 
     // Build Discord embed with each answer on its own line
@@ -50,7 +49,7 @@ export async function POST(request: NextRequest) {
       `**Fleet Length:** ${body.fleet_length || 'Not specified'}`,
       `**Clear Communication:** ${body.was_clear || 'Not specified'}`,
       `**FC Rating:** ${fc_rating}/3`,
-      `**Had Fun?:** ${had_fun}`
+      `**Had Fun?:** ${had_fun}`,
     ];
 
     // Add roles if provided
@@ -95,7 +94,7 @@ export async function POST(request: NextRequest) {
       title: 'New FC Feedback',
       description: descriptionLines.join('\n').substring(0, 4096), // Discord limit
       color: 0x3b82f6, // Blue color
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
 
     // Post to Discord webhook
@@ -103,42 +102,50 @@ export async function POST(request: NextRequest) {
 
     if (!webhookUrl) {
       console.error('[FC-FEEDBACK] DISCORD_WEBHOOK_URL not configured');
-      return NextResponse.json({
-        success: false,
-        error: 'Feedback system not configured'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Feedback system not configured',
+        },
+        { status: 500 }
+      );
     }
 
     const discordResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        embeds: [embed]
-      })
+        embeds: [embed],
+      }),
     });
 
     if (!discordResponse.ok) {
       const errorText = await discordResponse.text();
       console.error('[FC-FEEDBACK] Discord webhook error:', discordResponse.status, errorText);
-      return NextResponse.json({
-        success: false,
-        error: 'Failed to submit feedback'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Failed to submit feedback',
+        },
+        { status: 500 }
+      );
     }
 
     // Success response
     return NextResponse.json({
       success: true,
-      message: 'Feedback submitted successfully'
+      message: 'Feedback submitted successfully',
     });
-
   } catch (error: any) {
     console.error('[FC-FEEDBACK] Error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to process feedback'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to process feedback',
+      },
+      { status: 500 }
+    );
   }
 }

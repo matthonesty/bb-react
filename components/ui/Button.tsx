@@ -28,14 +28,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary disabled:opacity-50 disabled:pointer-events-none';
 
     const variants = {
-      primary:
-        'bg-primary text-white hover:bg-primary-hover active:bg-primary-hover shadow-sm',
+      primary: 'bg-primary text-white hover:bg-primary-hover active:bg-primary-hover shadow-sm',
       secondary:
         'bg-background-secondary text-foreground hover:bg-background-tertiary border border-border',
-      danger:
-        'bg-error text-white hover:bg-red-600 active:bg-red-700 shadow-sm',
-      ghost:
-        'text-foreground hover:bg-background-secondary active:bg-background-tertiary',
+      danger: 'bg-error text-white hover:bg-red-600 active:bg-red-700 shadow-sm',
+      ghost: 'text-foreground hover:bg-background-secondary active:bg-background-tertiary',
       outline:
         'border border-border text-foreground hover:bg-background-secondary active:bg-background-tertiary',
     };

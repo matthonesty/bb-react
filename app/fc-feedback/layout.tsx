@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Provide feedback on Fleet Commander performance',
 });
 
-export default function FCFeedbackLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function FCFeedbackLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

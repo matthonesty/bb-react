@@ -68,6 +68,7 @@ bb-react/
 ## Features Implemented
 
 ### ✅ Core Infrastructure
+
 - [x] Next.js 14+ with App Router
 - [x] TypeScript configuration
 - [x] Tailwind CSS v4 with dark theme
@@ -75,12 +76,14 @@ bb-react/
 - [x] Responsive design foundation
 
 ### ✅ State Management & Data Fetching
+
 - [x] Zustand store for authentication
 - [x] React Query setup for server state
 - [x] API client with interceptors
 - [x] Authentication hook
 
 ### ✅ UI Component Library
+
 - [x] Button (multiple variants & sizes)
 - [x] Card (with header, content, footer)
 - [x] Input (with label, error, helper text)
@@ -89,6 +92,7 @@ bb-react/
 - [x] Modal (portal-based with overlay)
 
 ### ✅ Layout & Navigation
+
 - [x] Header with responsive navigation
 - [x] User dropdown menu
 - [x] Mobile hamburger menu
@@ -96,6 +100,7 @@ bb-react/
 - [x] Footer
 
 ### ✅ Pages
+
 - [x] Home/Landing page with login
 - [ ] SRP page (to be migrated)
 - [ ] Fleet Management pages (to be migrated)
@@ -107,6 +112,7 @@ bb-react/
 - [ ] System Status (to be migrated)
 
 ### ✅ API Integration
+
 - [x] API client with Axios
 - [x] Authentication API service
 - [x] SRP API service (interface ready)
@@ -124,16 +130,19 @@ bb-react/
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    cd /home/ubuntu/bb-react
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Set up environment variables**
+
    ```bash
    cp .env.example .env.local
    ```
@@ -141,6 +150,7 @@ bb-react/
    Edit `.env.local` and fill in your values from the original bb project.
 
 4. **Run development server**
+
    ```bash
    npm run dev
    ```
@@ -153,6 +163,7 @@ bb-react/
 See `.env.example` for all required environment variables.
 
 Key variables:
+
 - `EVE_CLIENT_ID` - EVE Online SSO client ID
 - `EVE_SECRET_KEY` - EVE Online SSO secret key
 - `DATABASE_URL` - PostgreSQL connection string
@@ -173,6 +184,7 @@ The existing backend API routes (`/api/*`) from the original bb project can be i
 ### Colors
 
 Custom dark theme inspired by EVE Online:
+
 - **Background**: Deep space blues (#0a0e1a, #12182b, #1a2338)
 - **Primary**: EVE blue (#3b82f6)
 - **Accent**: Purple (#8b5cf6)
@@ -186,6 +198,7 @@ Custom dark theme inspired by EVE Online:
 ## Migration Status
 
 ### Phase 1: Foundation ✅ (Completed)
+
 - [x] Project setup
 - [x] Core infrastructure
 - [x] Component library
@@ -193,17 +206,20 @@ Custom dark theme inspired by EVE Online:
 - [x] Layout structure
 
 ### Phase 2: Core Pages (Next)
+
 - [ ] Migrate SRP page
 - [ ] Implement data tables
 - [ ] Add SRP submission flow
 - [ ] Build SRP admin interface
 
 ### Phase 3: Fleet Management
+
 - [ ] Fleet management pages
 - [ ] FC management
 - [ ] Fleet composition editor
 
 ### Phase 4: Advanced Features
+
 - [ ] Wallet reconciliation
 - [ ] Ban management
 - [ ] Ship type configuration

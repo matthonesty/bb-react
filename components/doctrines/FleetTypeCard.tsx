@@ -39,9 +39,7 @@ export function FleetTypeCard({
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-2">
-              <h3 className="text-xl font-semibold text-primary">
-                {fleetType.name}
-              </h3>
+              <h3 className="text-xl font-semibold text-primary">{fleetType.name}</h3>
               {!fleetType.is_active && (
                 <Badge variant="default" className="bg-foreground-muted/20 text-foreground-muted">
                   Inactive
@@ -49,9 +47,7 @@ export function FleetTypeCard({
               )}
             </div>
             {fleetType.description && (
-              <p className="text-foreground-muted text-sm">
-                {fleetType.description}
-              </p>
+              <p className="text-foreground-muted text-sm">{fleetType.description}</p>
             )}
           </div>
 
@@ -62,11 +58,7 @@ export function FleetTypeCard({
 
             {canManage && (
               <div className="flex gap-2" onClick={(e) => e.stopPropagation()}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={onEdit}
-                >
+                <Button variant="ghost" size="sm" onClick={onEdit}>
                   <Pencil size={14} />
                 </Button>
                 <Button
@@ -93,11 +85,7 @@ export function FleetTypeCard({
       {/* Doctrines List (shown when expanded) */}
       {isExpanded && (
         <div className="bg-background-dark p-6">
-          <DoctrinesList
-            fleetTypeId={fleetType.id}
-            canManage={canManage}
-            onReload={onReload}
-          />
+          <DoctrinesList fleetTypeId={fleetType.id} canManage={canManage} onReload={onReload} />
         </div>
       )}
     </Card>

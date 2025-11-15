@@ -12,7 +12,7 @@ export async function resolveIds(names: string[]) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       operation: 'resolveIds',
-      params: { names }
+      params: { names },
     }),
   });
 
@@ -34,7 +34,7 @@ export async function getTypeInfo(typeId: number) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       operation: 'getTypeInfo',
-      params: { typeId }
+      params: { typeId },
     }),
   });
 

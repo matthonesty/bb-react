@@ -24,6 +24,7 @@ vercel dev
 ```
 
 This will:
+
 - ✅ Serve `/api` routes correctly
 - ✅ Load environment variables from `.env`
 - ✅ Simulate the Vercel production environment
@@ -52,6 +53,7 @@ Convert the serverless functions to Next.js route handlers. This requires:
 3. Adapt to Next.js request/response format
 
 Example structure:
+
 ```
 app/api/auth/login/route.ts
 app/api/auth/callback/route.ts
@@ -72,6 +74,7 @@ vercel dev
 ```
 
 **Then access:**
+
 - Frontend: http://localhost:3000
 - API routes: http://localhost:3000/api/auth/login ✅
 
@@ -102,15 +105,18 @@ ADMIN_CHARACTER_IDS=12345678,87654321
 ## Why This Happens
 
 **Next.js Development Server (`npm run dev`):**
+
 - Supports `app/api/*/route.ts` files
 - Does NOT support `/api` directory (Vercel serverless functions)
 
 **Vercel Development Server (`vercel dev`):**
+
 - Supports `/api` directory (Vercel serverless functions) ✅
 - Supports `app/api/*/route.ts` files ✅
 - Matches production behavior
 
 **Production on Vercel:**
+
 - Both work perfectly ✅
 
 ---

@@ -10,7 +10,7 @@ import {
   parseAndCategorizeFitting,
   formatForDatabase,
   getShipInfo,
-  getGroupInfo
+  getGroupInfo,
 } from '@/lib/esi.js';
 
 // POST - Parse EVE fitting and return categorized modules
@@ -19,10 +19,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role (FC or higher)
@@ -111,9 +108,9 @@ export async function POST(request: NextRequest) {
           mid: categorized.mid_slot_modules.length,
           low: categorized.low_slot_modules.length,
           rig: categorized.rig_modules.length,
-          cargo: categorized.cargo_items.length
-        }
-      }
+          cargo: categorized.cargo_items.length,
+        },
+      },
     });
   } catch (error: any) {
     console.error('Error importing fitting:', error);

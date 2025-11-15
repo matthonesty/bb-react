@@ -19,7 +19,7 @@ export function CopyButton({
   label,
   showLabel = false,
   size = 16,
-  className = ''
+  className = '',
 }: CopyButtonProps) {
   const [copied, setCopied] = useState(false);
 

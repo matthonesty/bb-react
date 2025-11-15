@@ -35,5 +35,5 @@ export default new BaseSso({
   clientId,
   secretKey,
   callbackUrl,
-  label: 'Mailer SSO'
+  label: 'Mailer SSO',
 });

@@ -1,10 +1,5 @@
 import { apiClient } from './client';
-import type {
-  SRPRequest,
-  PaginatedResponse,
-  SRPStatus,
-  PaymentMethod,
-} from '@/types';
+import type { SRPRequest, PaginatedResponse, SRPStatus, PaymentMethod } from '@/types';
 
 export interface SRPListParams {
   page?: number;
@@ -40,9 +35,7 @@ export const srpApi = {
   /**
    * Get paginated list of SRP requests
    */
-  list: async (
-    params: SRPListParams = {}
-  ): Promise<PaginatedResponse<SRPRequest>> => {
+  list: async (params: SRPListParams = {}): Promise<PaginatedResponse<SRPRequest>> => {
     return apiClient.get<PaginatedResponse<SRPRequest>>('/api/admin/srp', {
       params,
     });
@@ -65,10 +58,7 @@ export const srpApi = {
   /**
    * Approve an SRP request
    */
-  approve: async (
-    id: number,
-    payoutAmount?: number
-  ): Promise<SRPRequest> => {
+  approve: async (id: number, payoutAmount?: number): Promise<SRPRequest> => {
     return apiClient.post<SRPRequest>(`/api/admin/srp/${id}/approve`, {
       payout_amount: payoutAmount,
     });
@@ -86,10 +76,7 @@ export const srpApi = {
   /**
    * Mark an SRP request as paid
    */
-  markPaid: async (
-    id: number,
-    paymentMethod: PaymentMethod
-  ): Promise<SRPRequest> => {
+  markPaid: async (id: number, paymentMethod: PaymentMethod): Promise<SRPRequest> => {
     return apiClient.post<SRPRequest>(`/api/admin/srp/${id}/paid`, {
       payment_method: paymentMethod,
     });
@@ -105,10 +92,7 @@ export const srpApi = {
   /**
    * Bulk mark as paid
    */
-  bulkMarkPaid: async (
-    ids: number[],
-    paymentMethod: PaymentMethod
-  ): Promise<void> => {
+  bulkMarkPaid: async (ids: number[], paymentMethod: PaymentMethod): Promise<void> => {
     return apiClient.post<void>('/api/admin/srp/bulk-paid', {
       ids,
       payment_method: paymentMethod,

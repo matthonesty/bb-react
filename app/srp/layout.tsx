@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'View and manage SRP requests for fleet losses',
 });
 
-export default function SRPLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function SRPLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

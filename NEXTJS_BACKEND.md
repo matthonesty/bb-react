@@ -27,6 +27,7 @@ app/api/
 ### Backend Logic
 
 Reused from original bb project:
+
 - `/lib` - Business logic (auth, ESI, SRP, etc.)
 - `/src` - Database connection
 - All CommonJS modules work with Next.js
@@ -42,8 +43,9 @@ npm run dev
 ```
 
 That's it! Everything works with the standard Next.js dev server:
+
 - ✅ Frontend at http://localhost:3000
-- ✅ API routes at http://localhost:3000/api/*
+- ✅ API routes at http://localhost:3000/api/\*
 - ✅ Database connection
 - ✅ EVE SSO authentication
 - ✅ Full SRP functionality
@@ -74,6 +76,7 @@ Or push to GitHub and connect to Vercel dashboard for automatic deployments.
 ### Authentication (Complete)
 
 **Login Flow:**
+
 1. User clicks "Login with EVE Online"
 2. Redirects to `/api/auth/login`
 3. Redirects to EVE SSO
@@ -84,11 +87,13 @@ Or push to GitHub and connect to Vercel dashboard for automatic deployments.
 8. Redirects user to `/srp`
 
 **Verification:**
+
 - `/api/auth/verify` - Checks JWT cookie
 - Returns user character info and roles
 - Admin roles based on character ID
 
 **Logout:**
+
 - `/api/auth/logout` - Clears JWT cookie
 
 ### SRP API (Complete)
@@ -96,6 +101,7 @@ Or push to GitHub and connect to Vercel dashboard for automatic deployments.
 **List Endpoint:** `GET /api/admin/srp`
 
 Query parameters:
+
 - `page` - Page number (default: 1)
 - `pageSize` - Items per page (default: 50)
 - `status` - Filter by status (Pending, Approved, Rejected, Paid, Ineligible, or 'all')
@@ -104,6 +110,7 @@ Query parameters:
 - `sortDirection` - asc or desc
 
 Returns:
+
 ```json
 {
   "data": [...],
@@ -129,6 +136,7 @@ DATABASE_URL=postgresql://user:password@host:port/database
 ```
 
 Connection pool configured in `/lib/db.ts`:
+
 - Max 20 connections
 - 30s idle timeout
 - 2s connection timeout
@@ -263,17 +271,20 @@ curl -H "Cookie: auth_token=YOUR_TOKEN" \
 Based on your needs, you can add:
 
 ### SRP Operations
+
 - `POST /api/srp/submit` - Submit new SRP request
 - `POST /api/admin/srp/[id]/approve` - Approve request
 - `POST /api/admin/srp/[id]/reject` - Reject request
 - `POST /api/admin/srp/[id]/paid` - Mark as paid
 
 ### Fleet Management
+
 - `GET /api/admin/fleets` - List fleets
 - `POST /api/admin/fleets` - Create fleet
 - `GET /api/admin/fleets/[id]` - Get fleet details
 
 ### Admin
+
 - `GET /api/admin/wallet` - Wallet transactions
 - `GET /api/admin/fcs` - FC list
 - `POST /api/admin/fcs` - Add FC
@@ -299,6 +310,7 @@ Just create new `route.ts` files in `app/api/` following the same pattern!
 ### Issue: "Module not found"
 
 Install missing dependencies:
+
 ```bash
 npm install cookie express jsonwebtoken pg dotenv
 npm install --save-dev @types/jsonwebtoken @types/pg @types/cookie
@@ -307,6 +319,7 @@ npm install --save-dev @types/jsonwebtoken @types/pg @types/cookie
 ### Issue: "Database connection failed"
 
 Check your `DATABASE_URL` in `.env`:
+
 - Correct username/password
 - Database is accessible
 - Firewall allows connection
@@ -315,6 +328,7 @@ Check your `DATABASE_URL` in `.env`:
 ### Issue: "EVE SSO error"
 
 Check your EVE SSO credentials:
+
 - `EVE_CLIENT_ID` is correct
 - `EVE_SECRET_KEY` is correct
 - `EVE_CALLBACK_URL` matches your registered callback
@@ -336,6 +350,7 @@ Check your EVE SSO credentials:
 ✅ **TypeScript** - No errors
 
 **Ready for:**
+
 - Local development
 - Testing
 - Adding more API routes

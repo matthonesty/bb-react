@@ -53,10 +53,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role (FC or higher)
@@ -178,10 +175,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage FCs
@@ -239,10 +233,13 @@ export async function POST(request: NextRequest) {
       is_admin: adminIds.includes(Number(result.rows[0].main_character_id)),
     };
 
-    return NextResponse.json({
-      success: true,
-      fc,
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        fc,
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error('[FCS] POST error:', error);
     return NextResponse.json(
@@ -258,10 +255,7 @@ export async function PUT(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -279,23 +273,14 @@ export async function PUT(request: NextRequest) {
     } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Missing required field: id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required field: id' }, { status: 400 });
     }
 
     // Get the existing FC to check permissions
-    const existingFC = await pool.query(
-      `SELECT * FROM fleet_commanders WHERE id = $1`,
-      [id]
-    );
+    const existingFC = await pool.query(`SELECT * FROM fleet_commanders WHERE id = $1`, [id]);
 
     if (existingFC.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'FC not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'FC not found' }, { status: 404 });
     }
 
     // Add is_admin flag to existing FC
@@ -342,10 +327,7 @@ export async function PUT(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'FC not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'FC not found' }, { status: 404 });
     }
 
     // Add is_admin flag
@@ -373,10 +355,7 @@ export async function DELETE(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Only Admin and Council can delete
@@ -392,10 +371,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Missing required parameter: id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required parameter: id' }, { status: 400 });
     }
 
     // Soft delete by setting status to 'Deleted'
@@ -408,10 +384,7 @@ export async function DELETE(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'FC not found or already deleted' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'FC not found or already deleted' }, { status: 404 });
     }
 
     return NextResponse.json({

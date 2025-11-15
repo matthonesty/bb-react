@@ -96,9 +96,7 @@ export function DoctrinesList({ fleetTypeId, canManage, onReload }: DoctrinesLis
 
   if (error) {
     return (
-      <div className="p-4 bg-danger/10 border border-danger text-danger rounded-lg">
-        {error}
-      </div>
+      <div className="p-4 bg-danger/10 border border-danger text-danger rounded-lg">{error}</div>
     );
   }
 

@@ -58,14 +58,15 @@ async function postToDiscord(results: any) {
 
     // ESI Health Status
     if (results.esiHealth) {
-      const warningText = results.esiHealth.warnings && results.esiHealth.warnings.length > 0
-        ? `\n${results.esiHealth.warnings.join('\n')}`
-        : '';
+      const warningText =
+        results.esiHealth.warnings && results.esiHealth.warnings.length > 0
+          ? `\n${results.esiHealth.warnings.join('\n')}`
+          : '';
 
       fields.push({
         name: 'ESI Status',
         value: `${results.esiHealth.status}${warningText}`,
-        inline: true
+        inline: true,
       });
     }
 
@@ -73,33 +74,35 @@ async function postToDiscord(results: any) {
       {
         name: 'Mail Processing',
         value: `Processed: ${results.processed}\nCreated: ${results.created}\nSkipped: ${results.skipped}`,
-        inline: true
+        inline: true,
       },
       {
         name: 'Wallet Reconciliation',
         value: results.reconciliationError
           ? `Error: ${results.reconciliationError}`
           : `Journal Entries: ${results.journalEntriesSaved || 0}\nPayments Reconciled: ${results.paymentsReconciled || 0}`,
-        inline: true
+        inline: true,
       },
       {
         name: 'Performance',
         value: `Duration: ${durationSeconds}s`,
-        inline: false
+        inline: false,
       }
     );
 
     // Add errors if any
     if (results.errors && results.errors.length > 0) {
-      const errorMessages = results.errors.slice(0, 3).map((err: any) =>
-        `Mail ${err.mail_id} (${err.subject}): ${err.error}`
-      ).join('\n');
-      const moreErrors = results.errors.length > 3 ? `\n... and ${results.errors.length - 3} more` : '';
+      const errorMessages = results.errors
+        .slice(0, 3)
+        .map((err: any) => `Mail ${err.mail_id} (${err.subject}): ${err.error}`)
+        .join('\n');
+      const moreErrors =
+        results.errors.length > 3 ? `\n... and ${results.errors.length - 3} more` : '';
 
       fields.push({
         name: 'Errors',
         value: errorMessages + moreErrors,
-        inline: false
+        inline: false,
       });
     }
 
@@ -110,14 +113,14 @@ async function postToDiscord(results: any) {
       fields: fields,
       timestamp: timestamp,
       footer: {
-        text: 'Bombers Bar SRP System'
-      }
+        text: 'Bombers Bar SRP System',
+      },
     };
 
     await fetch(webhookUrl, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embeds: [embed] })
+      body: JSON.stringify({ embeds: [embed] }),
     });
 
     console.log('[DISCORD] Posted cron results to Discord');
@@ -144,7 +147,7 @@ export async function GET(request: NextRequest) {
     esiHealth: null as any,
     journalEntriesSaved: 0,
     paymentsReconciled: 0,
-    reconciliationError: null as string | null
+    reconciliationError: null as string | null,
   };
 
   try {
@@ -153,23 +156,29 @@ export async function GET(request: NextRequest) {
     // Validate mailer character ID is configured
     if (!MAILER_CHARACTER_ID) {
       console.error('[MAIL CRON] MAILER_CHARACTER_ID not configured');
-      return NextResponse.json({
-        success: false,
-        error: 'Mailer character ID not configured',
-        hint: 'Set MAILER_CHARACTER_ID environment variable'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Mailer character ID not configured',
+          hint: 'Set MAILER_CHARACTER_ID environment variable',
+        },
+        { status: 500 }
+      );
     }
 
     // Step 0: Check ESI health before processing
     console.log('[MAIL CRON] Checking ESI health status...');
-    const health = await checkESIHealth() as {
+    const health = (await checkESIHealth()) as {
       healthy: boolean;
       issues: string[];
       warnings: string[];
     };
 
     if (!health.healthy) {
-      console.error('[MAIL CRON] ESI unhealthy, skipping mail processing:', health.issues.join(', '));
+      console.error(
+        '[MAIL CRON] ESI unhealthy, skipping mail processing:',
+        health.issues.join(', ')
+      );
 
       const skipResults = {
         ...results,
@@ -178,8 +187,8 @@ export async function GET(request: NextRequest) {
         errors: health.issues,
         esiHealth: {
           status: 'UNHEALTHY',
-          warnings: health.warnings
-        }
+          warnings: health.warnings,
+        },
       };
 
       await postToDiscord(skipResults);
@@ -200,7 +209,7 @@ export async function GET(request: NextRequest) {
     // Store ESI health in results for Discord notification
     results.esiHealth = {
       status: health.healthy ? (health.warnings.length > 0 ? 'DEGRADED' : 'OK') : 'UNHEALTHY',
-      warnings: health.warnings
+      warnings: health.warnings,
     };
 
     // Get mailer service account access token
@@ -215,16 +224,20 @@ export async function GET(request: NextRequest) {
         ...results,
         success: false,
         errors: [`Failed to get mailer token: ${error.message}`],
-        duration_ms: Date.now() - startTime
+        duration_ms: Date.now() - startTime,
       };
 
       await postToDiscord(tokenErrorResults);
 
-      return NextResponse.json({
-        success: false,
-        error: 'No mailer token available. Admin must authorize mailer service account via /api/auth/mailer-login first.',
-        details: error.message
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error:
+            'No mailer token available. Admin must authorize mailer service account via /api/auth/mailer-login first.',
+          details: error.message,
+        },
+        { status: 500 }
+      );
     }
 
     // Step 1: Process queued mails from previous runs (that hit rate limits)
@@ -237,7 +250,7 @@ export async function GET(request: NextRequest) {
     // Step 2: Reconcile SRP payments from wallet journal
     console.log('[MAIL CRON] Running wallet reconciliation...');
     try {
-      const reconciliationResults = await runWalletReconciliation(pool) as {
+      const reconciliationResults = (await runWalletReconciliation(pool)) as {
         journalSaved: number;
         paymentsReconciled: number;
       };
@@ -255,12 +268,12 @@ export async function GET(request: NextRequest) {
     console.log(`[MAIL CRON] Found ${mailHeaders.length} total mails`);
 
     // Process mails using shared module
-    const processingResults = await processMailsForSRP({
+    const processingResults = (await processMailsForSRP({
       accessToken,
       characterId: MAILER_CHARACTER_ID,
       mailHeaders,
-      db: pool
-    }) as {
+      db: pool,
+    })) as {
       processed: number;
       created: number;
       skipped: number;
@@ -283,9 +296,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({
       success: true,
       message: 'Mail processing complete',
-      results: results
+      results: results,
     });
-
   } catch (error: any) {
     results.duration_ms = Date.now() - startTime;
     results.success = false;
@@ -296,10 +308,13 @@ export async function GET(request: NextRequest) {
     // Post error results to Discord
     await postToDiscord(results);
 
-    return NextResponse.json({
-      success: false,
-      error: error.message,
-      results: results
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: error.message,
+        results: results,
+      },
+      { status: 500 }
+    );
   }
 }

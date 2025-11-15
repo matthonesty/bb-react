@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'View EVE in-game mails processed by the automated SRP mailer system',
 });
 
-export default function MailLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function MailLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

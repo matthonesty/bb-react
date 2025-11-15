@@ -103,7 +103,9 @@ export default function SystemPage() {
       }
 
       // Show success message
-      setSuccessMessage(`Successfully cleared idle connections (before: ${data.before}, after: ${data.after})`);
+      setSuccessMessage(
+        `Successfully cleared idle connections (before: ${data.before}, after: ${data.after})`
+      );
 
       // Reload system status to show updated counts
       await loadSystemStatus();
@@ -155,11 +157,7 @@ export default function SystemPage() {
           title="System Status"
           description="Monitor ESI API health and database connection status"
           actions={
-            <Button
-              onClick={refreshAll}
-              disabled={loading}
-              className="flex items-center gap-2"
-            >
+            <Button onClick={refreshAll} disabled={loading} className="flex items-center gap-2">
               <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
               Refresh All
             </Button>
@@ -184,14 +182,10 @@ export default function SystemPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* ESI API Status */}
           <Card variant="bordered" padding="lg">
-            <h2 className="text-xl font-semibold text-primary mb-4">
-              EVE ESI API Status
-            </h2>
+            <h2 className="text-xl font-semibold text-primary mb-4">EVE ESI API Status</h2>
 
             {loading && !esiStatus ? (
-              <div className="text-center text-foreground-muted py-8">
-                Loading ESI status...
-              </div>
+              <div className="text-center text-foreground-muted py-8">Loading ESI status...</div>
             ) : esiStatus ? (
               <div className="space-y-4">
                 {/* Overall Status */}
@@ -202,16 +196,12 @@ export default function SystemPage() {
                 </div>
 
                 {/* Message */}
-                <p className="text-sm text-foreground-muted">
-                  {esiStatus.message}
-                </p>
+                <p className="text-sm text-foreground-muted">{esiStatus.message}</p>
 
                 {/* Compatibility Date */}
                 {esiStatus.compatibility_date && (
                   <div className="bg-primary/10 border border-primary/30 rounded-lg p-3">
-                    <span className="text-sm font-semibold text-primary">
-                      Compatibility Date:{' '}
-                    </span>
+                    <span className="text-sm font-semibold text-primary">Compatibility Date: </span>
                     <span className="text-sm text-foreground font-mono">
                       {esiStatus.compatibility_date}
                     </span>
@@ -220,9 +210,7 @@ export default function SystemPage() {
 
                 {/* Critical Routes */}
                 <div className="mt-4">
-                  <h3 className="text-sm font-semibold text-primary mb-2">
-                    Critical Routes:
-                  </h3>
+                  <h3 className="text-sm font-semibold text-primary mb-2">Critical Routes:</h3>
                   <div className="bg-background-tertiary rounded-lg p-3 space-y-2">
                     {esiStatus.critical_routes.map((route, index) => (
                       <div
@@ -255,9 +243,7 @@ export default function SystemPage() {
           {/* Database Status */}
           <Card variant="bordered" padding="lg">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-primary">
-                Database Status
-              </h2>
+              <h2 className="text-xl font-semibold text-primary">Database Status</h2>
               {systemStatus && systemStatus.database.idleCount > 0 && (
                 <Button
                   onClick={clearIdleConnections}
@@ -280,52 +266,36 @@ export default function SystemPage() {
               <div className="space-y-4">
                 {/* Overall Status */}
                 <div className="flex items-center justify-between">
-                  <Badge
-                    variant={
-                      systemStatus.database.isConnected ? 'success' : 'error'
-                    }
-                  >
-                    {systemStatus.database.isConnected
-                      ? 'CONNECTED'
-                      : 'DISCONNECTED'}
+                  <Badge variant={systemStatus.database.isConnected ? 'success' : 'error'}>
+                    {systemStatus.database.isConnected ? 'CONNECTED' : 'DISCONNECTED'}
                   </Badge>
                 </div>
 
                 {/* Database Metrics */}
                 <div className="bg-background-tertiary rounded-lg p-4 space-y-3">
                   <div>
-                    <div className="text-xs text-foreground-muted mb-1">
-                      Connection Status
-                    </div>
+                    <div className="text-xs text-foreground-muted mb-1">Connection Status</div>
                     <div className="text-sm font-semibold text-foreground">
-                      {systemStatus.database.isConnected
-                        ? 'Connected'
-                        : 'Disconnected'}
+                      {systemStatus.database.isConnected ? 'Connected' : 'Disconnected'}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-foreground-muted mb-1">
-                      Total Pool Size
-                    </div>
+                    <div className="text-xs text-foreground-muted mb-1">Total Pool Size</div>
                     <div className="text-sm font-semibold text-foreground">
                       {systemStatus.database.totalCount}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-foreground-muted mb-1">
-                      Idle Connections
-                    </div>
+                    <div className="text-xs text-foreground-muted mb-1">Idle Connections</div>
                     <div className="text-sm font-semibold text-foreground">
                       {systemStatus.database.idleCount}
                     </div>
                   </div>
 
                   <div>
-                    <div className="text-xs text-foreground-muted mb-1">
-                      Waiting Requests
-                    </div>
+                    <div className="text-xs text-foreground-muted mb-1">Waiting Requests</div>
                     <div className="text-sm font-semibold text-foreground">
                       {systemStatus.database.waitingCount}
                     </div>

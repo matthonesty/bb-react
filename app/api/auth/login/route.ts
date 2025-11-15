@@ -11,7 +11,7 @@ const eveSso = new BaseSso({
   clientId: process.env.EVE_CLIENT_ID || '',
   secretKey: process.env.EVE_SECRET_KEY || '',
   callbackUrl: process.env.EVE_CALLBACK_URL || '',
-  label: 'Regular SSO'
+  label: 'Regular SSO',
 });
 
 const REGULAR_USER_SCOPES = ['publicData'];
@@ -25,9 +25,7 @@ export async function GET(request: NextRequest) {
     const returnUrl = request.nextUrl.searchParams.get('return_url') || '';
 
     // Encode state with return URL
-    const encodedState = returnUrl
-      ? `${state}::${encodeURIComponent(returnUrl)}`
-      : state;
+    const encodedState = returnUrl ? `${state}::${encodeURIComponent(returnUrl)}` : state;
 
     // Build authorization URL
     const authUrl = eveSso.getAuthorizationUrl(encodedState, REGULAR_USER_SCOPES);
@@ -39,16 +37,13 @@ export async function GET(request: NextRequest) {
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 600, // 10 minutes
-      path: '/'
+      path: '/',
     });
 
     // Redirect to EVE SSO
     return NextResponse.redirect(authUrl);
   } catch (error) {
     console.error('Login error:', error);
-    return NextResponse.json(
-      { error: 'Failed to initiate login' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to initiate login' }, { status: 500 });
   }
 }

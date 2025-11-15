@@ -14,10 +14,7 @@ export async function GET(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user has any authorized role
@@ -123,10 +120,7 @@ export async function POST(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage ship types
@@ -192,10 +186,13 @@ export async function POST(request: NextRequest) {
       ]
     );
 
-    return NextResponse.json({
-      success: true,
-      ship_type: result.rows[0],
-    }, { status: 201 });
+    return NextResponse.json(
+      {
+        success: true,
+        ship_type: result.rows[0],
+      },
+      { status: 201 }
+    );
   } catch (error: any) {
     console.error('[SRP-CONFIG] POST error:', error);
     return NextResponse.json(
@@ -211,10 +208,7 @@ export async function PUT(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage ship types
@@ -240,23 +234,14 @@ export async function PUT(request: NextRequest) {
     } = body;
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Missing required field: id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required field: id' }, { status: 400 });
     }
 
     // Check if ship type exists
-    const existing = await pool.query(
-      `SELECT id FROM srp_ship_types WHERE id = $1`,
-      [id]
-    );
+    const existing = await pool.query(`SELECT id FROM srp_ship_types WHERE id = $1`, [id]);
 
     if (existing.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Ship type not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Ship type not found' }, { status: 404 });
     }
 
     // If updating type_id, check for conflicts
@@ -268,7 +253,10 @@ export async function PUT(request: NextRequest) {
 
       if (typeIdCheck.rows.length > 0) {
         return NextResponse.json(
-          { success: false, error: `Another ship type "${typeIdCheck.rows[0].type_name}" with this type_id already exists` },
+          {
+            success: false,
+            error: `Another ship type "${typeIdCheck.rows[0].type_name}" with this type_id already exists`,
+          },
           { status: 409 }
         );
       }
@@ -323,10 +311,7 @@ export async function DELETE(request: NextRequest) {
     // Verify authentication
     const user = await verifyAuth(request);
     if (!user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     // Check if user can manage ship types
@@ -341,10 +326,7 @@ export async function DELETE(request: NextRequest) {
     const id = searchParams.get('id');
 
     if (!id) {
-      return NextResponse.json(
-        { error: 'Missing required parameter: id' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Missing required parameter: id' }, { status: 400 });
     }
 
     const result = await pool.query(
@@ -356,10 +338,7 @@ export async function DELETE(request: NextRequest) {
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json(
-        { error: 'Ship type not found' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'Ship type not found' }, { status: 404 });
     }
 
     return NextResponse.json({

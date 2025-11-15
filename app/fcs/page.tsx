@@ -211,8 +211,8 @@ export default function FCsPage() {
                             fc.status === 'Active'
                               ? 'success'
                               : fc.status === 'Inactive'
-                              ? 'default'
-                              : 'error'
+                                ? 'default'
+                                : 'error'
                           }
                         >
                           {fc.status}
@@ -224,10 +224,10 @@ export default function FCsPage() {
                             fc.rank === 'SFC'
                               ? 'info'
                               : fc.rank === 'JFC'
-                              ? 'warning'
-                              : fc.rank === 'FC'
-                              ? 'default'
-                              : 'secondary'
+                                ? 'warning'
+                                : fc.rank === 'FC'
+                                  ? 'default'
+                                  : 'secondary'
                           }
                         >
                           {fc.rank}
@@ -249,9 +249,7 @@ export default function FCsPage() {
                       </TableCell>
                       <TableCell>
                         {fc.bb_corp_alt_name ? (
-                          <span className="text-sm text-foreground">
-                            {fc.bb_corp_alt_name}
-                          </span>
+                          <span className="text-sm text-foreground">{fc.bb_corp_alt_name}</span>
                         ) : (
                           <span className="text-sm text-foreground-muted">-</span>
                         )}
@@ -275,11 +273,7 @@ export default function FCsPage() {
                       {canManage && (
                         <TableCell>
                           {canEdit(fc) && (
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => openEditModal(fc)}
-                            >
+                            <Button variant="ghost" size="sm" onClick={() => openEditModal(fc)}>
                               <Pencil size={14} />
                             </Button>
                           )}

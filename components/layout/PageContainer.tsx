@@ -24,11 +24,7 @@ export function PageContainer({ children, className, maxWidth = '7xl' }: PageCon
   };
 
   return (
-    <div className={cn(
-      'mx-auto px-4 py-8 sm:px-6 lg:px-8',
-      maxWidthClasses[maxWidth],
-      className
-    )}>
+    <div className={cn('mx-auto px-4 py-8 sm:px-6 lg:px-8', maxWidthClasses[maxWidth], className)}>
       {children}
     </div>
   );

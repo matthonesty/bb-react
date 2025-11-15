@@ -90,12 +90,7 @@ export function BanModal({ isOpen, onClose, onSuccess, ban }: BanModalProps) {
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={isEditMode ? 'Edit Ban' : 'Add Ban'}
-      size="lg"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? 'Edit Ban' : 'Add Ban'} size="lg">
       <form onSubmit={handleSubmit}>
         {error && (
           <div className="mb-4 bg-danger/10 border border-danger text-danger px-4 py-3 rounded-lg text-sm">
@@ -133,9 +128,7 @@ export function BanModal({ isOpen, onClose, onSuccess, ban }: BanModalProps) {
 
           {/* Ban Scope Checkboxes */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">
-              Ban Scope
-            </label>
+            <label className="mb-2 block text-sm font-medium text-foreground">Ban Scope</label>
             <div className="space-y-2">
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -178,9 +171,7 @@ export function BanModal({ isOpen, onClose, onSuccess, ban }: BanModalProps) {
 
           {/* Reason */}
           <div>
-            <label className="mb-2 block text-sm font-medium text-foreground">
-              Reason
-            </label>
+            <label className="mb-2 block text-sm font-medium text-foreground">Reason</label>
             <textarea
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
@@ -192,19 +183,10 @@ export function BanModal({ isOpen, onClose, onSuccess, ban }: BanModalProps) {
         </div>
 
         <ModalFooter>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={loading}
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={loading}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            isLoading={loading}
-            disabled={loading}
-          >
+          <Button type="submit" isLoading={loading} disabled={loading}>
             {isEditMode ? 'Save Changes' : 'Add Ban'}
           </Button>
         </ModalFooter>

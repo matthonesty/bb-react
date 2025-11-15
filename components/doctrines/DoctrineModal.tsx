@@ -123,12 +123,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
   }
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title="Add Doctrine"
-      size="xl"
-    >
+    <Modal isOpen={isOpen} onClose={onClose} title="Add Doctrine" size="xl">
       <form onSubmit={handleSubmit}>
         {error && (
           <div className="mb-4 p-3 bg-danger/10 border border-danger text-danger rounded-md text-sm">
@@ -151,12 +146,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
               className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
             />
             {!importedFitting && (
-              <Button
-                type="button"
-                onClick={handleImport}
-                disabled={importing}
-                className="mt-2"
-              >
+              <Button type="button" onClick={handleImport} disabled={importing} className="mt-2">
                 {importing ? 'Importing...' : 'Import Fitting'}
               </Button>
             )}
@@ -167,9 +157,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
             <>
               <div className="p-4 bg-background-dark rounded-lg border border-border">
                 <div className="mb-4">
-                  <h4 className="text-lg font-semibold text-primary">
-                    {importedFitting.name}
-                  </h4>
+                  <h4 className="text-lg font-semibold text-primary">{importedFitting.name}</h4>
                   <p className="text-sm text-foreground-muted">
                     {importedFitting.ship_name} ({importedFitting.ship_group_name})
                   </p>
@@ -228,7 +216,10 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
                     <h5 className="text-sm font-semibold text-foreground-muted mb-2">Cargo</h5>
                     <div className="space-y-1">
                       {importedFitting.cargo_items.map((item, index) => (
-                        <div key={index} className="text-sm text-foreground flex items-center gap-2">
+                        <div
+                          key={index}
+                          className="text-sm text-foreground flex items-center gap-2"
+                        >
                           <span className="text-primary font-mono">{item.quantity}x</span>
                           <span>{item.type_name}</span>
                         </div>
@@ -268,19 +259,11 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
         </div>
 
         <ModalFooter>
-          <Button
-            type="button"
-            variant="secondary"
-            onClick={onClose}
-            disabled={saving}
-          >
+          <Button type="button" variant="secondary" onClick={onClose} disabled={saving}>
             Cancel
           </Button>
           {importedFitting && (
-            <Button
-              type="submit"
-              disabled={saving}
-            >
+            <Button type="submit" disabled={saving}>
               {saving ? 'Saving...' : 'Save Doctrine'}
             </Button>
           )}

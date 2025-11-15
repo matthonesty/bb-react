@@ -43,10 +43,10 @@ function getAdminCharacterIds(): number[] {
   if (multipleAdminIds.trim()) {
     const parsed = multipleAdminIds
       .split(',')
-      .map(id => id.trim())
-      .filter(id => id.length > 0)
-      .map(id => parseInt(id, 10))
-      .filter(id => !isNaN(id));
+      .map((id) => id.trim())
+      .filter((id) => id.length > 0)
+      .map((id) => parseInt(id, 10))
+      .filter((id) => !isNaN(id));
 
     adminIds.push(...parsed);
   }
@@ -151,7 +151,7 @@ export async function hasRole(characterId: number, role: string): Promise<boolea
  */
 export async function hasAuthorizedAccess(characterId: number): Promise<boolean> {
   const roles = await getRoles(characterId);
-  return roles.some(role => checkAuthorizedRole(role));
+  return roles.some((role) => checkAuthorizedRole(role));
 }
 
 // Re-export for convenience

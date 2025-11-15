@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Apply to become a Fleet Commander for Bombers Bar',
 });
 
-export default function FCApplicationLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function FCApplicationLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

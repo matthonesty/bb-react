@@ -16,8 +16,8 @@ First, find your character ID by logging in and checking:
 ```javascript
 // In browser console after logging in:
 fetch('/auth/verify')
-  .then(r => r.json())
-  .then(d => console.log('Character ID:', d.character.id));
+  .then((r) => r.json())
+  .then((d) => console.log('Character ID:', d.character.id));
 ```
 
 Then add it to `.env`:
@@ -44,6 +44,7 @@ npm run dev
 **URL**: `https://data.edencom.net/auth/login`
 
 **Scopes Requested**:
+
 - publicData
 - esi-location.read_location.v1
 - esi-location.read_ship_type.v1
@@ -52,6 +53,7 @@ npm run dev
 - esi-wallet.read_character_wallet.v1
 
 **Use For**:
+
 - General user login
 - Basic application features
 - Faster authorization (fewer permissions)
@@ -61,6 +63,7 @@ npm run dev
 **URL**: `https://data.edencom.net/auth/admin-login`
 
 **Scopes Requested**: All 60+ scopes enabled in your EVE SSO application, including:
+
 - All character scopes (calendar, mail, skills, wallet, assets, etc.)
 - All corporation scopes (membership, wallets, assets, structures, etc.)
 - Alliance scopes (contacts)
@@ -68,6 +71,7 @@ npm run dev
 - Universe scopes (structures)
 
 **Use For**:
+
 - Admin operations requiring extended ESI access
 - Corporation management features
 - Advanced API operations
@@ -92,6 +96,7 @@ User clicks login → Choose endpoint → EVE SSO → Authorize scopes → Callb
 ### Role Assignment
 
 **After authentication (callback handler)**:
+
 1. System receives character info from EVE SSO
 2. Checks if `character.id` is in `ADMIN_CHARACTER_IDS`
 3. Assigns roles:
@@ -102,12 +107,12 @@ User clicks login → Choose endpoint → EVE SSO → Authorize scopes → Callb
 
 ### Token Scopes vs. Roles
 
-| Login Type | Scopes in Token | Admin Role | Admin Middleware |
-|------------|----------------|------------|------------------|
-| Regular login, regular user | Minimal | ❌ No | ❌ Fails (403) |
-| Regular login, admin user | Minimal | ✅ Yes | ✅ Passes role check |
-| Admin login, regular user | Extended | ❌ No | ❌ Fails (403) |
-| Admin login, admin user | Extended | ✅ Yes | ✅ Passes (full access) |
+| Login Type                  | Scopes in Token | Admin Role | Admin Middleware        |
+| --------------------------- | --------------- | ---------- | ----------------------- |
+| Regular login, regular user | Minimal         | ❌ No      | ❌ Fails (403)          |
+| Regular login, admin user   | Minimal         | ✅ Yes     | ✅ Passes role check    |
+| Admin login, regular user   | Extended        | ❌ No      | ❌ Fails (403)          |
+| Admin login, admin user     | Extended        | ✅ Yes     | ✅ Passes (full access) |
 
 **Key Point**: If you're an admin but login via regular login, you'll pass admin role checks but won't have extended scopes in your token. For full admin functionality, use the admin login endpoint.
 
@@ -116,18 +121,22 @@ User clicks login → Choose endpoint → EVE SSO → Authorize scopes → Callb
 ### Frontend - Regular Login Button
 
 ```jsx
-<button onClick={() => window.location.href = '/auth/login'}>
-  <img src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
-       alt="Login with EVE Online" />
+<button onClick={() => (window.location.href = '/auth/login')}>
+  <img
+    src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
+    alt="Login with EVE Online"
+  />
 </button>
 ```
 
 ### Frontend - Admin Login Button
 
 ```jsx
-<button onClick={() => window.location.href = '/auth/admin-login'}>
-  <img src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
-       alt="Admin Login with EVE Online" />
+<button onClick={() => (window.location.href = '/auth/admin-login')}>
+  <img
+    src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png"
+    alt="Admin Login with EVE Online"
+  />
 </button>
 ```
 
@@ -166,7 +175,7 @@ module.exports = async (req, res) => {
   // This code only runs for authenticated admin users
   res.json({
     message: 'Admin access granted',
-    admin: auth.character.name
+    admin: auth.character.name,
   });
 };
 ```
@@ -188,7 +197,7 @@ module.exports = async (req, res) => {
   if (!hasRequiredScopes(payload.scp, [CORPORATION_SCOPES.WALLETS])) {
     return res.status(403).json({
       error: 'Insufficient scopes',
-      message: 'Please login via /auth/admin-login to access this feature'
+      message: 'Please login via /auth/admin-login to access this feature',
     });
   }
 
@@ -247,7 +256,7 @@ const REGULAR_USER_SCOPES = [
   CHARACTER_SCOPES.SHIP_TYPE,
   CHARACTER_SCOPES.SKILLS,
   CHARACTER_SCOPES.ASSETS,
-  CHARACTER_SCOPES.WALLET
+  CHARACTER_SCOPES.WALLET,
   // Add more scopes as needed
 ];
 ```
@@ -277,6 +286,7 @@ The `ADMIN_SCOPES` array already includes all scopes enabled in your EVE SSO app
 **Cause**: Your character ID is not in `ADMIN_CHARACTER_IDS`
 
 **Solution**:
+
 1. Get your character ID from `/auth/verify`
 2. Add it to `.env`: `ADMIN_CHARACTER_IDS=YOUR_ID`
 3. Restart server
@@ -292,6 +302,7 @@ The `ADMIN_SCOPES` array already includes all scopes enabled in your EVE SSO app
 **Cause**: Old session has old scopes
 
 **Solution**:
+
 1. Logout: `/auth/logout`
 2. Login again with correct endpoint
 3. New token will have correct scopes
@@ -301,17 +312,20 @@ The `ADMIN_SCOPES` array already includes all scopes enabled in your EVE SSO app
 When deploying to production:
 
 1. **Update `.env` on Vercel**:
+
    ```bash
    vercel env add ADMIN_CHARACTER_IDS
    # Enter: 93922003,12345,67890
    ```
 
 2. **Update callback URL** in EVE Developers Portal:
+
    ```
    https://data.edencom.net/auth/callback
    ```
 
 3. **Update `.env` locally** to match production:
+
    ```env
    EVE_CALLBACK_URL=https://data.edencom.net/auth/callback
    ```

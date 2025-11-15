@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Manage fleet commanders and their access levels',
 });
 
-export default function FCsLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function FCsLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

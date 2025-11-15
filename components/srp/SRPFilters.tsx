@@ -61,7 +61,7 @@ export function SRPFilters({
           All
         </button>
 
-        {SRP_STATUSES.filter(s => s.value !== 'all').map((status) => (
+        {SRP_STATUSES.filter((s) => s.value !== 'all').map((status) => (
           <button
             key={status.value}
             onClick={() => onStatusFilterChange(status.value as SRPStatus)}

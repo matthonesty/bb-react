@@ -59,16 +59,18 @@ function SRPContent() {
 export default function SRPPage() {
   return (
     <RequireAuth requireFCRole>
-      <Suspense fallback={
-        <PageContainer>
-          <div className="flex items-center justify-center p-12">
-            <div className="text-center">
-              <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-              <p className="mt-4 text-foreground-muted">Loading...</p>
+      <Suspense
+        fallback={
+          <PageContainer>
+            <div className="flex items-center justify-center p-12">
+              <div className="text-center">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+                <p className="mt-4 text-foreground-muted">Loading...</p>
+              </div>
             </div>
-          </div>
-        </PageContainer>
-      }>
+          </PageContainer>
+        }
+      >
         <SRPContent />
       </Suspense>
     </RequireAuth>

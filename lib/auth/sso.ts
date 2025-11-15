@@ -44,5 +44,5 @@ export default new BaseSso({
   clientId: process.env.EVE_CLIENT_ID || '',
   secretKey: process.env.EVE_SECRET_KEY || '',
   callbackUrl: process.env.EVE_CALLBACK_URL || '',
-  label: 'Regular SSO'
+  label: 'Regular SSO',
 });

@@ -5,10 +5,6 @@ export const metadata = generatePageMetadata({
   description: 'Manage fleet types and ship fittings (doctrines)',
 });
 
-export default function DoctrinesLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DoctrinesLayout({ children }: { children: React.ReactNode }) {
   return children;
 }

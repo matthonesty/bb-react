@@ -15,10 +15,13 @@ export async function POST(request: NextRequest) {
     const session = await getPublicSession();
 
     if (!session) {
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication required'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication required',
+        },
+        { status: 401 }
+      );
     }
 
     // Parse request body
@@ -36,17 +39,29 @@ export async function POST(request: NextRequest) {
       fleet_types,
       timezones,
       bb_duration,
-      motivation
+      motivation,
     } = body;
 
-    if (!main_character || !prior_fc_experience || !blops_experience ||
-        !hunter_experience || !bridge_experience || !roller_experience ||
-        !familiar_fleet_types || !fleet_types || !timezones ||
-        !bb_duration || !motivation) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required fields'
-      }, { status: 400 });
+    if (
+      !main_character ||
+      !prior_fc_experience ||
+      !blops_experience ||
+      !hunter_experience ||
+      !bridge_experience ||
+      !roller_experience ||
+      !familiar_fleet_types ||
+      !fleet_types ||
+      !timezones ||
+      !bb_duration ||
+      !motivation
+    ) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required fields',
+        },
+        { status: 400 }
+      );
     }
 
     // Build Discord embed with each answer on its own line
@@ -71,7 +86,7 @@ export async function POST(request: NextRequest) {
       fleet_types.substring(0, 1024),
       ``,
       `**Motivation:**`,
-      motivation.substring(0, 1024)
+      motivation.substring(0, 1024),
     ].join('\n');
 
     const embed = {
@@ -80,8 +95,8 @@ export async function POST(request: NextRequest) {
       color: 0x22c55e, // Green color for applications
       timestamp: new Date().toISOString(),
       footer: {
-        text: `Applied via ${session.character_name}`
-      }
+        text: `Applied via ${session.character_name}`,
+      },
     };
 
     // Post to Discord webhook
@@ -89,42 +104,50 @@ export async function POST(request: NextRequest) {
 
     if (!webhookUrl) {
       console.error('[FC-APPLICATION] DISCORD_WEBHOOK_URL not configured');
-      return NextResponse.json({
-        success: false,
-        error: 'Application system not configured'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Application system not configured',
+        },
+        { status: 500 }
+      );
     }
 
     const discordResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        embeds: [embed]
-      })
+        embeds: [embed],
+      }),
     });
 
     if (!discordResponse.ok) {
       const errorText = await discordResponse.text();
       console.error('[FC-APPLICATION] Discord webhook error:', discordResponse.status, errorText);
-      return NextResponse.json({
-        success: false,
-        error: 'Failed to submit application'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Failed to submit application',
+        },
+        { status: 500 }
+      );
     }
 
     // Success response
     return NextResponse.json({
       success: true,
-      message: 'Application submitted successfully'
+      message: 'Application submitted successfully',
     });
-
   } catch (error: any) {
     console.error('[FC-APPLICATION] Error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to process application'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to process application',
+      },
+      { status: 500 }
+    );
   }
 }

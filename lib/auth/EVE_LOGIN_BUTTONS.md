@@ -11,11 +11,13 @@ CCP Games provides four official login button variants:
 ### Large Buttons (Recommended for desktop)
 
 **White Background (Large)**
+
 ```
 https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png
 ```
 
 **Black Background (Large)**
+
 ```
 https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large.png
 ```
@@ -23,11 +25,13 @@ https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-large
 ### Small Buttons (Recommended for mobile)
 
 **White Background (Small)**
+
 ```
 https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-small.png
 ```
 
 **Black Background (Small)**
+
 ```
 https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-black-small.png
 ```
@@ -75,13 +79,13 @@ function LoginButton() {
 
 ## Button Selection Guide
 
-| Use Case | Recommended Button |
-|----------|-------------------|
-| Desktop web app with light theme | White Large |
-| Desktop web app with dark theme | Black Large |
-| Mobile web app with light theme | White Small |
-| Mobile web app with dark theme | Black Small |
-| Responsive design | Use CSS to swap based on screen size |
+| Use Case                         | Recommended Button                   |
+| -------------------------------- | ------------------------------------ |
+| Desktop web app with light theme | White Large                          |
+| Desktop web app with dark theme  | Black Large                          |
+| Mobile web app with light theme  | White Small                          |
+| Mobile web app with dark theme   | Black Small                          |
+| Responsive design                | Use CSS to swap based on screen size |
 
 ## Styling Best Practices
 
@@ -135,6 +139,7 @@ Our application currently uses a text-based login button. **TODO**: Replace with
 **Current location**: `client/src/pages/LandingPage.jsx`
 
 **Recommended update**:
+
 ```jsx
 // Replace existing login button with:
 <button onClick={handleLogin} className="eve-sso-button">

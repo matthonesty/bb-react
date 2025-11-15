@@ -123,7 +123,7 @@ export const CHARACTER_SCOPES = {
   UI_OPEN_WINDOW: 'esi-ui.open_window.v1',
 
   // Wallet
-  WALLET: 'esi-wallet.read_character_wallet.v1'
+  WALLET: 'esi-wallet.read_character_wallet.v1',
 } as const;
 
 /**
@@ -187,7 +187,7 @@ export const CORPORATION_SCOPES = {
   TITLES: 'esi-corporations.read_titles.v1',
 
   // Wallet
-  WALLETS: 'esi-wallet.read_corporation_wallets.v1'
+  WALLETS: 'esi-wallet.read_corporation_wallets.v1',
 } as const;
 
 /**
@@ -196,7 +196,7 @@ export const CORPORATION_SCOPES = {
  * Source: https://esi.evetech.net/latest/swagger.json
  */
 export const ALLIANCE_SCOPES = {
-  CONTACTS: 'esi-alliances.read_contacts.v1'
+  CONTACTS: 'esi-alliances.read_contacts.v1',
 } as const;
 
 /**
@@ -206,7 +206,7 @@ export const ALLIANCE_SCOPES = {
  */
 export const FLEET_SCOPES = {
   READ: 'esi-fleets.read_fleet.v1',
-  WRITE: 'esi-fleets.write_fleet.v1'
+  WRITE: 'esi-fleets.write_fleet.v1',
 } as const;
 
 /**
@@ -215,7 +215,7 @@ export const FLEET_SCOPES = {
  * Source: https://esi.evetech.net/latest/swagger.json
  */
 export const UNIVERSE_SCOPES = {
-  STRUCTURES: 'esi-universe.read_structures.v1'
+  STRUCTURES: 'esi-universe.read_structures.v1',
 } as const;
 
 /**
@@ -231,7 +231,7 @@ export const SCOPE_PRESETS = {
     PUBLIC_DATA,
     CHARACTER_SCOPES.MARKET_ORDERS,
     CHARACTER_SCOPES.WALLET,
-    CHARACTER_SCOPES.ASSETS
+    CHARACTER_SCOPES.ASSETS,
   ],
 
   // Contract manager
@@ -239,7 +239,7 @@ export const SCOPE_PRESETS = {
     PUBLIC_DATA,
     CHARACTER_SCOPES.CONTRACTS,
     CHARACTER_SCOPES.ASSETS,
-    CHARACTER_SCOPES.WALLET
+    CHARACTER_SCOPES.WALLET,
   ],
 
   // Corporation manager
@@ -249,7 +249,7 @@ export const SCOPE_PRESETS = {
     CORPORATION_SCOPES.ASSETS,
     CORPORATION_SCOPES.WALLETS,
     CORPORATION_SCOPES.MARKET_ORDERS,
-    CORPORATION_SCOPES.CONTRACTS
+    CORPORATION_SCOPES.CONTRACTS,
   ],
 
   // Industry manager
@@ -258,7 +258,7 @@ export const SCOPE_PRESETS = {
     CHARACTER_SCOPES.INDUSTRY_JOBS,
     CHARACTER_SCOPES.ASSETS,
     CHARACTER_SCOPES.SKILLS,
-    CHARACTER_SCOPES.PLANETS_MANAGE
+    CHARACTER_SCOPES.PLANETS_MANAGE,
   ],
 
   // Fleet commander
@@ -267,7 +267,7 @@ export const SCOPE_PRESETS = {
     CHARACTER_SCOPES.LOCATION,
     CHARACTER_SCOPES.SHIP_TYPE,
     FLEET_SCOPES.READ,
-    FLEET_SCOPES.WRITE
+    FLEET_SCOPES.WRITE,
   ],
 
   // Full access (use with caution!)
@@ -277,8 +277,8 @@ export const SCOPE_PRESETS = {
     ...Object.values(CHARACTER_SCOPES),
     ...Object.values(CORPORATION_SCOPES),
     ...Object.values(FLEET_SCOPES),
-    ...Object.values(UNIVERSE_SCOPES)
-  ]
+    ...Object.values(UNIVERSE_SCOPES),
+  ],
 } as const;
 
 /**
@@ -450,7 +450,7 @@ export function getScopeDescription(scope: string): string {
     [FLEET_SCOPES.WRITE]: 'Manage fleet',
 
     // Universe
-    [UNIVERSE_SCOPES.STRUCTURES]: 'Read universe structures'
+    [UNIVERSE_SCOPES.STRUCTURES]: 'Read universe structures',
   };
 
   return descriptions[scope] || `Access to ${scope}`;
@@ -477,7 +477,7 @@ export function isValidScope(scope: string): boolean {
     ...Object.values(CHARACTER_SCOPES),
     ...Object.values(CORPORATION_SCOPES),
     ...Object.values(FLEET_SCOPES),
-    ...Object.values(UNIVERSE_SCOPES)
+    ...Object.values(UNIVERSE_SCOPES),
   ];
 
   return allScopes.includes(scope);
@@ -519,7 +519,7 @@ export function parseTokenScopes(scp: string | string[]): string[] {
     return scp;
   }
   if (typeof scp === 'string') {
-    return scp.split(' ').filter(s => s.length > 0);
+    return scp.split(' ').filter((s) => s.length > 0);
   }
   return [];
 }
@@ -538,7 +538,10 @@ export function parseTokenScopes(scp: string | string[]): string[] {
  * hasRequiredScopes(["publicData", "esi-assets.read_assets.v1"], [CHARACTER_SCOPES.ASSETS])
  * // Returns: true
  */
-export function hasRequiredScopes(tokenScopes: string | string[], requiredScopes: string[]): boolean {
+export function hasRequiredScopes(
+  tokenScopes: string | string[],
+  requiredScopes: string[]
+): boolean {
   const scopes = parseTokenScopes(tokenScopes);
-  return requiredScopes.every(required => scopes.includes(required));
+  return requiredScopes.every((required) => scopes.includes(required));
 }

@@ -52,10 +52,7 @@ export async function GET() {
     });
   } catch (error: any) {
     console.error('[ADMIN] System status error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
 
@@ -92,7 +89,9 @@ export async function POST(request: Request) {
       // pg.Pool doesn't have a direct "clear idle" method, but we can end the pool
       // and it will reconnect clients as needed. This is safe in Next.js as the pool
       // is a singleton and will be recreated on next import.
-      await pool.query('SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = \'idle\' AND pid != pg_backend_pid()');
+      await pool.query(
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE state = 'idle' AND pid != pg_backend_pid()"
+      );
 
       const afterIdle = pool.idleCount;
 
@@ -105,15 +104,9 @@ export async function POST(request: Request) {
       });
     }
 
-    return NextResponse.json(
-      { success: false, error: 'Invalid action' },
-      { status: 400 }
-    );
+    return NextResponse.json({ success: false, error: 'Invalid action' }, { status: 400 });
   } catch (error: any) {
     console.error('[ADMIN] System status action error:', error);
-    return NextResponse.json(
-      { success: false, error: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }

@@ -15,28 +15,29 @@ export async function POST(request: NextRequest) {
     const session = await getPublicSession();
 
     if (!session) {
-      return NextResponse.json({
-        success: false,
-        error: 'Authentication required'
-      }, { status: 401 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Authentication required',
+        },
+        { status: 401 }
+      );
     }
 
     // Parse request body
     const body = await request.json();
 
     // Validate required fields
-    const {
-      target_location,
-      timer_date,
-      timer_time,
-      target_description
-    } = body;
+    const { target_location, timer_date, timer_time, target_description } = body;
 
     if (!target_location || !timer_date || !timer_time || !target_description) {
-      return NextResponse.json({
-        success: false,
-        error: 'Missing required fields'
-      }, { status: 400 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Missing required fields',
+        },
+        { status: 400 }
+      );
     }
 
     // Build Discord embed with each answer on its own line
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
       `**Affiliation:** ${body.affiliation || 'Not specified'}`,
       ``,
       `**Target Description:**`,
-      target_description.substring(0, 1024)
+      target_description.substring(0, 1024),
     ];
 
     // Add expected doctrines if provided
@@ -86,8 +87,8 @@ export async function POST(request: NextRequest) {
       color: 0xef4444, // Red color for intel
       timestamp: new Date().toISOString(),
       footer: {
-        text: `Submitted via ${session.character_name}`
-      }
+        text: `Submitted via ${session.character_name}`,
+      },
     };
 
     // Post to Discord webhook
@@ -95,42 +96,50 @@ export async function POST(request: NextRequest) {
 
     if (!webhookUrl) {
       console.error('[BOMBING-INTEL] DISCORD_WEBHOOK_URL not configured');
-      return NextResponse.json({
-        success: false,
-        error: 'Intel system not configured'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Intel system not configured',
+        },
+        { status: 500 }
+      );
     }
 
     const discordResponse = await fetch(webhookUrl, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        embeds: [embed]
-      })
+        embeds: [embed],
+      }),
     });
 
     if (!discordResponse.ok) {
       const errorText = await discordResponse.text();
       console.error('[BOMBING-INTEL] Discord webhook error:', discordResponse.status, errorText);
-      return NextResponse.json({
-        success: false,
-        error: 'Failed to submit intel'
-      }, { status: 500 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Failed to submit intel',
+        },
+        { status: 500 }
+      );
     }
 
     // Success response
     return NextResponse.json({
       success: true,
-      message: 'Intel submitted successfully'
+      message: 'Intel submitted successfully',
     });
-
   } catch (error: any) {
     console.error('[BOMBING-INTEL] Error:', error);
-    return NextResponse.json({
-      success: false,
-      error: 'Failed to process intel'
-    }, { status: 500 });
+    return NextResponse.json(
+      {
+        success: false,
+        error: 'Failed to process intel',
+      },
+      { status: 500 }
+    );
   }
 }

@@ -8,10 +8,7 @@ import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
 import { verifyAuth } from '@/lib/auth/apiAuth';
 
-export async function POST(
-  request: NextRequest,
-  context: { params: Promise<{ id: string }> }
-) {
+export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
     // Verify authentication
     const user = await verifyAuth(request);
@@ -20,9 +17,7 @@ export async function POST(
     }
 
     // Check if user has admin role
-    const hasAuthorizedRole = user.roles?.some((role: string) =>
-      isAuthorizedRole(role)
-    );
+    const hasAuthorizedRole = user.roles?.some((role: string) => isAuthorizedRole(role));
 
     if (!hasAuthorizedRole) {
       return NextResponse.json(
@@ -35,10 +30,7 @@ export async function POST(
     const srpId = parseInt(params.id);
 
     if (isNaN(srpId)) {
-      return NextResponse.json(
-        { error: 'Invalid SRP request ID' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Invalid SRP request ID' }, { status: 400 });
     }
 
     // Get body
@@ -46,10 +38,7 @@ export async function POST(
     const paymentMethod = body.payment_method;
 
     if (!paymentMethod) {
-      return NextResponse.json(
-        { error: 'Payment method is required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Payment method is required' }, { status: 400 });
     }
 
     // Update the SRP request
@@ -84,9 +73,6 @@ export async function POST(
     return NextResponse.json(responseData);
   } catch (error) {
     console.error('SRP mark paid error:', error);
-    return NextResponse.json(
-      { error: 'Failed to mark SRP request as paid' },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: 'Failed to mark SRP request as paid' }, { status: 500 });
   }
 }
