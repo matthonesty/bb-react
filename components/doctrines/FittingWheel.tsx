@@ -143,6 +143,7 @@ export function FittingWheel({
               top: `${pos.y}px`,
               width: `${size}px`,
               height: `${size}px`,
+              zIndex: 2,
             }}
           >
             <a
@@ -201,12 +202,13 @@ export function FittingWheel({
           top: 0,
           width: '398px',
           height: '398px',
-          zIndex: -1,
+          zIndex: 0,
         }}
       >
         <img
           src={PANEL_IMAGES.base}
           alt=""
+          crossOrigin="anonymous"
           style={{
             position: 'absolute',
             left: 0,
@@ -228,12 +230,13 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: -1,
+            zIndex: 1,
           }}
         >
           <img
             src={PANEL_IMAGES.high[highSlots] || ''}
             alt=""
+            crossOrigin="anonymous"
             style={{ border: 0, width: '398px', height: '398px' }}
           />
         </div>
@@ -249,12 +252,13 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: -1,
+            zIndex: 1,
           }}
         >
           <img
             src={PANEL_IMAGES.mid[midSlots] || ''}
             alt=""
+            crossOrigin="anonymous"
             style={{ border: 0, width: '398px', height: '398px' }}
           />
         </div>
@@ -270,12 +274,13 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: -1,
+            zIndex: 1,
           }}
         >
           <img
             src={PANEL_IMAGES.low[lowSlots] || ''}
             alt=""
+            crossOrigin="anonymous"
             style={{ border: 0, width: '398px', height: '398px' }}
           />
         </div>
@@ -291,12 +296,13 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: -1,
+            zIndex: 1,
           }}
         >
           <img
             src={PANEL_IMAGES.rig[rigSlots] || ''}
             alt=""
+            crossOrigin="anonymous"
             style={{ border: 0, width: '398px', height: '398px' }}
           />
         </div>
@@ -311,7 +317,7 @@ export function FittingWheel({
           top: '71px',
           width: '256px',
           height: '256px',
-          zIndex: -2,
+          zIndex: -1,
         }}
       >
         <span className="shipImageSpan" style={{ height: '256px', width: '256px' }}>

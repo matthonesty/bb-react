@@ -135,16 +135,6 @@ export function FittingDisplay({
 
   return (
     <div className="space-y-4">
-      {/* Copy Button */}
-      {showCopyButton && (
-        <div className="flex justify-end">
-          <Button variant="secondary" size="sm" onClick={copyFitting}>
-            <Copy size={14} className="mr-1.5" />
-            {copied ? 'Copied!' : 'Copy Fitting'}
-          </Button>
-        </div>
-      )}
-
       {/* Fitting Wheel - Centered */}
       <div className="flex justify-center mb-6">
         <FittingWheel
@@ -178,9 +168,7 @@ export function FittingDisplay({
 
         {/* Row 3: Cargo (full width) */}
         {cargoItems.filter((c) => c !== null && c && c.type_id).length > 0 && (
-          <div className="p-3 bg-background-dark rounded-md">
-            {renderModuleList('Cargo', cargoItems)}
-          </div>
+          <div>{renderModuleList('Cargo', cargoItems)}</div>
         )}
       </div>
 
