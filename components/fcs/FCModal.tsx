@@ -87,38 +87,30 @@ export function FCModal({ isOpen, onClose, onSuccess, fc }: FCModalProps) {
     if (!name.trim()) return null;
 
     try {
-      const response = await fetch(
-        `https://esi.evetech.net/latest/search/?categories=character&datasource=tranquility&language=en&search=${encodeURIComponent(
-          name.trim()
-        )}&strict=true`
-      );
-
-      if (!response.ok) {
-        throw new Error('Character not found');
-      }
+      const response = await fetch('/api/admin/universe-ids', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ names: [name.trim()] }),
+      });
 
       const data = await response.json();
 
-      if (!data.character || data.character.length === 0) {
+      if (!data.success) {
+        throw new Error(data.error || 'Character not found');
+      }
+
+      // resolveIds returns { characters: [{id, name}], corporations: [{id, name}], ... }
+      if (!data.characters || data.characters.length === 0) {
         throw new Error(`Character "${name}" not found`);
       }
 
-      const characterId = data.character[0];
-
-      // Get character name
-      const charResponse = await fetch(
-        `https://esi.evetech.net/latest/characters/${characterId}/?datasource=tranquility`
-      );
-
-      if (!charResponse.ok) {
-        throw new Error('Failed to fetch character details');
-      }
-
-      const charData = await charResponse.json();
+      const character = data.characters[0];
 
       return {
-        id: characterId,
-        name: charData.name,
+        id: character.id,
+        name: character.name,
       };
     } catch (err: any) {
       throw new Error(err.message || 'Failed to lookup character');
