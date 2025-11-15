@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/Input';
 import { Badge } from '@/components/ui/Badge';
 import { SRP_STATUSES } from '@/lib/constants';
 import type { SRPStatus } from '@/types';
-import { Search } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface SRPFiltersProps {
   statusFilter: SRPStatus | 'all';
@@ -35,8 +35,17 @@ export function SRPFilters({
           placeholder="Search by character, ship, or system..."
           value={searchQuery}
           onChange={(e) => onSearchQueryChange(e.target.value)}
-          className="pl-10"
+          className="pl-10 pr-10"
         />
+        {searchQuery && (
+          <button
+            onClick={() => onSearchQueryChange('')}
+            className="absolute right-3 top-1/2 -translate-y-1/2 text-foreground-muted hover:text-foreground transition-colors"
+            aria-label="Clear search"
+          >
+            <X size={18} />
+          </button>
+        )}
       </div>
 
       {/* Status Filter Badges */}
