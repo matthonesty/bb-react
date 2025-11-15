@@ -327,3 +327,75 @@ export interface ShipType {
   srp_eligible: boolean;
   notes: string | null;
 }
+
+// Fleet Management Types
+export interface FleetManagement {
+  id: number;
+  scheduled_at: string;
+  timezone: string;
+  duration_minutes: number;
+  fleet_type_id: number;
+  fleet_type_name?: string;
+  fleet_type_description?: string;
+  fc_id: number;
+  fc_name?: string;
+  fc_rank?: string;
+  fc_character_id?: number;
+  title: string | null;
+  description: string | null;
+  staging_system: string | null;
+  comms_channel: string | null;
+  status: FleetStatus;
+  actual_start_time: string | null;
+  actual_end_time: string | null;
+  participant_count: number;
+  created_at: string;
+  updated_at: string;
+  created_by: number;
+  updated_by: number | null;
+}
+
+export type FleetStatus = 'scheduled' | 'in_progress' | 'completed' | 'cancelled';
+
+export interface FleetParticipant {
+  id: number;
+  fleet_id: number;
+  character_id: number;
+  character_name: string;
+  role: string | null;
+  added_at: string;
+  added_by: number;
+  kill_count?: number;
+}
+
+export interface FleetKill {
+  id: number;
+  fleet_id: number;
+  killmail_id: number;
+  zkill_url: string;
+  killmail_hash: string | null;
+  hunter_id: number | null;
+  hunter_name?: string;
+  hunter_role?: string;
+  drop_number: number;
+  zkb_location_id: number | null;
+  zkb_total_value: number | null;
+  zkb_fitted_value: number | null;
+  zkb_dropped_value: number | null;
+  zkb_destroyed_value: number | null;
+  kill_time: string | null;
+  solar_system_id: number | null;
+  victim_character_id: number | null;
+  victim_character_name: string | null;
+  victim_corporation_id: number | null;
+  victim_corporation_name: string | null;
+  victim_alliance_id: number | null;
+  victim_alliance_name: string | null;
+  victim_ship_type_id: number | null;
+  victim_ship_name: string | null;
+  dropped_items: any | null;
+  enriched_at: string | null;
+  enrichment_error: string | null;
+  added_at: string;
+  added_by: number;
+}
