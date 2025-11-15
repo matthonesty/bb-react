@@ -19,7 +19,6 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
 
   const [formData, setFormData] = useState({
     scheduled_at: '',
-    timezone: 'UTC',
     duration_minutes: 120,
     fleet_type_id: 0,
     fc_id: 0,
@@ -44,7 +43,6 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
 
       setFormData({
         scheduled_at: localDateTime,
-        timezone: fleet.timezone,
         duration_minutes: fleet.duration_minutes,
         fleet_type_id: fleet.fleet_type_id,
         fc_id: fleet.fc_id,
@@ -64,7 +62,6 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
 
       setFormData({
         scheduled_at: localDateTime,
-        timezone: 'UTC',
         duration_minutes: 120,
         fleet_type_id: fleetTypes.length > 0 ? fleetTypes[0].id : 0,
         fc_id: fcs.length > 0 ? fcs[0].id : 0,
@@ -91,6 +88,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
       const payload = {
         ...formData,
         scheduled_at: isoDateTime,
+        timezone: 'UTC',
         fleet_type_id: parseInt(formData.fleet_type_id as any),
         fc_id: parseInt(formData.fc_id as any),
         duration_minutes: parseInt(formData.duration_minutes as any),
@@ -120,18 +118,6 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
     }
   };
 
-  const timezones = [
-    'UTC',
-    'America/New_York',
-    'America/Chicago',
-    'America/Los_Angeles',
-    'Europe/London',
-    'Europe/Paris',
-    'Europe/Moscow',
-    'Asia/Tokyo',
-    'Australia/Sydney',
-  ];
-
   return (
     <Modal isOpen onClose={onClose} title={isEditMode ? 'Edit Fleet' : 'Schedule New Fleet'}>
       <form onSubmit={handleSubmit}>
@@ -142,36 +128,17 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
             </div>
           )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-foreground-muted mb-2">
-                Scheduled Time *
-              </label>
-              <input
-                type="datetime-local"
-                value={formData.scheduled_at}
-                onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
-                required
-                className="flex h-10 w-full rounded-md border border-input-border bg-input-bg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-150"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-foreground-muted mb-2">
-                Timezone
-              </label>
-              <select
-                value={formData.timezone}
-                onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
-              >
-                {timezones.map((tz) => (
-                  <option key={tz} value={tz}>
-                    {tz}
-                  </option>
-                ))}
-              </select>
-            </div>
+          <div>
+            <label className="block text-sm font-medium text-foreground-muted mb-2">
+              Scheduled Time (EVE) *
+            </label>
+            <input
+              type="datetime-local"
+              value={formData.scheduled_at}
+              onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
+              required
+              className="flex h-10 w-full rounded-md border border-input-border bg-input-bg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-150"
+            />
           </div>
 
           <div>
