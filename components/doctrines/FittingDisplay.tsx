@@ -147,36 +147,29 @@ export function FittingDisplay({
         </div>
       )}
 
-      {/* Fitting Wheel and Module Lists */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Fitting Wheel */}
-        <div className="lg:col-span-1 flex justify-center items-start" style={{ position: 'relative', zIndex: 1 }}>
-          <FittingWheel
-            highSlotModules={highSlotModules}
-            midSlotModules={midSlotModules}
-            lowSlotModules={lowSlotModules}
-            rigModules={rigModules}
-            highSlots={highSlots}
-            midSlots={midSlots}
-            lowSlots={lowSlots}
-            rigSlots={rigSlots}
-            shipTypeId={shipTypeId}
-            shipName={shipName}
-            size={32}
-          />
-        </div>
+      {/* Fitting Wheel - Centered */}
+      <div className="flex justify-center mb-6">
+        <FittingWheel
+          highSlotModules={highSlotModules}
+          midSlotModules={midSlotModules}
+          lowSlotModules={lowSlotModules}
+          rigModules={rigModules}
+          highSlots={highSlots}
+          midSlots={midSlots}
+          lowSlots={lowSlots}
+          rigSlots={rigSlots}
+          shipTypeId={shipTypeId}
+          shipName={shipName}
+          size={32}
+        />
+      </div>
 
-        {/* Module Lists */}
-        <div className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4" style={{ position: 'relative', zIndex: 2 }}>
-          <div className="space-y-3">
-            {renderModuleList('High Slots', highSlotModules)}
-            {renderModuleList('Mid Slots', midSlotModules)}
-          </div>
-          <div className="space-y-3">
-            {renderModuleList('Low Slots', lowSlotModules)}
-            {renderModuleList('Rigs', rigModules)}
-          </div>
-        </div>
+      {/* Module Lists - Below Wheel */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {renderModuleList('High Slots', highSlotModules)}
+        {renderModuleList('Mid Slots', midSlotModules)}
+        {renderModuleList('Low Slots', lowSlotModules)}
+        {renderModuleList('Rigs', rigModules)}
       </div>
 
       {/* Cargo */}
