@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { apiClient } from '@/lib/api/client';
 import type { WalletJournalEntry } from '@/types';
 import Link from 'next/link';
@@ -113,13 +115,11 @@ export default function WalletPage() {
 
   return (
     <RequireAuth requireFCRole>
-      <div className="mx-auto max-w-[1600px] px-4 py-8 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Wallet History</h1>
-          <p className="text-foreground-muted">
-            View corporation wallet journal entries
-          </p>
-        </div>
+      <PageContainer>
+        <PageHeader
+          title="Wallet History"
+          description="View corporation wallet journal entries"
+        />
 
         {/* Division Tabs */}
         <div className="mb-6 flex gap-2 flex-wrap">
@@ -298,7 +298,7 @@ export default function WalletPage() {
             </button>
           </div>
         )}
-      </div>
+      </PageContainer>
     </RequireAuth>
   );
 }

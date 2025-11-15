@@ -5,6 +5,8 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { PageHeader } from '@/components/layout/PageHeader';
 import { formatDate } from '@/lib/utils/format';
 import { RefreshCw } from 'lucide-react';
 
@@ -134,28 +136,21 @@ export default function SystemPage() {
 
   return (
     <RequireAuth requiredRoles={['admin']}>
-      <div className="container mx-auto px-4 py-8">
-        {/* Page Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">
-            System Status
-          </h1>
-          <p className="text-foreground-muted">
-            Monitor ESI API health and database connection status
-          </p>
-        </div>
-
-        {/* Refresh Button */}
-        <div className="mb-6">
-          <Button
-            onClick={refreshAll}
-            disabled={loading}
-            className="flex items-center gap-2"
-          >
-            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            Refresh All
-          </Button>
-        </div>
+      <PageContainer>
+        <PageHeader
+          title="System Status"
+          description="Monitor ESI API health and database connection status"
+          actions={
+            <Button
+              onClick={refreshAll}
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
+              Refresh All
+            </Button>
+          }
+        />
 
         {/* Error Message */}
         {error && (
@@ -323,7 +318,7 @@ export default function SystemPage() {
             ) : null}
           </Card>
         </div>
-      </div>
+      </PageContainer>
     </RequireAuth>
   );
 }

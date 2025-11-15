@@ -3,6 +3,8 @@
 import { useEffect } from 'react';
 import { RequireAuth } from '@/components/auth/RequireAuth';
 import { ProcessedMailsTable } from '@/components/mail/ProcessedMailsTable';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { PageHeader } from '@/components/layout/PageHeader';
 
 export default function ProcessedMailsPage() {
   useEffect(() => {
@@ -11,16 +13,13 @@ export default function ProcessedMailsPage() {
 
   return (
     <RequireAuth requireFCRole>
-      <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-foreground mb-2">Processed Mails</h1>
-        <p className="text-foreground-muted">
-          View EVE in-game mails processed by the automated SRP mailer system.
-        </p>
-      </div>
-
-      <ProcessedMailsTable />
-    </div>
+      <PageContainer>
+        <PageHeader
+          title="Processed Mails"
+          description="View EVE in-game mails processed by the automated SRP mailer system."
+        />
+        <ProcessedMailsTable />
+      </PageContainer>
     </RequireAuth>
   );
 }

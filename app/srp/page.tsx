@@ -7,6 +7,8 @@ import { RequireAuth } from '@/components/auth/RequireAuth';
 import { SRPTable } from '@/components/srp/SRPTable';
 import { SRPFilters } from '@/components/srp/SRPFilters';
 import { Card } from '@/components/ui/Card';
+import { PageContainer } from '@/components/layout/PageContainer';
+import { PageHeader } from '@/components/layout/PageHeader';
 import type { SRPStatus } from '@/types';
 
 function SRPContent() {
@@ -24,18 +26,14 @@ function SRPContent() {
   const isAdmin = hasRole(['admin', 'Council', 'Accountant']);
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Page Header */}
-      <div className="mb-8">
-        <div className="mb-4">
-          <h1 className="text-3xl font-bold text-foreground">
-            Ship Replacement Program
-          </h1>
-          <p className="text-foreground-muted">
-            View and manage SRP requests for fleet losses
-          </p>
-        </div>
+    <PageContainer>
+      <PageHeader
+        title="Ship Replacement Program"
+        description="View and manage SRP requests for fleet losses"
+      />
 
+      {/* Filters */}
+      <div className="mb-6">
         <SRPFilters
           statusFilter={statusFilter}
           onStatusFilterChange={setStatusFilter}
@@ -54,7 +52,7 @@ function SRPContent() {
           isAdmin={isAdmin}
         />
       </Card>
-    </div>
+    </PageContainer>
   );
 }
 
@@ -62,14 +60,14 @@ export default function SRPPage() {
   return (
     <RequireAuth requireFCRole>
       <Suspense fallback={
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <PageContainer>
           <div className="flex items-center justify-center p-12">
             <div className="text-center">
               <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
               <p className="mt-4 text-foreground-muted">Loading...</p>
             </div>
           </div>
-        </div>
+        </PageContainer>
       }>
         <SRPContent />
       </Suspense>
