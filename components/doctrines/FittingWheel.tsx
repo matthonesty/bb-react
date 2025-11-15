@@ -58,45 +58,45 @@ const SLOT_POSITIONS = {
 // Panel background images for different slot configurations
 const PANEL_IMAGES = {
   base: 'https://zkillboard.com/img/panel/tyrannis.png',
-  high: [
-    null,
-    'https://zkillboard.com/img/panel/1h.png',
-    'https://zkillboard.com/img/panel/2h.png',
-    'https://zkillboard.com/img/panel/3h.png',
-    'https://zkillboard.com/img/panel/4h.png',
-    'https://zkillboard.com/img/panel/5h.png',
-    'https://zkillboard.com/img/panel/6h.png',
-    'https://zkillboard.com/img/panel/7h.png',
-    'https://zkillboard.com/img/panel/8h.png',
-  ],
-  mid: [
-    null,
-    'https://zkillboard.com/img/panel/1m.png',
-    'https://zkillboard.com/img/panel/2m.png',
-    'https://zkillboard.com/img/panel/3m.png',
-    'https://zkillboard.com/img/panel/4m.png',
-    'https://zkillboard.com/img/panel/5m.png',
-    'https://zkillboard.com/img/panel/6m.png',
-    'https://zkillboard.com/img/panel/7m.png',
-    'https://zkillboard.com/img/panel/8m.png',
-  ],
-  low: [
-    null,
-    'https://zkillboard.com/img/panel/1l.png',
-    'https://zkillboard.com/img/panel/2l.png',
-    'https://zkillboard.com/img/panel/3l.png',
-    'https://zkillboard.com/img/panel/4l.png',
-    'https://zkillboard.com/img/panel/5l.png',
-    'https://zkillboard.com/img/panel/6l.png',
-    'https://zkillboard.com/img/panel/7l.png',
-    'https://zkillboard.com/img/panel/8l.png',
-  ],
-  rig: [
-    null,
-    'https://zkillboard.com/img/panel/1r.png',
-    'https://zkillboard.com/img/panel/2r.png',
-    'https://zkillboard.com/img/panel/3r.png',
-  ],
+  high: {
+    0: null,
+    1: 'https://zkillboard.com/img/panel/1h.png',
+    2: 'https://zkillboard.com/img/panel/2h.png',
+    3: 'https://zkillboard.com/img/panel/3h.png',
+    4: 'https://zkillboard.com/img/panel/4h.png',
+    5: 'https://zkillboard.com/img/panel/5h.png',
+    6: 'https://zkillboard.com/img/panel/6h.png',
+    7: 'https://zkillboard.com/img/panel/7h.png',
+    8: 'https://zkillboard.com/img/panel/8h.png',
+  } as Record<number, string | null>,
+  mid: {
+    0: null,
+    1: 'https://zkillboard.com/img/panel/1m.png',
+    2: 'https://zkillboard.com/img/panel/2m.png',
+    3: 'https://zkillboard.com/img/panel/3m.png',
+    4: 'https://zkillboard.com/img/panel/4m.png',
+    5: 'https://zkillboard.com/img/panel/5m.png',
+    6: 'https://zkillboard.com/img/panel/6m.png',
+    7: 'https://zkillboard.com/img/panel/7m.png',
+    8: 'https://zkillboard.com/img/panel/8m.png',
+  } as Record<number, string | null>,
+  low: {
+    0: null,
+    1: 'https://zkillboard.com/img/panel/1l.png',
+    2: 'https://zkillboard.com/img/panel/2l.png',
+    3: 'https://zkillboard.com/img/panel/3l.png',
+    4: 'https://zkillboard.com/img/panel/4l.png',
+    5: 'https://zkillboard.com/img/panel/5l.png',
+    6: 'https://zkillboard.com/img/panel/6l.png',
+    7: 'https://zkillboard.com/img/panel/7l.png',
+    8: 'https://zkillboard.com/img/panel/8l.png',
+  } as Record<number, string | null>,
+  rig: {
+    0: null,
+    1: 'https://zkillboard.com/img/panel/1r.png',
+    2: 'https://zkillboard.com/img/panel/2r.png',
+    3: 'https://zkillboard.com/img/panel/3r.png',
+  } as Record<number, string | null>,
 };
 
 export function FittingWheel({
@@ -133,6 +133,7 @@ export function FittingWheel({
       const module = modules[i];
 
       if (module && module.type_id) {
+        const moduleName = (module as any).name || module.type_name || 'Module';
         slots.push(
           <div
             key={`${slotType}-${i}`}
@@ -148,15 +149,15 @@ export function FittingWheel({
               href={`https://everef.net/type/${module.type_id}`}
               target="_blank"
               rel="noopener noreferrer"
-              title={`${module.quantity}x ${module.type_name || (module as any).name || 'Module'}`}
+              title={moduleName}
             >
               <img
+                className="img-rounded"
                 src={getTypeIconUrl(module.type_id, size)}
-                alt={module.type_name || (module as any).name || 'Module'}
+                alt={moduleName}
                 style={{
                   height: `${size}px`,
                   width: `${size}px`,
-                  borderRadius: '4px',
                 }}
               />
             </a>
@@ -189,10 +190,12 @@ export function FittingWheel({
         height: '398px',
         width: '398px',
         margin: '0 auto',
+        zIndex: 3,
       }}
     >
       {/* Base background */}
       <div
+        className="mask"
         style={{
           position: 'absolute',
           left: 0,
@@ -219,6 +222,7 @@ export function FittingWheel({
       {/* High slot panel */}
       {highSlots > 0 && PANEL_IMAGES.high[highSlots] && (
         <div
+          className="highx"
           style={{
             position: 'absolute',
             left: 0,
@@ -239,6 +243,7 @@ export function FittingWheel({
       {/* Mid slot panel */}
       {midSlots > 0 && PANEL_IMAGES.mid[midSlots] && (
         <div
+          className="midx"
           style={{
             position: 'absolute',
             left: 0,
@@ -259,6 +264,7 @@ export function FittingWheel({
       {/* Low slot panel */}
       {lowSlots > 0 && PANEL_IMAGES.low[lowSlots] && (
         <div
+          className="lowx"
           style={{
             position: 'absolute',
             left: 0,
@@ -279,6 +285,7 @@ export function FittingWheel({
       {/* Rig slot panel */}
       {rigSlots > 0 && PANEL_IMAGES.rig[rigSlots] && (
         <div
+          className="rigxx"
           style={{
             position: 'absolute',
             left: 0,
@@ -298,6 +305,7 @@ export function FittingWheel({
 
       {/* Ship render in center */}
       <div
+        className="bigship"
         style={{
           position: 'absolute',
           left: '72px',
@@ -307,17 +315,20 @@ export function FittingWheel({
           zIndex: -2,
         }}
       >
-        <img
-          src={getShipRenderUrl(shipTypeId, 256)}
-          alt={shipName || 'Ship'}
-          style={{
-            height: '256px',
-            width: '256px',
-          }}
-          onError={(e) => {
-            (e.target as HTMLImageElement).src = getTypeIconUrl(shipTypeId, 256);
-          }}
-        />
+        <span className="shipImageSpan" style={{ height: '256px', width: '256px' }}>
+          <img
+            src={getShipRenderUrl(shipTypeId, 256)}
+            alt={shipName || 'Ship'}
+            className="shipImageRender img-rounded"
+            style={{
+              height: '256px',
+              width: '256px',
+            }}
+            onError={(e) => {
+              (e.target as HTMLImageElement).src = getTypeIconUrl(shipTypeId, 256);
+            }}
+          />
+        </span>
       </div>
 
       {/* Render all slots */}
