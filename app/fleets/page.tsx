@@ -313,7 +313,7 @@ export default function FleetsPage() {
                     {fleet.comms_channel && (
                       <div className="text-foreground-muted">
                         <div className="font-medium text-foreground">{fleet.comms_channel}</div>
-                        <div className="text-xs">Comms Channel</div>
+                        <div className="text-xs">In-Game Channel</div>
                       </div>
                     )}
                   </div>

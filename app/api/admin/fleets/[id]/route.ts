@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
 import { verifyAuth } from '@/lib/auth/apiAuth';
+import { updateFleetStatuses } from '@/lib/fleet/statusUpdater';
 
 // GET - Get single fleet with full details
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -26,6 +27,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         { status: 403 }
       );
     }
+
+    // Automatically update fleet statuses based on current time
+    await updateFleetStatuses();
 
     const { id } = await params;
 
