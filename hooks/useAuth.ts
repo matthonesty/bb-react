@@ -18,7 +18,17 @@ export function useAuth() {
     error,
   } = useQuery({
     queryKey: ['auth', 'verify'],
-    queryFn: authApi.verify,
+    queryFn: async () => {
+      try {
+        return await authApi.verify();
+      } catch (err) {
+        // 401 is expected for unauthenticated users - don't treat as error
+        if (err && typeof err === 'object' && 'status' in err && err.status === 401) {
+          return null;
+        }
+        throw err;
+      }
+    },
     retry: false,
     staleTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: true,
