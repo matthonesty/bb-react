@@ -285,7 +285,7 @@ export default function FleetDetailPage() {
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-foreground-muted text-sm">
                   <Clock size={16} className="text-primary" />
-                  <span>Comms Channel</span>
+                  <span>In-Game Channel</span>
                 </div>
                 <div className="text-foreground font-medium">{fleet.comms_channel}</div>
               </div>

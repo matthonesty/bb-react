@@ -71,7 +71,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
         title: '',
         description: '',
         staging_system: '',
-        comms_channel: '',
+        comms_channel: 'BB: Bombers Bar',
         status: 'scheduled',
       });
     }
@@ -152,6 +152,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
                 value={formData.scheduled_at}
                 onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
                 required
+                className="[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-200"
               />
             </div>
 
@@ -162,7 +163,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
               <select
                 value={formData.timezone}
                 onChange={(e) => setFormData({ ...formData, timezone: e.target.value })}
-                className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 {timezones.map((tz) => (
                   <option key={tz} value={tz}>
@@ -197,7 +198,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
               value={formData.fleet_type_id}
               onChange={(e) => setFormData({ ...formData, fleet_type_id: parseInt(e.target.value) })}
               required
-              className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">Select Fleet Type</option>
               {fleetTypes.map((ft) => (
@@ -216,7 +217,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
               value={formData.fc_id}
               onChange={(e) => setFormData({ ...formData, fc_id: parseInt(e.target.value) })}
               required
-              className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
             >
               <option value="">Select FC</option>
               {fcs.map((fc) => (
@@ -228,50 +229,53 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-foreground-muted mb-2">Title</label>
+            <label className="block text-sm font-medium text-foreground-muted mb-2">Title *</label>
             <Input
               type="text"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              placeholder="Optional fleet title"
+              placeholder="Fleet title"
+              required
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground-muted mb-2">
-              Description
+              Description *
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              placeholder="Optional fleet description"
+              placeholder="Fleet description"
               rows={3}
-              className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none"
+              required
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-foreground-muted mb-2">
-                Staging System
+                Staging System *
               </label>
               <Input
                 type="text"
                 value={formData.staging_system}
                 onChange={(e) => setFormData({ ...formData, staging_system: e.target.value })}
                 placeholder="e.g., Jita"
+                required
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-foreground-muted mb-2">
-                Comms Channel
+                In-Game Channel
               </label>
               <Input
                 type="text"
                 value={formData.comms_channel}
                 onChange={(e) => setFormData({ ...formData, comms_channel: e.target.value })}
-                placeholder="e.g., bombers_bar"
+                placeholder="BB: Bombers Bar"
               />
             </div>
           </div>
@@ -282,7 +286,7 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
               <select
                 value={formData.status}
                 onChange={(e) => setFormData({ ...formData, status: e.target.value as any })}
-                className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="scheduled">Scheduled</option>
                 <option value="in_progress">In Progress</option>
