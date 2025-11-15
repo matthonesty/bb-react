@@ -97,6 +97,14 @@ export function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex md:items-center md:space-x-1">
+            {/* About Link - Always visible */}
+            <Link
+              href="/about"
+              className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
+            >
+              About
+            </Link>
+
             {/* Forms Dropdown - Always visible */}
             <div className="relative" ref={formsMenuRef}>
               <button
@@ -253,6 +261,15 @@ export function Header() {
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-border bg-background-secondary">
           <nav className="px-4 py-3 space-y-1">
+            {/* About Link - Always visible */}
+            <Link
+              href="/about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
+            >
+              About
+            </Link>
+
             {/* Forms section - Always visible */}
             <div className="mb-2">
               <p className="px-3 py-2 text-xs font-semibold text-foreground-muted uppercase">
