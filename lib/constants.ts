@@ -67,8 +67,8 @@ export const NAV_ITEMS: NavItem[] = [
     ],
     children: [
       {
-        label: 'Fleet Commanders',
-        href: '/fcs',
+        label: 'Ban Management',
+        href: '/bans',
         roles: [
           ROLES.ADMIN,
           ROLES.COUNCIL,
@@ -91,8 +91,8 @@ export const NAV_ITEMS: NavItem[] = [
         ],
       },
       {
-        label: 'Fleet Management',
-        href: '/fleets',
+        label: 'Fleet Commanders',
+        href: '/fcs',
         roles: [
           ROLES.ADMIN,
           ROLES.COUNCIL,
@@ -103,8 +103,8 @@ export const NAV_ITEMS: NavItem[] = [
         ],
       },
       {
-        label: 'Ban Management',
-        href: '/bans',
+        label: 'Fleet Management',
+        href: '/fleets',
         roles: [
           ROLES.ADMIN,
           ROLES.COUNCIL,
