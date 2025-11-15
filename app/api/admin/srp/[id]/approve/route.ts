@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
 import { verifyAuth } from '@/lib/auth/apiAuth';
+import { queueMailSend } from '@/lib/pendingMailQueue';
 
 export async function POST(request: NextRequest, context: { params: Promise<{ id: string }> }) {
   try {
@@ -59,6 +60,38 @@ export async function POST(request: NextRequest, context: { params: Promise<{ id
     }
 
     const srpRequest = result.rows[0];
+
+    // Queue approval notification mail
+    try {
+      // Extract killmail URL from mail body or construct from killmail_id
+      const zkbUrlMatch = srpRequest.mail_body?.match(/(https?:\/\/zkillboard\.com\/kill\/\d+\/?)/i);
+      const killmailUrl = zkbUrlMatch
+        ? zkbUrlMatch[0]
+        : srpRequest.killmail_id
+          ? `https://zkillboard.com/kill/${srpRequest.killmail_id}/`
+          : 'N/A';
+
+      await queueMailSend({
+        mailType: 'manual_approval',
+        recipientCharacterId: srpRequest.character_id,
+        payload: {
+          senderCharacterId: parseInt(process.env.MAILER_CHARACTER_ID || ''),
+          recipientCharacterId: srpRequest.character_id,
+          recipientName: srpRequest.character_name,
+          payoutAmount: srpRequest.final_payout_amount,
+          shipName: srpRequest.ship_name,
+          killmailUrl,
+        },
+        retryAfter: new Date(), // Send ASAP
+      });
+
+      console.log(
+        `[SRP APPROVE] Queued approval mail for ${srpRequest.character_name} (${srpRequest.character_id}) - ${srpRequest.final_payout_amount} ISK`
+      );
+    } catch (mailError) {
+      console.error('[SRP APPROVE] Failed to queue approval mail:', mailError);
+      // Don't fail the approval if mail queueing fails
+    }
 
     // Add is_auto_rejection flag
     const responseData = {
