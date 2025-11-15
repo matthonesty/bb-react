@@ -509,106 +509,175 @@ export default function AboutPage() {
         {/* Terminology */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Common Terminology</h2>
-          <Card className="p-6">
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">BB</h4>
-                <p className="text-sm text-foreground-muted">Bombers Bar</p>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">BB</span>
               </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">X up</h4>
-                <p className="text-sm text-foreground-muted">Sign up for a fleet / add your ship to the spreadsheet</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">SB</h4>
-                <p className="text-sm text-foreground-muted">Stealth Bomber</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Cov Ops</h4>
-                <p className="text-sm text-foreground-muted">Covert Ops cloak</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">7o</h4>
-                <p className="text-sm text-foreground-muted">Greeting</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Pew</h4>
-                <p className="text-sm text-foreground-muted">Shooting ships</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Dank / Gucci / GF</h4>
-                <p className="text-sm text-foreground-muted">Positive adjectives, good fight</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Gate Cloak</h4>
-                <p className="text-sm text-foreground-muted">Cloak you get when jumping through a gate</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Prop Mod</h4>
-                <p className="text-sm text-foreground-muted">Afterburner or Microwarpdrive</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Sebo / Sebos</h4>
-                <p className="text-sm text-foreground-muted">Sensor Booster</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Point / Scram</h4>
-                <p className="text-sm text-foreground-muted">Warp disruptor / warp scrambler</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Web / Webs</h4>
-                <p className="text-sm text-foreground-muted">Stasis Webifier</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Align</h4>
-                <p className="text-sm text-foreground-muted">Get into warp alignment without activating warp drive</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Anchor</h4>
-                <p className="text-sm text-foreground-muted">Get close to a specific person</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Broadcast</h4>
-                <p className="text-sm text-foreground-muted">Send a message to the fleet via the fleet interface</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Cyno</h4>
-                <p className="text-sm text-foreground-muted">Cynosural Field Generator</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">GTFO</h4>
-                <p className="text-sm text-foreground-muted">Warp out immediately</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Heat / Overheat</h4>
-                <p className="text-sm text-foreground-muted">Use modules on overheat</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Hold Cloak</h4>
-                <p className="text-sm text-foreground-muted">Use your natural 60 second cloak when jumping gates/wormholes</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">NPSI</h4>
-                <p className="text-sm text-foreground-muted">Not Purple Shoot It (anyone without excellent standings is fair game)</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Ping</h4>
-                <p className="text-sm text-foreground-muted">Message sent out to all BB channel members</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Primary</h4>
-                <p className="text-sm text-foreground-muted">The target you&apos;re supposed to shoot first</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Recon</h4>
-                <p className="text-sm text-foreground-muted">Recon ship - Force Recon or Combat Recon</p>
-              </div>
-              <div>
-                <h4 className="font-semibold text-foreground mb-1">Warp to me</h4>
-                <p className="text-sm text-foreground-muted">Warp to the person talking</p>
-              </div>
+              <p className="text-sm text-foreground-muted">Bombers Bar</p>
             </div>
-          </Card>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">X up</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Sign up for a fleet / add your ship to the spreadsheet</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">SB</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Stealth Bomber</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Cov Ops</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Covert Ops cloak</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">7o</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Greeting</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Pew</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Shooting ships</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Dank / Gucci / GF</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Positive adjectives, good fight</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Gate Cloak</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Cloak you get when jumping through a gate</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Prop Mod</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Afterburner or Microwarpdrive</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Sebo / Sebos</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Sensor Booster</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Point / Scram</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Warp disruptor / warp scrambler</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Web / Webs</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Stasis Webifier</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Align</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Get into warp alignment without activating warp drive</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Anchor</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Get close to a specific person</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Broadcast</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Send a message to the fleet via the fleet interface</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Cyno</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Cynosural Field Generator</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">GTFO</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Warp out immediately</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Heat / Overheat</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Use modules on overheat</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Hold Cloak</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Use your natural 60 second cloak when jumping gates/wormholes</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">NPSI</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Not Purple Shoot It (anyone without excellent standings is fair game)</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Ping</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Message sent out to all BB channel members</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Primary</span>
+              </div>
+              <p className="text-sm text-foreground-muted">The target you&apos;re supposed to shoot first</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Recon</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Recon ship - Force Recon or Combat Recon</p>
+            </div>
+
+            <div className="group rounded-lg border border-border bg-surface p-4 transition-all hover:border-primary/50 hover:shadow-md">
+              <div className="flex items-baseline gap-2 mb-1">
+                <span className="inline-block px-2 py-0.5 rounded bg-primary/10 text-primary font-mono text-sm font-bold">Warp to me</span>
+              </div>
+              <p className="text-sm text-foreground-muted">Warp to the person talking</p>
+            </div>
+          </div>
         </section>
 
         {/* FAQ */}
