@@ -7,6 +7,8 @@
 
 import { NextResponse } from 'next/server';
 import { getServerSession } from '@/lib/auth/session';
+import { getESIStatus, getHealthSummary } from '@/lib/esi/status.js';
+import { getCompatibilityDateSync } from '@/lib/esi/helpers.js';
 
 /**
  * Critical routes we depend on for mail processing and operations
@@ -19,83 +21,7 @@ const CRITICAL_ROUTES = [
   { method: 'GET', path: '/corporations/{corporation_id}/wallets/{division}/journal/' },
 ];
 
-/**
- * Cache for ESI status (1 minute)
- */
-let cachedStatus: {
-  data: any | null;
-  lastFetched: number | null;
-} = {
-  data: null,
-  lastFetched: null,
-};
-
-const CACHE_DURATION = 60000; // 1 minute
-
-/**
- * Fetch ESI status from /status.json endpoint
- */
-async function fetchESIStatus(forceRefresh = false): Promise<any> {
-  const now = Date.now();
-
-  // Return cached data if still valid
-  if (
-    !forceRefresh &&
-    cachedStatus.data &&
-    cachedStatus.lastFetched &&
-    now - cachedStatus.lastFetched < CACHE_DURATION
-  ) {
-    return cachedStatus.data;
-  }
-
-  try {
-    const response = await fetch('https://esi.evetech.net/status.json', {
-      headers: {
-        'User-Agent': process.env.ESI_USER_AGENT || 'Bombers Bar Admin Panel',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(`ESI returned ${response.status}`);
-    }
-
-    const data = await response.json();
-
-    cachedStatus.data = data;
-    cachedStatus.lastFetched = now;
-
-    return data;
-  } catch (error: any) {
-    console.error('[ESI STATUS] Failed to fetch:', error.message);
-
-    // Return stale cache if available
-    if (cachedStatus.data) {
-      console.warn('[ESI STATUS] Using stale cached data');
-      return cachedStatus.data;
-    }
-
-    return null;
-  }
-}
-
-/**
- * Get compatibility date from ESI headers
- */
-async function getCompatibilityDate(): Promise<string | null> {
-  try {
-    const response = await fetch('https://esi.evetech.net/latest/', {
-      method: 'HEAD',
-      headers: {
-        'User-Agent': process.env.ESI_USER_AGENT || 'Bombers Bar Admin Panel',
-      },
-    });
-
-    return response.headers.get('X-Compatibility-Date') || null;
-  } catch (error) {
-    console.error('[ESI] Failed to fetch compatibility date:', error);
-    return null;
-  }
-}
+// Removed duplicate functions - now using centralized helpers from lib/esi/status.js and lib/esi/helpers.js
 
 /**
  * GET /api/admin/esi-status
@@ -118,10 +44,8 @@ export async function GET() {
   }
 
   try {
-    const [statusData, compatDate] = await Promise.all([
-      fetchESIStatus(),
-      getCompatibilityDate(),
-    ]);
+    const statusData = await getESIStatus();
+    const compatDate = getCompatibilityDateSync();
 
     if (!statusData || !Array.isArray(statusData)) {
       return NextResponse.json({
@@ -181,9 +105,7 @@ export async function GET() {
       message,
       compatibility_date: compatDate,
       critical_routes: criticalRouteStatus,
-      last_checked: cachedStatus.lastFetched
-        ? new Date(cachedStatus.lastFetched).toISOString()
-        : null,
+      last_checked: new Date().toISOString(),
     });
   } catch (error: any) {
     console.error('[ADMIN] ESI status error:', error);
