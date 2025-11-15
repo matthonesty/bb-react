@@ -8,14 +8,15 @@
 import DOMPurify from 'dompurify';
 
 /**
- * Convert EVE killReport links to zkillboard URLs
+ * Convert EVE killReport links to ESI killmail URLs
  * Format: killReport:killmail_id:hash
+ * Converts to: https://esi.evetech.net/v1/killmails/{id}/{hash}/?datasource=tranquility
  */
 function convertKillReportLinks(html: string): string {
   // Match killReport: links in href attributes
   return html.replace(
     /killReport:(\d+):([a-f0-9]+)/gi,
-    'https://zkillboard.com/kill/$1/'
+    'https://esi.evetech.net/v1/killmails/$1/$2/?datasource=tranquility'
   );
 }
 
@@ -23,7 +24,7 @@ function convertKillReportLinks(html: string): string {
  * Sanitize EVE mail HTML
  * - Removes dangerous tags and attributes
  * - Allows safe formatting tags (font, br, a, etc.)
- * - Converts killReport links to zkillboard links
+ * - Converts killReport links to ESI killmail API links
  * - Prevents XSS attacks
  */
 export function sanitizeMailHtml(html: string): string {
