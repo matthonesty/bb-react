@@ -15,7 +15,8 @@ export async function GET() {
         group_name,
         base_payout,
         polarized_payout,
-        fc_discretion
+        fc_discretion,
+        notes
       FROM srp_ship_types
       WHERE is_active = TRUE
       ORDER BY group_name ASC, type_name ASC`

@@ -273,7 +273,10 @@ export default function AboutPage() {
                       <div className="space-y-2">
                         {ships.map((ship) => (
                           <div key={ship.type_name} className="flex justify-between items-start text-xs">
-                            <span className="text-foreground-muted flex-1 mr-2">{ship.type_name}</span>
+                            <span className="text-foreground-muted flex-1 mr-2">
+                              {ship.type_name}
+                              {ship.notes && <span className="font-bold text-foreground ml-1">*</span>}
+                            </span>
                             <div className="flex flex-col items-end">
                               <span className="font-semibold text-foreground whitespace-nowrap">
                                 {(ship.base_payout / 1000000).toFixed(0)}m
@@ -292,6 +295,24 @@ export default function AboutPage() {
                       </div>
                     </div>
                   ))}
+                </div>
+              )}
+
+              {/* Ship Notes Legend */}
+              {shipTypes.some(ship => ship.notes) && (
+                <div className="mt-6 rounded-md bg-background-secondary p-4 text-xs">
+                  <div className="font-semibold text-foreground mb-2">
+                    <span className="font-bold">*</span> Additional Notes:
+                  </div>
+                  <div className="space-y-1 text-foreground-muted">
+                    {shipTypes
+                      .filter(ship => ship.notes)
+                      .map((ship) => (
+                        <div key={ship.type_name}>
+                          <span className="font-semibold text-foreground">{ship.type_name}:</span> {ship.notes}
+                        </div>
+                      ))}
+                  </div>
                 </div>
               )}
 

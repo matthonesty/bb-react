@@ -29,6 +29,7 @@ interface SRPShipType {
   base_payout: number;
   polarized_payout: number | null;
   fc_discretion: boolean;
+  notes: string | null;
 }
 
 interface SRPConfigResponse {
