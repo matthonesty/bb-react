@@ -147,12 +147,12 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
               <label className="block text-sm font-medium text-foreground-muted mb-2">
                 Scheduled Time *
               </label>
-              <Input
+              <input
                 type="datetime-local"
                 value={formData.scheduled_at}
                 onChange={(e) => setFormData({ ...formData, scheduled_at: e.target.value })}
                 required
-                className="[&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-200"
+                className="flex h-10 w-full rounded-md border border-input-border bg-input-bg px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent [&::-webkit-calendar-picker-indicator]:cursor-pointer [&::-webkit-calendar-picker-indicator]:invert [&::-webkit-calendar-picker-indicator]:brightness-150"
               />
             </div>
 
