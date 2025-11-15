@@ -4,7 +4,7 @@
  * Validates SRP requests by checking killmails against O'Bomber-care rules.
  */
 
-import { parseKillmailFromText } from '../killmail/parser.js';
+import { parseKillmailFromText } from '../killmail/parser';
 import { isApprovedShip, getPayoutAmount, getShipInfo, ShipInfo, ShipsMap } from './shipTypes';
 
 export interface ValidationResult {

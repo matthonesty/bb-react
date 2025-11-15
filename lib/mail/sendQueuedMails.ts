@@ -11,19 +11,46 @@ import {
   sendUnapprovedShipMail,
   sendMail,
   sendMailsWithRateLimit,
-} from '../esi.js';
-import { parseMailStopSpammingError } from '../esi.js';
-import { getPendingMailsReadyToSend, markMailSent, updateMailRetry } from '../pendingMailQueue';
+} from '../esi';
+import { parseMailStopSpammingError } from '../esi';
+import { getPendingMailsReadyToSend, markMailSent, updateMailRetry, PendingMail } from '../pendingMailQueue';
 import { getAllApprovedShips } from '../srp/shipTypes';
-import { resolveNames } from '../esi.js';
+import { resolveNames } from '../esi';
+
+export interface QueuedMailResult {
+  sent: number;
+  failed: number;
+  retrying: number;
+}
+
+interface MailBatchItem {
+  queueId: number;
+  mailType: string;
+  recipientId: number;
+  attempts: number;
+  sendFunction: () => Promise<any>;
+}
+
+interface SendResult {
+  status: 'success' | 'error';
+  error?: string | any; // Can be string (from sendMailsWithRateLimit) or Error object
+}
+
+interface SpamError {
+  isMailSpam: boolean;
+  retryAfterMs: number;
+  retryAfterDate: Date;
+  retryAfterSeconds: string;
+  retryAfterMinutes: string;
+}
 
 /**
  * Process and send queued mails with rate limiting (max 15 per run)
  *
- * @param {string} accessToken - ESI access token
- * @returns {Promise<Object>} Results of queue processing
+ * @param accessToken - ESI access token
+ * @returns Results of queue processing
  */
-async function sendQueuedMails(accessToken) {
+export async function sendQueuedMails(accessToken: string): Promise<QueuedMailResult> {
   const queuedMails = await getPendingMailsReadyToSend();
   console.log(
     `[MAIL QUEUE] Found ${queuedMails.length} queued mail(s) ready to send (max 15 per batch)`
@@ -40,8 +67,8 @@ async function sendQueuedMails(accessToken) {
   );
 
   // Build batch of mail send functions
-  const mailBatch = queuedMails.map((queuedMail) => {
-    const payload = queuedMail.payload;
+  const mailBatch: MailBatchItem[] = queuedMails.map((queuedMail: PendingMail) => {
+    const payload = queuedMail.payload as any; // Payloads are dynamic based on mail_type
 
     return {
       queueId: queuedMail.id,
@@ -186,9 +213,8 @@ Fly safe.
           });
         } else if (queuedMail.mail_type === 'multiple_killmails_rejection') {
           // Resolve recipient name
-          const recipientName = await resolveNames([payload.recipientCharacterId])
-            .then((names) => names[0]?.name || 'Pilot')
-            .catch(() => 'Pilot');
+          const resolvedNames = (await resolveNames([payload.recipientCharacterId])) as Array<{ id: number; name: string }>;
+          const recipientName = resolvedNames[0]?.name || 'Pilot';
 
           // Support both old and new payload structures
           const senderCharId = payload.senderCharacterId || payload.mailSenderCharacterId;
@@ -296,10 +322,10 @@ Fly safe.
   console.log(
     `[MAIL QUEUE] Sending ${mailBatch.length} queued mail(s) with rate limiting (15s delays)...`
   );
-  const results = await sendMailsWithRateLimit(accessToken, mailBatch);
+  const results = (await sendMailsWithRateLimit(accessToken, mailBatch)) as SendResult[];
 
   // Track results
-  const queueResults = {
+  const queueResults: QueuedMailResult = {
     sent: 0,
     failed: 0,
     retrying: 0,
@@ -320,7 +346,11 @@ Fly safe.
     } else {
       // Failed - check error type
       const errorMessage = result.error || 'Unknown error';
-      const spamError = parseMailStopSpammingError(result.error);
+      // parseMailStopSpammingError expects Error object with axios structure
+      // If result.error is a string, it will return null (no spam error detected)
+      const spamError = parseMailStopSpammingError(
+        typeof result.error === 'string' ? null : result.error
+      ) as SpamError | null;
 
       if (spamError) {
         // Still rate limited - update retry time
@@ -342,5 +372,3 @@ Fly safe.
 
   return queueResults;
 }
-
-export { sendQueuedMails };

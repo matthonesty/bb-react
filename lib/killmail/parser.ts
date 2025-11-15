@@ -11,7 +11,64 @@
  */
 
 import axios from 'axios';
-import { ESI_BASE_URL, esiGet } from '../esi.js';
+import { ESI_BASE_URL, esiGet } from '../esi';
+import { Pool } from 'pg';
+
+export interface KillReportLinkData {
+  killmailId: number;
+  hash: string;
+}
+
+export interface PolarizedResult {
+  is_polarized: boolean;
+  count: number;
+  warning: string | null;
+}
+
+export interface ParsedKillmail {
+  killmail_id: number;
+  killmail_time: string;
+  victim_character_id: number;
+  victim_corporation_id: number;
+  victim_alliance_id: number | null;
+  victim_ship_type_id: number;
+  damage_taken: number;
+  items: any[];
+  solar_system_id: number;
+  attackers_count: number;
+  hash?: string;
+}
+
+export interface FCInfo {
+  fc_id: number;
+  status: string;
+  rank: string;
+  main_character_name: string;
+}
+
+export interface ProximityKillmail {
+  attackers?: number[];
+  fleet_commanders?: FCInfo[];
+  [key: string]: any;
+}
+
+export interface ProximityData {
+  sourceKillmail?: any;
+  relatedKillmails?: ProximityKillmail[];
+  victimAsAttacker?: ProximityKillmail[];
+  timeWindow?: any;
+  count?: any;
+}
+
+export interface ParseKillmailResult {
+  hash: string;
+  killmail: any;
+  parsed: ParsedKillmail;
+  is_polarized: boolean;
+  polarized_count: number;
+  polarized_warning: string | null;
+  source: 'killReport' | 'zkillboard';
+}
 
 /**
  * Extract killmail ID from zkillboard URL
@@ -21,14 +78,14 @@ import { ESI_BASE_URL, esiGet } from '../esi.js';
  * - https://zkillboard.com/kill/131006011
  * - zkillboard.com/kill/131006011/
  *
- * @param {string} text - Text containing zkillboard URL
- * @returns {number|null} Killmail ID or null if not found
+ * @param text - Text containing zkillboard URL
+ * @returns Killmail ID or null if not found
  *
  * @example
  * extractKillmailId("Check this: https://zkillboard.com/kill/131006011/")
  * // Returns: 131006011
  */
-function extractKillmailId(text) {
+export function extractKillmailId(text: string): number | null {
   // Match zkillboard.com/kill/NUMBER
   const regex = /zkillboard\.com\/kill\/(\d+)/i;
   const match = text.match(regex);
@@ -46,14 +103,14 @@ function extractKillmailId(text) {
  * EVE in-game kill links have format:
  * <url=killReport:KILLMAIL_ID:HASH>Kill: Character Name (Ship)</url>
  *
- * @param {string} text - Text containing EVE kill report link
- * @returns {Object|null} { killmailId, hash } or null if not found
+ * @param text - Text containing EVE kill report link
+ * @returns { killmailId, hash } or null if not found
  *
  * @example
  * extractKillReportLink("<url=killReport:130838826:4b7930e8b8f7077b6a2999f3127a83061b62400b>Kill: Isarra Vess (Nemesis)</url>")
  * // Returns: { killmailId: 130838826, hash: "4b7930e8b8f7077b6a2999f3127a83061b62400b" }
  */
-function extractKillReportLink(text) {
+export function extractKillReportLink(text: string): KillReportLinkData | null {
   // Match killReport:KILLMAIL_ID:HASH
   const regex = /killReport:(\d+):([a-f0-9]{40})/i;
   const match = text.match(regex);
@@ -71,14 +128,14 @@ function extractKillReportLink(text) {
 /**
  * Fetch killmail hash from zkillboard API
  *
- * @param {number} killmailId - Killmail ID
- * @returns {Promise<string>} Killmail hash
+ * @param killmailId - Killmail ID
+ * @returns Killmail hash
  *
  * @example
  * const hash = await getKillmailHash(131006011);
  * // Returns: "3a06facfb5a56fd3e2fa54ec4fcaec6d821cc008"
  */
-async function getKillmailHash(killmailId) {
+export async function getKillmailHash(killmailId: number): Promise<string> {
   try {
     const url = `https://zkillboard.com/api/killID/${killmailId}/`;
     const response = await axios.get(url, {
@@ -98,7 +155,7 @@ async function getKillmailHash(killmailId) {
     }
 
     return hash;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[KILLMAIL] Error fetching hash from zkillboard:', error.message);
     throw new Error(`Failed to fetch killmail hash: ${error.message}`);
   }
@@ -107,15 +164,15 @@ async function getKillmailHash(killmailId) {
 /**
  * Fetch full killmail from ESI
  *
- * @param {number} killmailId - Killmail ID
- * @param {string} hash - Killmail hash from zkillboard
- * @returns {Promise<Object>} Full killmail data
+ * @param killmailId - Killmail ID
+ * @param hash - Killmail hash from zkillboard
+ * @returns Full killmail data
  *
  * @example
  * const killmail = await getKillmailFromESI(131006011, "3a06...");
  * // Returns: { killmail_id, killmail_time, victim: {...}, attackers: [...] }
  */
-async function getKillmailFromESI(killmailId, hash) {
+export async function getKillmailFromESI(killmailId: number, hash: string): Promise<any> {
   try {
     const url = `${ESI_BASE_URL}/killmails/${killmailId}/${hash}/`;
     const killmail = await esiGet(url);
@@ -125,7 +182,7 @@ async function getKillmailFromESI(killmailId, hash) {
     }
 
     return killmail;
-  } catch (error) {
+  } catch (error: any) {
     console.error('[KILLMAIL] Error fetching from ESI:', error.message);
     throw new Error(`Failed to fetch killmail from ESI: ${error.message}`);
   }
@@ -134,22 +191,14 @@ async function getKillmailFromESI(killmailId, hash) {
 /**
  * Parse killmail to extract SRP-relevant information
  *
- * @param {Object} killmail - Full killmail from ESI
- * @returns {Object} Parsed killmail data
- * @property {number} killmail_id
- * @property {string} killmail_time
- * @property {number} victim_character_id
- * @property {number} victim_corporation_id
- * @property {number} victim_ship_type_id
- * @property {number} damage_taken
- * @property {Array} items - Fitted items
- * @property {number} solar_system_id
+ * @param killmail - Full killmail from ESI
+ * @returns Parsed killmail data
  *
  * @example
  * const parsed = parseKillmail(killmailData);
  * // Returns: { killmail_id: 131006011, victim_ship_type_id: 624, ... }
  */
-function parseKillmail(killmail) {
+export function parseKillmail(killmail: any): ParsedKillmail {
   if (!killmail) {
     throw new Error('Killmail data is null or undefined');
   }
@@ -180,13 +229,10 @@ function parseKillmail(killmail) {
  *
  * Polarized Torpedo Launcher type ID: 34294
  *
- * @param {Array} items - Items from killmail
- * @returns {Object} Polarized detection result
- * @property {boolean} is_polarized - True if ship has any polarized weapons in correct slots
- * @property {number} count - Number of polarized launchers found
- * @property {string|null} warning - Warning if less than 3 launchers found
+ * @param items - Items from killmail
+ * @returns Polarized detection result
  */
-function hasPolarizedWeapons(items) {
+export function hasPolarizedWeapons(items: any[]): PolarizedResult {
   if (!items || !Array.isArray(items)) {
     return {
       is_polarized: false,
@@ -219,11 +265,11 @@ function hasPolarizedWeapons(items) {
 /**
  * Load all Fleet Commanders into memory and build character ID lookup map
  *
- * @param {Object} db - Database instance
- * @returns {Promise<Map>} Map of character_id -> FC info
+ * @param db - Database instance
+ * @returns Map of character_id -> FC info
  */
-async function loadFleetCommandersMap(db) {
-  const fcMap = new Map();
+export async function loadFleetCommandersMap(db: Pool): Promise<Map<string, FCInfo>> {
+  const fcMap = new Map<string, FCInfo>();
 
   try {
     if (!db) {
@@ -233,7 +279,7 @@ async function loadFleetCommandersMap(db) {
     const result = await db.query('SELECT * FROM fleet_commanders');
 
     for (const fc of result.rows) {
-      const fcInfo = {
+      const fcInfo: FCInfo = {
         fc_id: fc.id,
         status: fc.status,
         rank: fc.rank,
@@ -271,7 +317,7 @@ async function loadFleetCommandersMap(db) {
       `[KILLMAIL] Loaded ${result.rows.length} Fleet Commanders (${fcMap.size} character IDs mapped)`
     );
     return fcMap;
-  } catch (error) {
+  } catch (error: any) {
     console.warn(`[KILLMAIL] Failed to load Fleet Commanders:`, error.message);
     return fcMap;
   }
@@ -280,11 +326,14 @@ async function loadFleetCommandersMap(db) {
 /**
  * Enrich proximity data with Fleet Commander information
  *
- * @param {Object} proximityData - Raw proximity data from API
- * @param {Map} fcMap - Map of character_id -> FC info
- * @returns {Object} Enriched proximity data
+ * @param proximityData - Raw proximity data from API
+ * @param fcMap - Map of character_id -> FC info
+ * @returns Enriched proximity data
  */
-function enrichProximityWithFCs(proximityData, fcMap) {
+export function enrichProximityWithFCs(
+  proximityData: ProximityData,
+  fcMap: Map<string, FCInfo>
+): ProximityData {
   if (!proximityData || !fcMap || fcMap.size === 0) {
     return proximityData;
   }
@@ -298,8 +347,8 @@ function enrichProximityWithFCs(proximityData, fcMap) {
         return km;
       }
 
-      const fcs = [];
-      const fcSet = new Set();
+      const fcs: FCInfo[] = [];
+      const fcSet = new Set<number>();
 
       for (const attackerId of km.attackers) {
         const fcInfo = fcMap.get(String(attackerId));
@@ -323,8 +372,8 @@ function enrichProximityWithFCs(proximityData, fcMap) {
         return km;
       }
 
-      const fcs = [];
-      const fcSet = new Set();
+      const fcs: FCInfo[] = [];
+      const fcSet = new Set<number>();
 
       for (const attackerId of km.attackers) {
         const fcInfo = fcMap.get(String(attackerId));
@@ -350,9 +399,9 @@ function enrichProximityWithFCs(proximityData, fcMap) {
  * Retrieves related killmails that occurred near the same time/location,
  * and checks if the victim was involved as an attacker in other kills.
  *
- * @param {number} killmailId - Killmail ID
- * @param {Map} fcMap - Optional Fleet Commander map for enrichment
- * @returns {Promise<Object|null>} Proximity data or null if unavailable
+ * @param killmailId - Killmail ID
+ * @param fcMap - Optional Fleet Commander map for enrichment
+ * @returns Proximity data or null if unavailable
  *
  * @example
  * const proximity = await getProximityData(130922515, fcMap);
@@ -364,7 +413,10 @@ function enrichProximityWithFCs(proximityData, fcMap) {
  * //   count: {...}
  * // }
  */
-async function getProximityData(killmailId, fcMap = null) {
+export async function getProximityData(
+  killmailId: number,
+  fcMap: Map<string, FCInfo> | null = null
+): Promise<ProximityData | null> {
   try {
     const url = `https://data.edencom.net/api/killmails-by-proximity?killmailId=${killmailId}`;
     const response = await axios.get(url, {
@@ -375,7 +427,7 @@ async function getProximityData(killmailId, fcMap = null) {
       timeout: 5000, // 5 second timeout to avoid blocking processing
     });
 
-    let proximityData = response.data || null;
+    let proximityData: ProximityData = response.data || null;
 
     // Enrich with FC info if map provided
     if (proximityData && fcMap) {
@@ -383,7 +435,7 @@ async function getProximityData(killmailId, fcMap = null) {
     }
 
     return proximityData;
-  } catch (error) {
+  } catch (error: any) {
     console.warn(`[KILLMAIL] Failed to fetch proximity data for ${killmailId}:`, error.message);
     // Return null on error - proximity data is optional enrichment
     return null;
@@ -400,13 +452,8 @@ async function getProximityData(killmailId, fcMap = null) {
  * 1. EVE in-game kill link: <url=killReport:ID:HASH>...</url> (preferred - no zkillboard API call needed)
  * 2. Zkillboard URL: https://zkillboard.com/kill/ID/ (requires zkillboard API call to get hash)
  *
- * @param {string} text - Text containing killmail link (e.g., from EVE mail)
- * @returns {Promise<Object>} Parsed killmail data with hash
- * @property {string} hash - Killmail hash (for verification)
- * @property {Object} killmail - Full ESI killmail data
- * @property {Object} parsed - Parsed SRP-relevant data
- * @property {boolean} is_polarized - True if ship has polarized weapons
- * @property {string} source - Source of killmail data ('killReport' or 'zkillboard')
+ * @param text - Text containing killmail link (e.g., from EVE mail)
+ * @returns Parsed killmail data with hash
  *
  * @example
  * const result = await parseKillmailFromText(mailBody);
@@ -418,10 +465,10 @@ async function getProximityData(killmailId, fcMap = null) {
  * //   source: 'killReport'
  * // }
  */
-async function parseKillmailFromText(text) {
-  let killmailId;
-  let hash;
-  let source;
+export async function parseKillmailFromText(text: string): Promise<ParseKillmailResult> {
+  let killmailId: number;
+  let hash: string;
+  let source: 'killReport' | 'zkillboard';
 
   // Try to extract from EVE in-game kill report link first (preferred - includes hash)
   const killReportData = extractKillReportLink(text);
@@ -432,12 +479,13 @@ async function parseKillmailFromText(text) {
     console.log(`[KILLMAIL] Parsed EVE in-game kill link: ${killmailId} (hash from link)`);
   } else {
     // Fall back to zkillboard URL extraction
-    killmailId = extractKillmailId(text);
-    if (!killmailId) {
+    const extractedId = extractKillmailId(text);
+    if (!extractedId) {
       throw new Error(
         'No killmail link found in text (supported formats: EVE in-game kill link or zkillboard URL)'
       );
     }
+    killmailId = extractedId;
 
     // Get hash from zkillboard API
     hash = await getKillmailHash(killmailId);
@@ -467,15 +515,3 @@ async function parseKillmailFromText(text) {
     source,
   };
 }
-
-export {
-  extractKillmailId,
-  extractKillReportLink,
-  getKillmailHash,
-  getKillmailFromESI,
-  parseKillmail,
-  hasPolarizedWeapons,
-  parseKillmailFromText,
-  getProximityData,
-  loadFleetCommandersMap,
-};

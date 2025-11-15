@@ -11,13 +11,59 @@ import axios from 'axios';
 import { getKillmailFromESI } from './parser.js';
 import { resolveNames } from '../esi.js';
 
+export interface ZkbData {
+  hash: string;
+  zkb: {
+    locationID?: number;
+    totalValue?: number;
+    fittedValue?: number;
+    droppedValue?: number;
+    destroyedValue?: number;
+    points?: number;
+    npc?: boolean;
+    solo?: boolean;
+    awox?: boolean;
+  };
+}
+
+export interface DroppedItem {
+  item_type_id: number;
+  quantity_dropped: number;
+  flag: number;
+}
+
+export interface EnrichedDroppedItem extends DroppedItem {
+  item_name: string | null;
+}
+
+export interface EnrichedKillmailData {
+  killmail_id: number;
+  killmail_hash?: string;
+  zkb_location_id?: number | null;
+  zkb_total_value?: number;
+  zkb_fitted_value?: number;
+  zkb_dropped_value?: number;
+  zkb_destroyed_value?: number;
+  kill_time?: string;
+  solar_system_id?: number;
+  victim_character_id?: number | null;
+  victim_character_name?: string | null;
+  victim_corporation_id?: number | null;
+  victim_corporation_name?: string | null;
+  victim_alliance_id?: number | null;
+  victim_alliance_name?: string | null;
+  victim_ship_type_id?: number;
+  victim_ship_name?: string | null;
+  dropped_items?: EnrichedDroppedItem[] | null;
+  enriched_at: Date;
+  enrichment_error: string | null;
+}
+
 /**
  * Fetch zkillboard data for a killmail
  *
- * @param {number} killmailId - Killmail ID
- * @returns {Promise<Object>} zkillboard data
- * @property {string} hash - Killmail hash
- * @property {Object} zkb - zkillboard metadata
+ * @param killmailId - Killmail ID
+ * @returns zkillboard data
  *
  * @example
  * const zkbData = await fetchZkillData(131196380);
@@ -26,7 +72,7 @@ import { resolveNames } from '../esi.js';
  * //   zkb: { locationID, totalValue, droppedValue, ... }
  * // }
  */
-async function fetchZkillData(killmailId) {
+export async function fetchZkillData(killmailId: number): Promise<ZkbData> {
   try {
     const url = `https://zkillboard.com/api/killID/${killmailId}/`;
     const response = await axios.get(url, {
@@ -51,7 +97,7 @@ async function fetchZkillData(killmailId) {
       hash: data.zkb.hash,
       zkb: data.zkb,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('[KILLMAIL ENRICHMENT] Error fetching from zkillboard:', error.message);
     throw new Error(`Failed to fetch zkillboard data: ${error.message}`);
   }
@@ -60,8 +106,8 @@ async function fetchZkillData(killmailId) {
 /**
  * Extract dropped items from ESI killmail
  *
- * @param {Object} killmail - Full killmail from ESI
- * @returns {Array} Array of dropped items
+ * @param killmail - Full killmail from ESI
+ * @returns Array of dropped items
  *
  * @example
  * const droppedItems = extractDroppedItems(killmail);
@@ -70,14 +116,14 @@ async function fetchZkillData(killmailId) {
  * //   { item_type_id: 35657, quantity_dropped: 1, flag: 21 }
  * // ]
  */
-function extractDroppedItems(killmail) {
+export function extractDroppedItems(killmail: any): DroppedItem[] {
   if (!killmail.victim || !killmail.victim.items) {
     return [];
   }
 
   return killmail.victim.items
-    .filter((item) => item.quantity_dropped && item.quantity_dropped > 0)
-    .map((item) => ({
+    .filter((item: any) => item.quantity_dropped && item.quantity_dropped > 0)
+    .map((item: any) => ({
       item_type_id: item.item_type_id,
       quantity_dropped: item.quantity_dropped,
       flag: item.flag,
@@ -87,9 +133,9 @@ function extractDroppedItems(killmail) {
 /**
  * Calculate total loot value from dropped items
  *
- * @returns {Promise<number>} Total ISK value of dropped loot
+ * @returns Total ISK value of dropped loot
  */
-async function calculateLootValue() {
+export async function calculateLootValue(): Promise<number> {
   // For now, we rely on zkillboard's droppedValue
   // Future enhancement: fetch market prices and calculate ourselves
   return 0;
@@ -98,8 +144,8 @@ async function calculateLootValue() {
 /**
  * Enrich a single killmail with data from zkillboard and ESI
  *
- * @param {number} killmailId - Killmail ID
- * @returns {Promise<Object>} Enriched killmail data
+ * @param killmailId - Killmail ID
+ * @returns Enriched killmail data
  *
  * @example
  * const enriched = await enrichKillmail(131196380);
@@ -126,7 +172,7 @@ async function calculateLootValue() {
  * //   enriched_at: Date
  * // }
  */
-async function enrichKillmail(killmailId) {
+export async function enrichKillmail(killmailId: number): Promise<EnrichedKillmailData> {
   try {
     console.log(`[KILLMAIL ENRICHMENT] Enriching killmail ${killmailId}...`);
 
@@ -140,7 +186,7 @@ async function enrichKillmail(killmailId) {
     const droppedItems = extractDroppedItems(killmail);
 
     // Step 4: Resolve all IDs to names in bulk
-    const idsToResolve = [];
+    const idsToResolve: number[] = [];
 
     // Add character, corp, alliance IDs
     if (killmail.victim.character_id) idsToResolve.push(killmail.victim.character_id);
@@ -158,24 +204,24 @@ async function enrichKillmail(killmailId) {
     });
 
     // Resolve all names in one bulk call
-    let nameMap = {};
+    const nameMap: Record<number, string> = {};
     try {
-      const resolvedNames = await resolveNames(idsToResolve);
+      const resolvedNames = (await resolveNames(idsToResolve)) as Array<{ id: number; name: string }>;
       resolvedNames.forEach((item) => {
         nameMap[item.id] = item.name;
       });
-    } catch (error) {
+    } catch (error: any) {
       console.warn(`[KILLMAIL ENRICHMENT] Failed to resolve names:`, error.message);
     }
 
     // Step 5: Enrich dropped items with names
-    const enrichedDroppedItems = droppedItems.map((item) => ({
+    const enrichedDroppedItems: EnrichedDroppedItem[] = droppedItems.map((item) => ({
       ...item,
       item_name: nameMap[item.item_type_id] || null,
     }));
 
     // Step 6: Compile enriched data
-    const enrichedData = {
+    const enrichedData: EnrichedKillmailData = {
       killmail_id: killmailId,
       killmail_hash: zkbData.hash,
 
@@ -208,7 +254,7 @@ async function enrichKillmail(killmailId) {
 
     console.log(`[KILLMAIL ENRICHMENT] Successfully enriched killmail ${killmailId}`);
     return enrichedData;
-  } catch (error) {
+  } catch (error: any) {
     console.error(`[KILLMAIL ENRICHMENT] Failed to enrich killmail ${killmailId}:`, error.message);
 
     return {
@@ -222,12 +268,15 @@ async function enrichKillmail(killmailId) {
 /**
  * Enrich multiple killmails in batch
  *
- * @param {Array<number>} killmailIds - Array of killmail IDs
- * @param {number} delayMs - Delay between requests (to avoid rate limiting)
- * @returns {Promise<Array>} Array of enriched killmail data
+ * @param killmailIds - Array of killmail IDs
+ * @param delayMs - Delay between requests (to avoid rate limiting)
+ * @returns Array of enriched killmail data
  */
-async function enrichKillmailsBatch(killmailIds, delayMs = 1000) {
-  const results = [];
+export async function enrichKillmailsBatch(
+  killmailIds: number[],
+  delayMs = 1000
+): Promise<EnrichedKillmailData[]> {
+  const results: EnrichedKillmailData[] = [];
 
   for (const killmailId of killmailIds) {
     try {
@@ -238,7 +287,7 @@ async function enrichKillmailsBatch(killmailIds, delayMs = 1000) {
       if (delayMs > 0 && killmailIds.indexOf(killmailId) < killmailIds.length - 1) {
         await new Promise((resolve) => setTimeout(resolve, delayMs));
       }
-    } catch (error) {
+    } catch (error: any) {
       results.push({
         killmail_id: killmailId,
         enriched_at: new Date(),
@@ -249,11 +298,3 @@ async function enrichKillmailsBatch(killmailIds, delayMs = 1000) {
 
   return results;
 }
-
-export {
-  fetchZkillData,
-  extractDroppedItems,
-  calculateLootValue,
-  enrichKillmail,
-  enrichKillmailsBatch,
-};

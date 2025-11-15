@@ -8,22 +8,78 @@
  * Handles validation, rejection, and SRP creation with queue support.
  */
 
-import { getMailContent } from '../esi.js';
-import { validateSRPRequest } from '../srp/validator';
-import { getAllApprovedShips } from '../srp/shipTypes';
-import { resolveNames } from '../esi.js';
+import { getMailContent, resolveNames } from '../esi';
+import { validateSRPRequest, ValidationResult } from '../srp/validator';
+import { getAllApprovedShips, ShipsMap } from '../srp/shipTypes';
 import { queueMailSend } from '../pendingMailQueue';
-import { getProximityData, loadFleetCommandersMap } from '../killmail/parser.js';
+import { getProximityData, loadFleetCommandersMap, ProximityData, FCInfo } from '../killmail/parser';
 import { isBanned } from '../banlist/checker';
+import { Pool } from 'pg';
+
+export interface MailHeader {
+  mail_id: number;
+  from: number;
+  subject: string;
+  timestamp: string;
+  [key: string]: any;
+}
+
+export interface MailError {
+  mail_id: number;
+  subject: string;
+  error: string;
+}
+
+export interface ProcessingResult {
+  processed: number;
+  created: number;
+  skipped: number;
+  errors: MailError[];
+}
+
+export interface ProcessMailsParams {
+  accessToken: string;
+  characterId: number;
+  mailHeaders: MailHeader[];
+  db: Pool;
+}
+
+interface ValidatedMail {
+  mailHeader: MailHeader;
+  mailBody: string;
+  validation: ValidationResult;
+}
+
+interface BannedMail {
+  mailHeader: MailHeader;
+  bannedEntry: any;
+}
+
+interface NotSrpMail {
+  mailHeader: MailHeader;
+  mailBody: string;
+}
+
+interface MultipleKillmailMail {
+  mailHeader: MailHeader;
+  mailBody: string;
+  rejectionReason: string;
+}
+
+interface ErrorMail {
+  mailHeader: MailHeader;
+  mailBody: string;
+  error: string;
+}
 
 /**
  * Collect all IDs from a killmail that need name resolution
  *
- * @param {Object} killmailData - Raw killmail data
- * @returns {Array<number>} Array of IDs to resolve
+ * @param killmailData - Raw killmail data
+ * @returns Array of IDs to resolve
  */
-function collectIdsFromKillmail(killmailData) {
-  const ids = [];
+function collectIdsFromKillmail(killmailData: any): number[] {
+  const ids: number[] = [];
 
   if (killmailData.victim_character_id) ids.push(killmailData.victim_character_id);
   if (killmailData.victim_corporation_id) ids.push(killmailData.victim_corporation_id);
@@ -33,7 +89,7 @@ function collectIdsFromKillmail(killmailData) {
 
   // Item type IDs
   if (killmailData.items && Array.isArray(killmailData.items)) {
-    killmailData.items.forEach((item) => {
+    killmailData.items.forEach((item: any) => {
       if (item.item_type_id) {
         ids.push(item.item_type_id);
       }
@@ -46,11 +102,11 @@ function collectIdsFromKillmail(killmailData) {
 /**
  * Enrich killmail data with resolved names from a name map
  *
- * @param {Object} killmailData - Raw killmail data
- * @param {Object} nameMap - Map of ID -> name
- * @returns {Object} Enriched killmail data with name fields
+ * @param killmailData - Raw killmail data
+ * @param nameMap - Map of ID -> name
+ * @returns Enriched killmail data with name fields
  */
-function enrichKillmailWithNameMap(killmailData, nameMap) {
+function enrichKillmailWithNameMap(killmailData: any, nameMap: Record<number, string>): any {
   const enrichedData = { ...killmailData };
 
   if (enrichedData.victim_character_id) {
@@ -71,7 +127,7 @@ function enrichKillmailWithNameMap(killmailData, nameMap) {
 
   // Enrich items with type names
   if (enrichedData.items && Array.isArray(enrichedData.items)) {
-    enrichedData.items = enrichedData.items.map((item) => ({
+    enrichedData.items = enrichedData.items.map((item: any) => ({
       ...item,
       item_type_name: item.item_type_id
         ? nameMap[item.item_type_id] || `Type ${item.item_type_id}`
@@ -85,15 +141,11 @@ function enrichKillmailWithNameMap(killmailData, nameMap) {
 /**
  * Process mails for SRP requests
  *
- * @param {Object} params - Processing parameters
- * @param {string} params.accessToken - EVE SSO access token
- * @param {number} params.characterId - Admin character ID
- * @param {Array} params.mailHeaders - Mail headers to process
- * @param {Object} params.db - Database instance
- * @returns {Object} Processing results
+ * @param params - Processing parameters
+ * @returns Processing results
  */
-async function processMailsForSRP({ accessToken, characterId, mailHeaders, db }) {
-  const results = {
+export async function processMailsForSRP({ accessToken, characterId, mailHeaders, db }: ProcessMailsParams): Promise<ProcessingResult> {
+  const results: ProcessingResult = {
     processed: 0,
     created: 0,
     skipped: 0,
@@ -104,7 +156,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
     // Get list of already processed mail IDs
     const processedResult = await db.query('SELECT mail_id FROM processed_mails');
     // Ensure mail_id is consistently a number for comparison (ESI returns numbers)
-    const processedMailIds = new Set(processedResult.rows.map((r) => Number(r.mail_id)));
+    const processedMailIds = new Set(processedResult.rows.map((r: any) => Number(r.mail_id)));
 
     // CRITICAL: Filter out admin's sent mails immediately - do NOT process, do NOT save, do NOTHING
     // This prevents the admin from ever mailing themselves under any circumstances
@@ -128,13 +180,13 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
     // =====================================================================
     // PHASE 1: Validate all mails and collect validated data
     // =====================================================================
-    const validatedMails = [];
-    const bannedMails = [];
-    const notSrpMails = [];
-    const multipleKillmailMails = []; // Mails with multiple killmail links
-    const errorMails = [];
-    const allIdsToResolve = [];
-    const allSenderIds = new Set(); // Collect all sender IDs to resolve in one batch
+    const validatedMails: ValidatedMail[] = [];
+    const bannedMails: BannedMail[] = [];
+    const notSrpMails: NotSrpMail[] = [];
+    const multipleKillmailMails: MultipleKillmailMail[] = []; // Mails with multiple killmail links
+    const errorMails: ErrorMail[] = [];
+    const allIdsToResolve: number[] = [];
+    const allSenderIds = new Set<number>(); // Collect all sender IDs to resolve in one batch
 
     for (const mailHeader of unprocessedMails) {
       results.processed++;
@@ -157,7 +209,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
         }
 
         // Get full mail content
-        const mailContent = await getMailContent(accessToken, characterId, mailHeader.mail_id);
+        const mailContent = (await getMailContent(accessToken, characterId, mailHeader.mail_id)) as { body?: string };
         const mailBody = mailContent.body || '';
 
         // Check if mail contains zkillboard link or EVE in-game kill report link
@@ -210,10 +262,10 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
         }
 
         // Validate SRP request
-        let validation;
+        let validation: ValidationResult;
         try {
           validation = await validateSRPRequest(mailBody, approvedShips);
-        } catch (error) {
+        } catch (error: any) {
           // Validation failed - collect for batch insert
           errorMails.push({
             mailHeader,
@@ -240,7 +292,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
           const killmailIds = collectIdsFromKillmail(validation.killmail_data);
           allIdsToResolve.push(...killmailIds);
         }
-      } catch (error) {
+      } catch (error: any) {
         // Unexpected error during validation phase
         console.error(
           `[MAIL PROCESSING] Error validating mail ${mailHeader.mail_id}:`,
@@ -257,20 +309,20 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
     // =====================================================================
     // PHASE 2: Bulk resolve ALL IDs (senders + killmail data) in ONE ESI call
     // =====================================================================
-    let nameMap = {};
+    let nameMap: Record<number, string> = {};
     try {
       const uniqueIds = [...new Set([...allIdsToResolve, ...Array.from(allSenderIds)])];
       console.log(
         `[MAIL PROCESSING] Bulk resolving ${uniqueIds.length} unique IDs (${allSenderIds.size} senders + ${allIdsToResolve.length} killmail IDs)`
       );
 
-      const resolvedNames = await resolveNames(uniqueIds);
+      const resolvedNames = (await resolveNames(uniqueIds)) as Array<{ id: number; name: string }>;
       resolvedNames.forEach((item) => {
         nameMap[item.id] = item.name;
       });
 
       console.log(`[MAIL PROCESSING] Successfully resolved ${resolvedNames.length} names`);
-    } catch (error) {
+    } catch (error: any) {
       console.warn('[MAIL PROCESSING] Failed to bulk resolve names:', error.message);
       // Continue with empty nameMap - individual handlers will use fallbacks
     }
@@ -356,7 +408,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
         }
 
         // Fetch proximity data for this killmail (enriched with FC info)
-        let proximityData = null;
+        let proximityData: ProximityData | null = null;
         if (validation.killmail_data && validation.killmail_data.killmail_id) {
           proximityData = await getProximityData(validation.killmail_data.killmail_id, fcMap);
         }
@@ -406,7 +458,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
 
         // Check if killmail is older than 30 days
         const killmailTime = new Date(validation.killmail_data.killmail_time);
-        const daysSinceKill = (new Date() - killmailTime) / (1000 * 60 * 60 * 24);
+        const daysSinceKill = (new Date().getTime() - killmailTime.getTime()) / (1000 * 60 * 60 * 24);
 
         if (daysSinceKill > 30) {
           await handleTooOldKillmail(
@@ -444,7 +496,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
 
         // Get names from enriched killmail data (already resolved in bulk)
         const characterName = validation.killmail_data.victim_character_name || 'Unknown';
-        const shipName = validation.killmail_data.victim_ship_name || validation.ship_info.name;
+        const shipName = validation.killmail_data.victim_ship_name || validation.ship_info!.name;
         const systemName = validation.killmail_data.solar_system_name || null;
 
         // Check if killmail already exists
@@ -584,7 +636,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
           shipName,
           nameMap
         );
-      } catch (error) {
+      } catch (error: any) {
         // Unexpected error processing this mail
         console.error(
           `[MAIL PROCESSING] Error processing mail ${mailHeader.mail_id}:`,
@@ -610,7 +662,7 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
               `Processing error: ${error.message}`,
             ]
           );
-        } catch (dbError) {
+        } catch (dbError: any) {
           console.error(
             `[MAIL PROCESSING] Failed to mark mail ${mailHeader.mail_id} as processed:`,
             dbError.message
@@ -620,9 +672,9 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
     }
 
     console.log('[MAIL PROCESSING] Processing complete:', JSON.stringify(results, null, 2));
-  } catch (error) {
+  } catch (error: any) {
     console.error('[MAIL PROCESSING] Fatal error:', error);
-    results.errors.push({ error: error.message });
+    results.errors.push({ mail_id: 0, subject: '', error: error.message });
   }
 
   return results;
@@ -632,15 +684,15 @@ async function processMailsForSRP({ accessToken, characterId, mailHeaders, db })
  * Helper function to create an auto-rejected SRP request in both tables
  */
 async function createAutoRejectedSRPRequest(
-  db,
-  mailHeader,
-  mailBody,
-  validation,
-  rejectionReason,
-  rejectionType,
-  senderName,
-  proximityData
-) {
+  db: Pool,
+  mailHeader: MailHeader,
+  mailBody: string,
+  validation: ValidationResult | null,
+  rejectionReason: string,
+  rejectionType: string,
+  senderName: string,
+  proximityData: ProximityData | null
+): Promise<number> {
   const killmailData = validation?.killmail_data || {};
 
   // Insert into srp_requests first
@@ -719,17 +771,17 @@ async function createAutoRejectedSRPRequest(
  * Handle unapproved ship rejection
  */
 async function handleUnapprovedShip(
-  accessToken,
-  characterId,
-  mailHeader,
-  mailBody,
-  validation,
-  nameMap,
-  db,
-  results,
-  proximityData,
-  senderName
-) {
+  accessToken: string,
+  characterId: number,
+  mailHeader: MailHeader,
+  mailBody: string,
+  validation: ValidationResult,
+  nameMap: Record<number, string>,
+  db: Pool,
+  results: ProcessingResult,
+  proximityData: ProximityData | null,
+  senderName: string
+): Promise<void> {
   const senderCharacterId = mailHeader.from;
 
   // Get names from enriched data
@@ -779,18 +831,18 @@ async function handleUnapprovedShip(
  * Handle too-old killmail rejection
  */
 async function handleTooOldKillmail(
-  accessToken,
-  characterId,
-  mailHeader,
-  mailBody,
-  validation,
-  daysSinceKill,
-  nameMap,
-  db,
-  results,
-  proximityData,
-  senderName
-) {
+  accessToken: string,
+  characterId: number,
+  mailHeader: MailHeader,
+  mailBody: string,
+  validation: ValidationResult,
+  daysSinceKill: number,
+  nameMap: Record<number, string>,
+  db: Pool,
+  results: ProcessingResult,
+  proximityData: ProximityData | null,
+  senderName: string
+): Promise<void> {
   const senderCharacterId = mailHeader.from;
 
   const zkbUrlMatch = mailBody.match(/(https?:\/\/zkillboard\.com\/kill\/\d+\/?)/i);
@@ -839,17 +891,17 @@ async function handleTooOldKillmail(
  * Handle sender/victim mismatch rejection
  */
 async function handleSenderMismatch(
-  accessToken,
-  characterId,
-  mailHeader,
-  mailBody,
-  validation,
-  nameMap,
-  db,
-  results,
-  proximityData,
-  senderName
-) {
+  accessToken: string,
+  characterId: number,
+  mailHeader: MailHeader,
+  mailBody: string,
+  validation: ValidationResult,
+  nameMap: Record<number, string>,
+  db: Pool,
+  results: ProcessingResult,
+  proximityData: ProximityData | null,
+  senderName: string
+): Promise<void> {
   const senderCharacterId = mailHeader.from;
 
   // Get names from enriched data
@@ -896,15 +948,15 @@ async function handleSenderMismatch(
  * Send confirmation mail to submitter
  */
 async function sendConfirmationMail(
-  accessToken,
-  characterId,
-  mailHeader,
-  mailBody,
-  validation,
-  characterName,
-  shipName,
-  nameMap
-) {
+  accessToken: string,
+  characterId: number,
+  mailHeader: MailHeader,
+  mailBody: string,
+  validation: ValidationResult,
+  characterName: string,
+  shipName: string,
+  nameMap: Record<number, string>
+): Promise<void> {
   const mailSenderCharacterId = mailHeader.from;
 
   // Get sender name from nameMap (default to victim name if same person)
@@ -937,5 +989,3 @@ async function sendConfirmationMail(
     `[MAIL PROCESSING] Confirmation mail queued for ${mailSenderName} (${mailSenderCharacterId}) for ${characterName}'s loss`
   );
 }
-
-export { processMailsForSRP };
