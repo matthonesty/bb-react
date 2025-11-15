@@ -4,18 +4,20 @@ import { useState, useEffect } from 'react';
 import { Modal, ModalFooter } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { FittingWheel } from './FittingWheel';
-import type { FittingImport } from '@/types';
+import type { FittingImport, Doctrine } from '@/types';
 
 interface DoctrineModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: () => void;
   fleetTypeId: number;
+  doctrine?: Doctrine | null;
 }
 
 const DOCTRINE_NAME_OPTIONS = ['Tech 1', 'Tech 2', 'Polarized', 'Other'] as const;
 
-export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: DoctrineModalProps) {
+export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId, doctrine = null }: DoctrineModalProps) {
+  const isEditMode = !!doctrine;
   const [fittingText, setFittingText] = useState('');
   const [importedFitting, setImportedFitting] = useState<FittingImport | null>(null);
   const [doctrineName, setDoctrineName] = useState('');
@@ -26,17 +28,71 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Reset form when modal opens/closes
+  // Reset form when modal opens/closes or load existing doctrine
   useEffect(() => {
     if (isOpen) {
-      setFittingText('');
-      setImportedFitting(null);
-      setDoctrineName('');
-      setCustomDoctrineName('');
-      setDoctrineNotes('');
+      if (doctrine) {
+        // Edit mode - pre-populate with existing doctrine data
+        const parseModules = (modules: any): any[] => {
+          if (typeof modules === 'string') {
+            try {
+              const parsed = JSON.parse(modules);
+              return Array.isArray(parsed) ? parsed.filter((item) => item != null) : [];
+            } catch {
+              return [];
+            }
+          }
+          if (Array.isArray(modules)) {
+            return modules.filter((item) => item != null);
+          }
+          return [];
+        };
+
+        // Extract doctrine name (e.g., "Hound (Polarized)" -> "Polarized")
+        const nameMatch = doctrine.name.match(/\(([^)]+)\)/);
+        const extractedName = nameMatch ? nameMatch[1] : doctrine.name;
+
+        // Check if it's a preset name or custom
+        const isPreset = DOCTRINE_NAME_OPTIONS.includes(extractedName as any);
+
+        setImportedFitting({
+          ship_type_id: doctrine.ship_type_id,
+          ship_name: doctrine.ship_name,
+          ship_group_id: doctrine.ship_group_id || 0,
+          ship_group_name: doctrine.ship_group_name || '',
+          name: doctrine.name,
+          high_slots: doctrine.high_slots || 0,
+          mid_slots: doctrine.mid_slots || 0,
+          low_slots: doctrine.low_slots || 0,
+          rig_slots: doctrine.rig_slots || 0,
+          high_slot_modules: parseModules(doctrine.high_slot_modules),
+          mid_slot_modules: parseModules(doctrine.mid_slot_modules),
+          low_slot_modules: parseModules(doctrine.low_slot_modules),
+          rig_modules: parseModules(doctrine.rig_modules),
+          cargo_items: parseModules(doctrine.cargo_items),
+          module_counts: {
+            high: parseModules(doctrine.high_slot_modules).filter((m) => m?.type_id).length,
+            mid: parseModules(doctrine.mid_slot_modules).filter((m) => m?.type_id).length,
+            low: parseModules(doctrine.low_slot_modules).filter((m) => m?.type_id).length,
+            rig: parseModules(doctrine.rig_modules).filter((m) => m?.type_id).length,
+            cargo: parseModules(doctrine.cargo_items).length,
+          },
+        });
+        setDoctrineName(isPreset ? extractedName : 'Other');
+        setCustomDoctrineName(isPreset ? '' : extractedName);
+        setDoctrineNotes(doctrine.notes || '');
+        setFittingText(''); // Don't show fitting text in edit mode
+      } else {
+        // Add mode - clear form
+        setFittingText('');
+        setImportedFitting(null);
+        setDoctrineName('');
+        setCustomDoctrineName('');
+        setDoctrineNotes('');
+      }
       setError(null);
     }
-  }, [isOpen]);
+  }, [isOpen, doctrine]);
 
   async function handleImport() {
     if (!fittingText.trim()) {
@@ -110,8 +166,11 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
         notes: doctrineNotes || null,
       };
 
-      const response = await fetch('/api/admin/doctrines', {
-        method: 'POST',
+      const url = isEditMode ? `/api/admin/doctrines?id=${doctrine.id}` : '/api/admin/doctrines';
+      const method = isEditMode ? 'PUT' : 'POST';
+
+      const response = await fetch(url, {
+        method,
         headers: {
           'Content-Type': 'application/json',
         },
@@ -134,7 +193,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title="Add Doctrine" size="xl">
+    <Modal isOpen={isOpen} onClose={onClose} title={isEditMode ? 'Edit Doctrine' : 'Add Doctrine'} size="xl">
       <form onSubmit={handleSubmit}>
         {error && (
           <div className="mb-4 p-3 bg-danger/10 border border-danger text-danger rounded-md text-sm">
@@ -148,18 +207,27 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
             <label className="block text-sm font-medium text-foreground mb-2">
               Paste EVE Fitting <span className="text-error">*</span>
             </label>
-            <textarea
-              value={fittingText}
-              onChange={(e) => setFittingText(e.target.value)}
-              placeholder="Link fitting in chat, copy your message, paste here"
-              rows={4}
-              disabled={!!importedFitting}
-              className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
-            />
-            {!importedFitting && (
-              <Button type="button" onClick={handleImport} disabled={importing} className="mt-2">
-                {importing ? 'Importing...' : 'Import Fitting'}
-              </Button>
+            {!isEditMode && (
+              <>
+                <textarea
+                  value={fittingText}
+                  onChange={(e) => setFittingText(e.target.value)}
+                  placeholder="Link fitting in chat, copy your message, paste here"
+                  rows={4}
+                  disabled={!!importedFitting}
+                  className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground font-mono text-sm focus:outline-none focus:ring-2 focus:ring-primary disabled:opacity-50"
+                />
+                {!importedFitting && (
+                  <Button type="button" onClick={handleImport} disabled={importing} className="mt-2">
+                    {importing ? 'Importing...' : 'Import Fitting'}
+                  </Button>
+                )}
+              </>
+            )}
+            {isEditMode && (
+              <p className="text-sm text-foreground-muted italic">
+                Editing existing doctrine. To change the fitting, create a new doctrine instead.
+              </p>
             )}
           </div>
 
@@ -226,15 +294,18 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
                   <div className="mt-4 p-3 bg-background rounded">
                     <h5 className="text-sm font-semibold text-foreground-muted mb-2">Cargo</h5>
                     <div className="space-y-1">
-                      {importedFitting.cargo_items.map((item, index) => (
-                        <div
-                          key={index}
-                          className="text-sm text-foreground flex items-center gap-2"
-                        >
-                          <span className="text-primary font-mono">{item.quantity}x</span>
-                          <span>{item.type_name}</span>
-                        </div>
-                      ))}
+                      {importedFitting.cargo_items.map((item, index) => {
+                        const itemName = item.type_name || (item as any).name || 'Unknown Item';
+                        return (
+                          <div
+                            key={index}
+                            className="text-sm text-foreground flex items-center gap-2"
+                          >
+                            <span className="text-primary font-mono">{item.quantity}x</span>
+                            <span>{itemName}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 )}
@@ -298,7 +369,7 @@ export function DoctrineModal({ isOpen, onClose, onSuccess, fleetTypeId }: Doctr
           </Button>
           {importedFitting && (
             <Button type="submit" disabled={saving}>
-              {saving ? 'Saving...' : 'Save Doctrine'}
+              {saving ? 'Saving...' : isEditMode ? 'Update Doctrine' : 'Save Doctrine'}
             </Button>
           )}
         </ModalFooter>

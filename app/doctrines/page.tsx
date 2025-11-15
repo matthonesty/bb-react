@@ -7,6 +7,7 @@ import { PageContainer } from '@/components/layout/PageContainer';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Plus, X } from 'lucide-react';
 import { FleetTypeCard } from '@/components/doctrines/FleetTypeCard';
 import { FleetTypeModal } from '@/components/doctrines/FleetTypeModal';
@@ -29,6 +30,9 @@ export default function DoctrinesPage() {
   // Modal state
   const [isFleetTypeModalOpen, setIsFleetTypeModalOpen] = useState(false);
   const [selectedFleetType, setSelectedFleetType] = useState<FleetType | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [fleetTypeToDelete, setFleetTypeToDelete] = useState<{ id: number; name: string; doctrineCount: number } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const canManage = hasRole(['admin', 'Council']);
 
@@ -80,18 +84,18 @@ export default function DoctrinesPage() {
     loadFleetTypes();
   }
 
-  async function deleteFleetType(id: number, name: string, doctrineCount: number) {
-    const message =
-      doctrineCount > 0
-        ? `Delete "${name}" and its ${doctrineCount} doctrine(s)?`
-        : `Delete "${name}"?`;
+  function openDeleteModal(id: number, name: string, doctrineCount: number) {
+    setFleetTypeToDelete({ id, name, doctrineCount });
+    setIsDeleteModalOpen(true);
+  }
 
-    if (!confirm(message)) {
-      return;
-    }
+  async function handleDeleteConfirm() {
+    if (!fleetTypeToDelete) return;
+
+    setIsDeleting(true);
 
     try {
-      const response = await fetch(`/api/admin/fleet-types?id=${id}`, {
+      const response = await fetch(`/api/admin/fleet-types?id=${fleetTypeToDelete.id}`, {
         method: 'DELETE',
       });
 
@@ -101,9 +105,13 @@ export default function DoctrinesPage() {
         throw new Error(data.error || 'Failed to delete fleet type');
       }
 
+      setIsDeleteModalOpen(false);
+      setFleetTypeToDelete(null);
       loadFleetTypes();
     } catch (err: any) {
       setError(err.message);
+    } finally {
+      setIsDeleting(false);
     }
   }
 
@@ -199,7 +207,7 @@ export default function DoctrinesPage() {
                 canManage={canManage}
                 onEdit={() => openEditFleetTypeModal(fleetType)}
                 onDelete={() =>
-                  deleteFleetType(fleetType.id, fleetType.name, fleetType.doctrine_count || 0)
+                  openDeleteModal(fleetType.id, fleetType.name, fleetType.doctrine_count || 0)
                 }
                 onReload={loadFleetTypes}
               />
@@ -213,6 +221,27 @@ export default function DoctrinesPage() {
           onClose={closeFleetTypeModal}
           onSuccess={handleFleetTypeModalSuccess}
           fleetType={selectedFleetType}
+        />
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setFleetTypeToDelete(null);
+          }}
+          onConfirm={handleDeleteConfirm}
+          title="Delete Fleet Type"
+          message={
+            fleetTypeToDelete
+              ? fleetTypeToDelete.doctrineCount > 0
+                ? `Are you sure you want to delete "${fleetTypeToDelete.name}" and its ${fleetTypeToDelete.doctrineCount} doctrine(s)? This action cannot be undone.`
+                : `Are you sure you want to delete "${fleetTypeToDelete.name}"? This action cannot be undone.`
+              : ''
+          }
+          confirmText="Delete"
+          confirmVariant="danger"
+          isLoading={isDeleting}
         />
       </PageContainer>
     </RequireAuth>
