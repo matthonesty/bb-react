@@ -14,6 +14,50 @@
 import { getWalletJournal } from '../esi.js';
 import { getMailerAccessToken } from '../mailerToken';
 import { resolveNames } from '../esi.js';
+import { Pool } from 'pg';
+
+interface JournalEntry {
+  id: number;
+  amount: number;
+  balance: number;
+  context_id?: number;
+  context_id_type?: string;
+  date: string;
+  description: string;
+  first_party_id?: number;
+  reason?: string;
+  ref_type: string;
+  second_party_id?: number;
+  tax?: number;
+  tax_receiver_id?: number;
+}
+
+interface NameMapItem {
+  id: number;
+  name: string;
+}
+
+interface JournalResult {
+  saved: number;
+  skipped: number;
+}
+
+interface ReconciliationResult {
+  reconciled: number;
+  errors: number;
+}
+
+interface DivisionResult {
+  saved: number;
+  skipped: number;
+  error?: string;
+}
+
+interface WalletReconciliationResult {
+  journalSaved: number;
+  paymentsReconciled: number;
+  divisions: Record<string, DivisionResult>;
+}
 
 /**
  * Fetch and save wallet journal entries to database for a specific division
@@ -25,13 +69,18 @@ import { resolveNames } from '../esi.js';
  * Collects all character/corp/alliance IDs from journal entries, then resolves them
  * in a single bulk request before saving enriched data.
  *
- * @param {Object} db - Database instance
- * @param {string} accessToken - ESI access token with wallet scope
- * @param {number} corporationId - Corporation ID
- * @param {number} division - Wallet division (1-7)
- * @returns {Promise<Object>} { saved: number, skipped: number }
+ * @param db - Database instance
+ * @param accessToken - ESI access token with wallet scope
+ * @param corporationId - Corporation ID
+ * @param division - Wallet division (1-7)
+ * @returns { saved: number, skipped: number }
  */
-async function fetchAndSaveJournalEntries(db, accessToken, corporationId, division = 1) {
+export async function fetchAndSaveJournalEntries(
+  db: Pool,
+  accessToken: string,
+  corporationId: number,
+  division = 1
+): Promise<JournalResult> {
   try {
     // Get the most recent journal entry ID we have for this division
     const lastEntryResult = await db.query(
@@ -46,17 +95,17 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
 
     // Fetch journal entries from ESI (goes back 30 days max)
     // ESI returns entries newest-first
-    let allEntries = [];
+    const allEntries: JournalEntry[] = [];
     let page = 1;
     let hasMore = true;
 
     while (hasMore) {
       console.log(`[WALLET Division ${division}] Fetching journal page ${page}...`);
 
-      let entries;
+      let entries: JournalEntry[];
       try {
-        entries = await getWalletJournal(accessToken, corporationId, division, page);
-      } catch (error) {
+        entries = (await getWalletJournal(accessToken, corporationId, division, page)) as JournalEntry[];
+      } catch (error: any) {
         // ESI returns 404 "Requested page does not exist!" when we've reached the last page
         if (error.message && error.message.includes('Requested page does not exist')) {
           console.log(
@@ -98,7 +147,7 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
     );
 
     // Collect all IDs from journal entries for bulk name resolution
-    const idsToResolve = new Set();
+    const idsToResolve = new Set<number>();
 
     for (const entry of allEntries) {
       if (entry.first_party_id) idsToResolve.add(entry.first_party_id);
@@ -115,16 +164,16 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
     }
 
     // Bulk resolve all IDs to names in ONE ESI call
-    let nameMap = {};
+    const nameMap: Record<number, string> = {};
     if (idsToResolve.size > 0) {
       try {
         console.log(`[WALLET] Bulk resolving ${idsToResolve.size} unique IDs`);
-        const resolvedNames = await resolveNames([...idsToResolve]);
+        const resolvedNames = (await resolveNames([...idsToResolve])) as NameMapItem[];
         resolvedNames.forEach((item) => {
           nameMap[item.id] = item.name;
         });
         console.log(`[WALLET] Successfully resolved ${resolvedNames.length} names`);
-      } catch (error) {
+      } catch (error: any) {
         console.warn('[WALLET] Failed to bulk resolve names:', error.message);
         // Continue with empty nameMap - will save IDs without names
       }
@@ -142,7 +191,7 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
       return { saved: 0, skipped: 0 };
     }
 
-    const chunks = [];
+    const chunks: JournalEntry[][] = [];
     for (let i = 0; i < allEntries.length; i += CHUNK_SIZE) {
       chunks.push(allEntries.slice(i, i + CHUNK_SIZE));
     }
@@ -153,8 +202,8 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
 
     for (let chunkIndex = 0; chunkIndex < chunks.length; chunkIndex++) {
       const chunk = chunks[chunkIndex];
-      const values = [];
-      const valueStrings = [];
+      const values: any[] = [];
+      const valueStrings: string[] = [];
       let paramIndex = 1;
 
       for (const entry of chunk) {
@@ -206,7 +255,7 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
             `[WALLET Division ${division}] Chunk ${chunkIndex + 1}/${chunks.length}: saved ${saved}, skipped ${skipped}`
           );
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(
           `[WALLET Division ${division}] Failed to insert chunk ${chunkIndex + 1}/${chunks.length}:`,
           error.message
@@ -219,7 +268,7 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
       `[WALLET Division ${division}] Total: saved ${totalSaved} entries, skipped ${totalSkipped} duplicates`
     );
     return { saved: totalSaved, skipped: totalSkipped };
-  } catch (error) {
+  } catch (error: any) {
     console.error('[WALLET] Error fetching journal entries:', error.message);
     throw error;
   }
@@ -235,10 +284,10 @@ async function fetchAndSaveJournalEntries(db, accessToken, corporationId, divisi
  *
  * Updates matching SRP requests to "paid" status.
  *
- * @param {Object} db - Database instance
- * @returns {Promise<Object>} { reconciled: number, errors: number }
+ * @param db - Database instance
+ * @returns { reconciled: number, errors: number }
  */
-async function reconcileSRPPayments(db) {
+export async function reconcileSRPPayments(db: Pool): Promise<ReconciliationResult> {
   try {
     console.log('[WALLET] Starting SRP payment reconciliation');
 
@@ -259,10 +308,6 @@ async function reconcileSRPPayments(db) {
     for (const srpRequest of pendingRequests.rows) {
       try {
         // Look for matching journal entry
-        // - ref_type: corporation_account_withdrawal
-        // - reason: SRP request ID OR killmail ID (as string)
-        // - second_party_id: recipient character_id (NOT context_id, which is the person who made the transfer)
-        // - amount: negative (money going out), absolute value matches payout
         const journalMatch = await db.query(
           `SELECT * FROM wallet_journal
            WHERE ref_type = 'corporation_account_withdrawal'
@@ -272,8 +317,8 @@ async function reconcileSRPPayments(db) {
            ORDER BY date DESC
            LIMIT 1`,
           [
-            srpRequest.id.toString(), // SRP ID as string in reason field
-            srpRequest.killmail_id.toString(), // Also check killmail ID
+            srpRequest.id.toString(),
+            srpRequest.killmail_id.toString(),
             srpRequest.character_id,
             srpRequest.final_payout_amount,
           ]
@@ -291,12 +336,7 @@ async function reconcileSRPPayments(db) {
                  paid_at = $3,
                  updated_at = NOW()
              WHERE id = $4`,
-            [
-              journal.id,
-              Math.abs(journal.amount), // Store positive value
-              journal.date,
-              srpRequest.id,
-            ]
+            [journal.id, Math.abs(journal.amount), journal.date, srpRequest.id]
           );
 
           console.log(
@@ -308,7 +348,7 @@ async function reconcileSRPPayments(db) {
             `[WALLET] ✗ No match for SRP ${srpRequest.id} (killmail: ${srpRequest.killmail_id}, character: ${srpRequest.character_id}, amount: ${srpRequest.final_payout_amount})`
           );
         }
-      } catch (error) {
+      } catch (error: any) {
         console.error(`[WALLET] Error reconciling SRP request ${srpRequest.id}:`, error.message);
         errors++;
       }
@@ -318,31 +358,8 @@ async function reconcileSRPPayments(db) {
       `[WALLET] Reconciliation complete: ${reconciled} payments matched, ${errors} errors`
     );
 
-    // NOTE: Commented out to prevent race condition with payment confirmation
-    // Previously this would move approved requests back to pending before payment could be confirmed
-    //
-    // // Move unreconciled approved requests back to pending
-    // try {
-    //   const moveBackResult = await db.query(
-    //     `UPDATE srp_requests
-    //      SET status = 'pending', updated_at = NOW()
-    //      WHERE status = 'approved' AND payment_journal_id IS NULL
-    //      RETURNING id`
-    //   );
-    //
-    //   const movedCount = moveBackResult.rows.length;
-    //   if (movedCount > 0) {
-    //     console.log(`[WALLET] Moved ${movedCount} unreconciled approved request(s) back to pending`);
-    //     moveBackResult.rows.forEach(row => {
-    //       console.log(`[WALLET] - SRP ${row.id} moved back to pending (not reconciled)`);
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error('[WALLET] Error moving unreconciled requests back to pending:', error.message);
-    // }
-
     return { reconciled, errors };
-  } catch (error) {
+  } catch (error: any) {
     console.error('[WALLET] Error during SRP reconciliation:', error.message);
     throw error;
   }
@@ -358,10 +375,10 @@ async function reconcileSRPPayments(db) {
  * Automatically determines corporation ID from mailer character's public info.
  * Should be run periodically (e.g., every hour via cron)
  *
- * @param {Object} db - Database instance
- * @returns {Promise<Object>} { journalSaved: number, paymentsReconciled: number, divisions: Object }
+ * @param db - Database instance
+ * @returns { journalSaved: number, paymentsReconciled: number, divisions: Object }
  */
-async function runWalletReconciliation(db) {
+export async function runWalletReconciliation(db: Pool): Promise<WalletReconciliationResult> {
   try {
     console.log('[WALLET] Starting wallet reconciliation process');
 
@@ -369,7 +386,7 @@ async function runWalletReconciliation(db) {
     const accessToken = await getMailerAccessToken();
 
     // Get corporation ID from environment variable
-    const corporationId = parseInt(process.env.EVE_CORPORATION_ID);
+    const corporationId = parseInt(process.env.EVE_CORPORATION_ID || '');
     if (!corporationId) {
       throw new Error('EVE_CORPORATION_ID not configured in environment');
     }
@@ -378,7 +395,7 @@ async function runWalletReconciliation(db) {
     // Step 1: Fetch and save journal entries for all 7 divisions
     let totalSaved = 0;
     let totalSkipped = 0;
-    const divisionResults = {};
+    const divisionResults: Record<string, DivisionResult> = {};
 
     for (let division = 1; division <= 7; division++) {
       try {
@@ -395,7 +412,7 @@ async function runWalletReconciliation(db) {
           saved: journalResult.saved,
           skipped: journalResult.skipped,
         };
-      } catch (error) {
+      } catch (error: any) {
         console.error(`[WALLET] Failed to fetch division ${division}:`, error.message);
         divisionResults[`division_${division}`] = {
           saved: 0,
@@ -420,10 +437,8 @@ async function runWalletReconciliation(db) {
       paymentsReconciled: reconcileResult.reconciled,
       divisions: divisionResults,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('[WALLET] Reconciliation process failed:', error.message);
     throw error;
   }
 }
-
-export { fetchAndSaveJournalEntries, reconcileSRPPayments, runWalletReconciliation };

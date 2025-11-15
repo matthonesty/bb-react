@@ -5,19 +5,18 @@
  */
 
 import { parseKillmailFromText } from '../killmail/parser.js';
-import { isApprovedShip, getPayoutAmount, getShipInfo } from './shipTypes.js';
+import { isApprovedShip, getPayoutAmount, getShipInfo, ShipInfo, ShipsMap } from './shipTypes';
 
-/**
- * Validation result object
- * @typedef {Object} ValidationResult
- * @property {boolean} valid - Whether request is valid
- * @property {string[]} errors - Array of validation error messages
- * @property {string[]} warnings - Array of validation warnings
- * @property {Object} killmail_data - Parsed killmail data
- * @property {Object} ship_info - Ship information
- * @property {number} payout_amount - Calculated payout amount
- * @property {boolean} requires_fc_approval - True if FC discretion needed
- */
+export interface ValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  killmail_data: any;
+  ship_info: ShipInfo | null;
+  payout_amount: number;
+  requires_fc_approval: boolean;
+  is_polarized?: boolean;
+}
 
 /**
  * Validate SRP request from EVE mail
@@ -26,9 +25,9 @@ import { isApprovedShip, getPayoutAmount, getShipInfo } from './shipTypes.js';
  * 1. EVE in-game kill link: <url=killReport:ID:HASH>Kill: Character (Ship)</url>
  * 2. Zkillboard URL: https://zkillboard.com/kill/ID/
  *
- * @param {string} mailBody - Body of EVE mail containing killmail link
- * @param {Object} approvedShipsMap - Pre-loaded approved ships map from getAllApprovedShips()
- * @returns {Promise<ValidationResult>} Validation result
+ * @param mailBody - Body of EVE mail containing killmail link
+ * @param approvedShipsMap - Pre-loaded approved ships map from getAllApprovedShips()
+ * @returns Validation result
  *
  * @example
  * const ships = await getAllApprovedShips();
@@ -39,8 +38,11 @@ import { isApprovedShip, getPayoutAmount, getShipInfo } from './shipTypes.js';
  *   console.log(`Denied: ${result.errors.join(', ')}`);
  * }
  */
-async function validateSRPRequest(mailBody, approvedShipsMap) {
-  const result = {
+export async function validateSRPRequest(
+  mailBody: string,
+  approvedShipsMap: ShipsMap
+): Promise<ValidationResult> {
+  const result: ValidationResult = {
     valid: false,
     errors: [],
     warnings: [],
@@ -52,10 +54,10 @@ async function validateSRPRequest(mailBody, approvedShipsMap) {
 
   try {
     // Parse killmail from text
-    let killmailResult;
+    let killmailResult: any;
     try {
       killmailResult = await parseKillmailFromText(mailBody);
-    } catch (error) {
+    } catch (error: any) {
       result.errors.push(`Failed to parse killmail: ${error.message}`);
       return result;
     }
@@ -74,11 +76,11 @@ async function validateSRPRequest(mailBody, approvedShipsMap) {
     result.ship_info = shipInfo;
 
     // Calculate payout amount
-    let payoutAmount = getPayoutAmount(shipTypeId, approvedShipsMap, killmailResult.is_polarized);
-    result.payout_amount = payoutAmount;
+    const payoutAmount = getPayoutAmount(shipTypeId, approvedShipsMap, killmailResult.is_polarized);
+    result.payout_amount = payoutAmount || 0;
 
     // Check if FC discretion required
-    if (shipInfo.fc_discretion) {
+    if (shipInfo?.fc_discretion) {
       result.requires_fc_approval = true;
       result.warnings.push('This ship type requires FC discretion for approval');
     }
@@ -96,11 +98,9 @@ async function validateSRPRequest(mailBody, approvedShipsMap) {
 
     // All checks passed
     result.valid = true;
-  } catch (error) {
+  } catch (error: any) {
     result.errors.push(`Unexpected validation error: ${error.message}`);
   }
 
   return result;
 }
-
-export { validateSRPRequest };

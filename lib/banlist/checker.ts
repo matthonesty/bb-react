@@ -6,27 +6,60 @@
 
 import pool from '../db';
 
+export type BanType = 'bb' | 'xup' | 'hk';
+export type BanTypeOrAll = BanType | 'all';
+
+export interface BanRecord {
+  id: number;
+  name: string;
+  esi_id: number | null;
+  type: string;
+  bb_banned: boolean;
+  xup_banned: boolean;
+  hk_banned: boolean;
+  banned_by: string | null;
+  reason: string | null;
+  ban_date: Date;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface AddBanData {
+  name: string;
+  esiId?: number | null;
+  type: string;
+  bbBanned?: boolean;
+  xupBanned?: boolean;
+  hkBanned?: boolean;
+  bannedBy?: string | null;
+  reason?: string | null;
+  banDate?: Date;
+}
+
+const COLUMN_MAP: Record<BanType, string> = {
+  bb: 'bb_banned',
+  xup: 'xup_banned',
+  hk: 'hk_banned',
+};
+
 /**
  * Check if an entity is banned by ID or name
  *
- * @param {number|string} idOrName - Entity ID or name to check
- * @param {string} [banType='bb'] - Type of ban to check: 'bb', 'xup', 'hk'
- * @returns {Promise<Object|null>} Ban record if banned, null if not banned
+ * @param idOrName - Entity ID or name to check
+ * @param banType - Type of ban to check: 'bb', 'xup', 'hk'
+ * @returns Ban record if banned, null if not banned
  */
-async function isBanned(idOrName, banType = 'bb') {
-  const columnMap = {
-    bb: 'bb_banned',
-    xup: 'xup_banned',
-    hk: 'hk_banned',
-  };
-
-  const column = columnMap[banType];
+export async function isBanned(
+  idOrName: number | string,
+  banType: BanType = 'bb'
+): Promise<BanRecord | null> {
+  const column = COLUMN_MAP[banType];
   if (!column) {
     throw new Error(`Invalid ban type: ${banType}. Must be 'bb', 'xup', or 'hk'`);
   }
 
-  if (typeof idOrName === 'number' || !isNaN(parseInt(idOrName))) {
-    const id = typeof idOrName === 'number' ? idOrName : parseInt(idOrName);
+  if (typeof idOrName === 'number' || !isNaN(parseInt(String(idOrName)))) {
+    const id = typeof idOrName === 'number' ? idOrName : parseInt(String(idOrName));
     const result = await pool.query(
       `SELECT * FROM ban_list WHERE esi_id = $1 AND ${column} = true`,
       [id]
@@ -44,30 +77,27 @@ async function isBanned(idOrName, banType = 'bb') {
 /**
  * Check if multiple entities are banned by IDs or names
  *
- * @param {Array<number|string>} idsOrNames - Array of entity IDs or names to check
- * @param {string} [banType='bb'] - Type of ban to check: 'bb', 'xup', 'hk'
- * @returns {Promise<Map>} Map of id/name -> ban record
+ * @param idsOrNames - Array of entity IDs or names to check
+ * @param banType - Type of ban to check: 'bb', 'xup', 'hk'
+ * @returns Map of id/name -> ban record
  */
-async function areBanned(idsOrNames, banType = 'bb') {
-  const columnMap = {
-    bb: 'bb_banned',
-    xup: 'xup_banned',
-    hk: 'hk_banned',
-  };
-
-  const column = columnMap[banType];
+export async function areBanned(
+  idsOrNames: Array<number | string>,
+  banType: BanType = 'bb'
+): Promise<Map<number | string, BanRecord>> {
+  const column = COLUMN_MAP[banType];
   if (!column) {
     throw new Error(`Invalid ban type: ${banType}. Must be 'bb', 'xup', or 'hk'`);
   }
 
-  const ids = [];
-  const names = [];
+  const ids: number[] = [];
+  const names: string[] = [];
 
   for (const item of idsOrNames) {
-    if (typeof item === 'number' || !isNaN(parseInt(item))) {
-      ids.push(typeof item === 'number' ? item : parseInt(item));
+    if (typeof item === 'number' || !isNaN(parseInt(String(item)))) {
+      ids.push(typeof item === 'number' ? item : parseInt(String(item)));
     } else {
-      names.push(item.toLowerCase());
+      names.push(String(item).toLowerCase());
     }
   }
 
@@ -78,7 +108,7 @@ async function areBanned(idsOrNames, banType = 'bb') {
     [ids.length > 0 ? ids : [null], names.length > 0 ? names : [null]]
   );
 
-  const banMap = new Map();
+  const banMap = new Map<number | string, BanRecord>();
   for (const row of result.rows) {
     if (row.esi_id) {
       banMap.set(row.esi_id, row);
@@ -92,26 +122,20 @@ async function areBanned(idsOrNames, banType = 'bb') {
 /**
  * Get all banned entities
  *
- * @param {string} [banType='bb'] - Type of ban to retrieve: 'bb', 'xup', 'hk', 'all'
- * @returns {Promise<Array>} Array of ban records
+ * @param banType - Type of ban to retrieve: 'bb', 'xup', 'hk', 'all'
+ * @returns Array of ban records
  *
  * @example
  * const allBans = await getAllBans('bb');
  * console.log(`Total BB bans: ${allBans.length}`);
  */
-async function getAllBans(banType = 'bb') {
-  let query;
+export async function getAllBans(banType: BanTypeOrAll = 'bb'): Promise<BanRecord[]> {
+  let query: string;
   if (banType === 'all') {
     query =
       'SELECT * FROM ban_list WHERE bb_banned = true OR xup_banned = true OR hk_banned = true ORDER BY name';
   } else {
-    const columnMap = {
-      bb: 'bb_banned',
-      xup: 'xup_banned',
-      hk: 'hk_banned',
-    };
-
-    const column = columnMap[banType];
+    const column = COLUMN_MAP[banType];
     if (!column) {
       throw new Error(`Invalid ban type: ${banType}. Must be 'bb', 'xup', 'hk', or 'all'`);
     }
@@ -126,19 +150,10 @@ async function getAllBans(banType = 'bb') {
 /**
  * Add or update a ban
  *
- * @param {Object} banData - Ban data
- * @param {string} banData.name - Entity name
- * @param {number} [banData.esiId] - Entity ESI ID
- * @param {string} banData.type - Entity type
- * @param {boolean} [banData.bbBanned=false] - Global BB ban
- * @param {boolean} [banData.xupBanned=false] - X-up channel ban
- * @param {boolean} [banData.hkBanned=false] - HK channel ban
- * @param {string} [banData.bannedBy] - Who issued the ban
- * @param {string} [banData.reason] - Reason for ban
- * @param {Date} [banData.banDate] - Date of ban
- * @returns {Promise<Object>} Created/updated ban record
+ * @param banData - Ban data
+ * @returns Created/updated ban record
  */
-async function addBan(banData) {
+export async function addBan(banData: AddBanData): Promise<BanRecord> {
   const {
     name,
     esiId = null,
@@ -181,24 +196,18 @@ async function addBan(banData) {
 /**
  * Remove a ban (or specific ban type)
  *
- * @param {string} name - Entity name to unban
- * @param {string} [banType='all'] - Ban type to remove: 'bb', 'xup', 'hk', 'all'
- * @returns {Promise<boolean>} True if ban was removed
+ * @param name - Entity name to unban
+ * @param banType - Ban type to remove: 'bb', 'xup', 'hk', 'all'
+ * @returns True if ban was removed
  */
-async function removeBan(name, banType = 'all') {
+export async function removeBan(name: string, banType: BanTypeOrAll = 'all'): Promise<boolean> {
   if (banType === 'all') {
     // Remove entire record
     const result = await pool.query('DELETE FROM ban_list WHERE LOWER(name) = LOWER($1)', [name]);
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   } else {
     // Just unset specific ban flag
-    const columnMap = {
-      bb: 'bb_banned',
-      xup: 'xup_banned',
-      hk: 'hk_banned',
-    };
-
-    const column = columnMap[banType];
+    const column = COLUMN_MAP[banType];
     if (!column) {
       throw new Error(`Invalid ban type: ${banType}. Must be 'bb', 'xup', 'hk', or 'all'`);
     }
@@ -220,8 +229,6 @@ async function removeBan(name, banType = 'all') {
       [name]
     );
 
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 }
-
-export { isBanned, areBanned, getAllBans, addBan, removeBan };

@@ -12,11 +12,34 @@
 
 import pool from '../db';
 
+export interface ShipInfo {
+  type_id: number;
+  name: string;
+  group_id: number;
+  group_name: string;
+  payout: number;
+  polarized_payout: number | null;
+  fc_discretion: boolean;
+  notes: string | null;
+}
+
+export interface ShipsMap {
+  [typeId: number]: ShipInfo;
+}
+
+export interface GroupedShips {
+  [groupName: string]: Array<{
+    type_id: number;
+    name: string;
+    notes: string | null;
+  }>;
+}
+
 /**
  * Load all approved ship types from database
  * Called once at start of mail processing cycle
  *
- * @returns {Promise<Object>} Map of type_id -> ship data
+ * @returns Map of type_id -> ship data
  *
  * @example
  * const ships = await getAllApprovedShips();
@@ -25,11 +48,10 @@ import pool from '../db';
  * //   ...
  * // }
  */
-
-async function getAllApprovedShips() {
+export async function getAllApprovedShips(): Promise<ShipsMap> {
   const result = await pool.query('SELECT * FROM srp_ship_types WHERE is_active = TRUE');
 
-  const ships = {};
+  const ships: ShipsMap = {};
   result.rows.forEach((row) => {
     ships[row.type_id] = {
       type_id: row.type_id,
@@ -49,9 +71,9 @@ async function getAllApprovedShips() {
 /**
  * Check if ship is approved (synchronous - requires pre-loaded ship map)
  *
- * @param {number} typeId - EVE type ID
- * @param {Object} shipsMap - Pre-loaded ship types map from getAllApprovedShips()
- * @returns {boolean} True if ship is approved
+ * @param typeId - EVE type ID
+ * @param shipsMap - Pre-loaded ship types map from getAllApprovedShips()
+ * @returns True if ship is approved
  *
  * @example
  * const ships = await getAllApprovedShips();
@@ -59,24 +81,28 @@ async function getAllApprovedShips() {
  *   console.log('Hound is approved');
  * }
  */
-function isApprovedShip(typeId, shipsMap) {
+export function isApprovedShip(typeId: number, shipsMap: ShipsMap): boolean {
   return typeId in shipsMap;
 }
 
 /**
  * Get payout amount (synchronous - requires pre-loaded ship map)
  *
- * @param {number} typeId - EVE type ID
- * @param {Object} shipsMap - Pre-loaded ship types map from getAllApprovedShips()
- * @param {boolean} isPolarized - Whether fit is polarized
- * @returns {number|null} Payout amount in ISK, or null if not approved
+ * @param typeId - EVE type ID
+ * @param shipsMap - Pre-loaded ship types map from getAllApprovedShips()
+ * @param isPolarized - Whether fit is polarized
+ * @returns Payout amount in ISK, or null if not approved
  *
  * @example
  * const ships = await getAllApprovedShips();
  * const payout = getPayoutAmount(12034, ships, true);
  * console.log(payout); // 70000000 (polarized bomber)
  */
-function getPayoutAmount(typeId, shipsMap, isPolarized = false) {
+export function getPayoutAmount(
+  typeId: number,
+  shipsMap: ShipsMap,
+  isPolarized = false
+): number | null {
   const ship = shipsMap[typeId];
   if (!ship) return null;
 
@@ -90,24 +116,24 @@ function getPayoutAmount(typeId, shipsMap, isPolarized = false) {
 /**
  * Get ship info (synchronous - requires pre-loaded ship map)
  *
- * @param {number} typeId - EVE type ID
- * @param {Object} shipsMap - Pre-loaded ship types map from getAllApprovedShips()
- * @returns {Object|null} Ship data or null if not approved
+ * @param typeId - EVE type ID
+ * @param shipsMap - Pre-loaded ship types map from getAllApprovedShips()
+ * @returns Ship data or null if not approved
  *
  * @example
  * const ships = await getAllApprovedShips();
  * const info = getShipInfo(12034, ships);
  * console.log(info.name); // "Hound"
  */
-function getShipInfo(typeId, shipsMap) {
+export function getShipInfo(typeId: number, shipsMap: ShipsMap): ShipInfo | null {
   return shipsMap[typeId] || null;
 }
 
 /**
  * Get all ship types grouped by ESI group name (for mail templates)
  *
- * @param {Object} shipsMap - Pre-loaded ship types map from getAllApprovedShips()
- * @returns {Object} Ships grouped by group_name
+ * @param shipsMap - Pre-loaded ship types map from getAllApprovedShips()
+ * @returns Ships grouped by group_name
  *
  * @example
  * const ships = await getAllApprovedShips();
@@ -124,8 +150,8 @@ function getShipInfo(typeId, shipsMap) {
  * //   ]
  * // }
  */
-function getShipsByGroup(shipsMap) {
-  const grouped = {};
+export function getShipsByGroup(shipsMap: ShipsMap): GroupedShips {
+  const grouped: GroupedShips = {};
 
   Object.values(shipsMap).forEach((ship) => {
     const groupName = ship.group_name;
@@ -141,5 +167,3 @@ function getShipsByGroup(shipsMap) {
 
   return grouped;
 }
-
-export { getAllApprovedShips, isApprovedShip, getPayoutAmount, getShipInfo, getShipsByGroup };
