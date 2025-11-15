@@ -35,14 +35,12 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
   // Reset form when modal opens/closes or fleet changes
   useEffect(() => {
     if (fleet) {
-      // Convert scheduled_at to datetime-local format
+      // Display scheduled_at as UTC time (EVE time) in datetime-local format
       const scheduledDate = new Date(fleet.scheduled_at);
-      const localDateTime = new Date(scheduledDate.getTime() - scheduledDate.getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 16);
+      const utcDateTime = scheduledDate.toISOString().slice(0, 16);
 
       setFormData({
-        scheduled_at: localDateTime,
+        scheduled_at: utcDateTime,
         duration_minutes: fleet.duration_minutes,
         fleet_type_id: fleet.fleet_type_id,
         fc_id: fleet.fc_id,
@@ -53,15 +51,13 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
         status: fleet.status,
       });
     } else {
-      // Default to next hour
+      // Default to next hour in UTC (EVE time)
       const now = new Date();
-      now.setHours(now.getHours() + 1, 0, 0, 0);
-      const localDateTime = new Date(now.getTime() - now.getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 16);
+      now.setUTCHours(now.getUTCHours() + 1, 0, 0, 0);
+      const utcDateTime = now.toISOString().slice(0, 16);
 
       setFormData({
-        scheduled_at: localDateTime,
+        scheduled_at: utcDateTime,
         duration_minutes: 120,
         fleet_type_id: fleetTypes.length > 0 ? fleetTypes[0].id : 0,
         fc_id: fcs.length > 0 ? fcs[0].id : 0,
@@ -81,9 +77,9 @@ export function FleetModal({ fleet, fleetTypes, fcs, onClose, onSuccess }: Fleet
     setError(null);
 
     try {
-      // Convert local datetime to ISO string
-      const scheduledDate = new Date(formData.scheduled_at);
-      const isoDateTime = scheduledDate.toISOString();
+      // Treat the datetime-local input as UTC time (EVE time)
+      // Append 'Z' to indicate UTC timezone
+      const isoDateTime = formData.scheduled_at + ':00.000Z';
 
       const payload = {
         ...formData,
