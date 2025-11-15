@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useQuery } from '@tanstack/react-query';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
@@ -203,13 +204,13 @@ export default function AboutPage() {
               </svg>
               Join Discord
             </a>
-            <a
+            <Link
               href="/#doctrines"
               className="group relative inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl hover:-translate-y-0.5"
             >
               <Target className="h-5 w-5" />
               Fleet Doctrines
-            </a>
+            </Link>
             <a
               href="#obombercare"
               className="group relative inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl hover:-translate-y-0.5"
@@ -814,13 +815,13 @@ export default function AboutPage() {
               Join our Discord, check out the fleet schedule, and get ready for some epic bombing runs!
             </p>
             <div className="flex flex-wrap justify-center gap-4">
-              <a
+              <Link
                 href="/"
                 className="inline-flex items-center gap-2 rounded-xl bg-primary px-8 py-4 font-semibold text-white shadow-lg transition-all hover:bg-primary/80 hover:shadow-xl hover:-translate-y-0.5"
               >
                 <Calendar className="h-5 w-5" />
                 View Upcoming Fleets
-              </a>
+              </Link>
               <a
                 href="https://discord.gg/yqQFDqRXvr"
                 target="_blank"
