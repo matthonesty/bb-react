@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { NAV_ITEMS } from '@/lib/constants';
 import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
@@ -23,6 +23,42 @@ export function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [formsMenuOpen, setFormsMenuOpen] = useState(false);
   const [navDropdownOpen, setNavDropdownOpen] = useState<string | null>(null);
+
+  // Refs for click-outside detection
+  const formsMenuRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  const navDropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
+
+  // Handle click outside to close dropdowns
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      // Close forms menu if clicked outside
+      if (formsMenuRef.current && !formsMenuRef.current.contains(event.target as Node)) {
+        setFormsMenuOpen(false);
+      }
+
+      // Close user menu if clicked outside
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setUserMenuOpen(false);
+      }
+
+      // Close nav dropdowns if clicked outside
+      if (navDropdownOpen) {
+        const dropdownRef = navDropdownRefs.current[navDropdownOpen];
+        if (dropdownRef && !dropdownRef.contains(event.target as Node)) {
+          setNavDropdownOpen(null);
+        }
+      }
+    }
+
+    // Only add listener if any menu is open
+    if (formsMenuOpen || userMenuOpen || navDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [formsMenuOpen, userMenuOpen, navDropdownOpen]);
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (!item.roles) return true;
@@ -62,7 +98,7 @@ export function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex md:items-center md:space-x-1">
             {/* Forms Dropdown - Always visible */}
-            <div className="relative">
+            <div className="relative" ref={formsMenuRef}>
               <button
                 onClick={() => setFormsMenuOpen(!formsMenuOpen)}
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors flex items-center space-x-1"
@@ -72,21 +108,18 @@ export function Header() {
               </button>
 
               {formsMenuOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setFormsMenuOpen(false)} />
-                  <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
-                    {FORM_ITEMS.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setFormsMenuOpen(false)}
-                        className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                </>
+                <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                  {FORM_ITEMS.map((item) => (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setFormsMenuOpen(false)}
+                      className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
               )}
             </div>
 
@@ -96,7 +129,13 @@ export function Header() {
                 // Dropdown menu
                 if (item.children) {
                   return (
-                    <div key={item.label} className="relative">
+                    <div
+                      key={item.label}
+                      className="relative"
+                      ref={(el) => {
+                        navDropdownRefs.current[item.label] = el;
+                      }}
+                    >
                       <button
                         onClick={() =>
                           setNavDropdownOpen(navDropdownOpen === item.label ? null : item.label)
@@ -108,24 +147,18 @@ export function Header() {
                       </button>
 
                       {navDropdownOpen === item.label && (
-                        <>
-                          <div
-                            className="fixed inset-0 z-10"
-                            onClick={() => setNavDropdownOpen(null)}
-                          />
-                          <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
-                            {item.children.map((child) => (
-                              <Link
-                                key={child.href}
-                                href={child.href!}
-                                onClick={() => setNavDropdownOpen(null)}
-                                className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
-                              >
-                                {child.label}
-                              </Link>
-                            ))}
-                          </div>
-                        </>
+                        <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                          {item.children.map((child) => (
+                            <Link
+                              key={child.href}
+                              href={child.href!}
+                              onClick={() => setNavDropdownOpen(null)}
+                              className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
+                            >
+                              {child.label}
+                            </Link>
+                          ))}
+                        </div>
                       )}
                     </div>
                   );
@@ -148,7 +181,7 @@ export function Header() {
           {isAuthenticated && user ? (
             <div className="hidden md:flex md:items-center md:space-x-2">
               {/* User Menu */}
-              <div className="relative">
+              <div className="relative" ref={userMenuRef}>
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-background-secondary transition-colors"
@@ -166,28 +199,25 @@ export function Header() {
 
                 {/* Dropdown Menu */}
                 {userMenuOpen && (
-                  <>
-                    <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)} />
-                    <div className="absolute right-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
-                      {/* System Link (Admin Only) */}
-                      {user.roles.includes('admin') && (
-                        <Link
-                          href="/system"
-                          onClick={() => setUserMenuOpen(false)}
-                          className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors rounded-t-md"
-                        >
-                          System
-                        </Link>
-                      )}
-                      <button
-                        onClick={logout}
-                        className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors rounded-b-md"
+                  <div className="absolute right-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
+                    {/* System Link (Admin Only) */}
+                    {user.roles.includes('admin') && (
+                      <Link
+                        href="/system"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors rounded-t-md"
                       >
-                        <LogOut size={16} />
-                        <span>Logout</span>
-                      </button>
-                    </div>
-                  </>
+                        System
+                      </Link>
+                    )}
+                    <button
+                      onClick={logout}
+                      className="flex w-full items-center space-x-2 px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors rounded-b-md"
+                    >
+                      <LogOut size={16} />
+                      <span>Logout</span>
+                    </button>
+                  </div>
                 )}
               </div>
             </div>
