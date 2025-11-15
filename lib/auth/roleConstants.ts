@@ -36,3 +36,26 @@ export function isAuthorizedRole(role: string): boolean {
   ];
   return authorizedRoles.includes(role);
 }
+
+/**
+ * Check if user roles can view private resources
+ * Private resources require FC+ access (FC, admin, council, etc.)
+ *
+ * @param roles - Array of user roles
+ * @returns True if user has FC+ access
+ */
+export function canViewPrivateResources(roles: string[]): boolean {
+  return roles.some((role) => isAuthorizedRole(role));
+}
+
+/**
+ * Check if user roles can edit resources
+ * Only admin and election officer can edit resources
+ *
+ * @param roles - Array of user roles
+ * @returns True if user can edit resources
+ */
+export function canEditResources(roles: string[]): boolean {
+  const editRoles: string[] = [ROLES.ADMIN, ROLES.ELECTION_OFFICER];
+  return roles.some((role) => editRoles.includes(role));
+}

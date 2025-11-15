@@ -7,7 +7,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { NAV_ITEMS } from '@/lib/constants';
 import { Menu, X, LogOut, ChevronDown } from 'lucide-react';
 
-const FORM_ITEMS = [
+const RESOURCE_ITEMS = [
+  { label: 'Documents & Guides', href: '/resources' },
   { label: 'FC Feedback', href: '/fc-feedback' },
   { label: 'FC Application', href: '/fc-application' },
   { label: 'Bombing Intel', href: '/bombing-intel' },
@@ -31,12 +32,12 @@ export function Header() {
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [formsMenuOpen, setFormsMenuOpen] = useState(false);
+  const [resourcesMenuOpen, setResourcesMenuOpen] = useState(false);
   const [aboutMenuOpen, setAboutMenuOpen] = useState(false);
   const [navDropdownOpen, setNavDropdownOpen] = useState<string | null>(null);
 
   // Refs for click-outside detection
-  const formsMenuRef = useRef<HTMLDivElement>(null);
+  const resourcesMenuRef = useRef<HTMLDivElement>(null);
   const aboutMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   const navDropdownRefs = useRef<{ [key: string]: HTMLDivElement | null }>({});
@@ -44,9 +45,9 @@ export function Header() {
   // Handle click outside to close dropdowns
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      // Close forms menu if clicked outside
-      if (formsMenuRef.current && !formsMenuRef.current.contains(event.target as Node)) {
-        setFormsMenuOpen(false);
+      // Close resources menu if clicked outside
+      if (resourcesMenuRef.current && !resourcesMenuRef.current.contains(event.target as Node)) {
+        setResourcesMenuOpen(false);
       }
 
       // Close about menu if clicked outside
@@ -69,13 +70,13 @@ export function Header() {
     }
 
     // Only add listener if any menu is open
-    if (formsMenuOpen || aboutMenuOpen || userMenuOpen || navDropdownOpen) {
+    if (resourcesMenuOpen || aboutMenuOpen || userMenuOpen || navDropdownOpen) {
       document.addEventListener('mousedown', handleClickOutside);
       return () => {
         document.removeEventListener('mousedown', handleClickOutside);
       };
     }
-  }, [formsMenuOpen, aboutMenuOpen, userMenuOpen, navDropdownOpen]);
+  }, [resourcesMenuOpen, aboutMenuOpen, userMenuOpen, navDropdownOpen]);
 
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (!item.roles) return true;
@@ -148,23 +149,23 @@ export function Header() {
               )}
             </div>
 
-            {/* Forms Dropdown - Always visible */}
-            <div className="relative" ref={formsMenuRef}>
+            {/* Resources Dropdown - Always visible */}
+            <div className="relative" ref={resourcesMenuRef}>
               <button
-                onClick={() => setFormsMenuOpen(!formsMenuOpen)}
+                onClick={() => setResourcesMenuOpen(!resourcesMenuOpen)}
                 className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors flex items-center space-x-1"
               >
-                <span>Forms</span>
+                <span>Resources</span>
                 <ChevronDown size={16} />
               </button>
 
-              {formsMenuOpen && (
+              {resourcesMenuOpen && (
                 <div className="absolute left-0 mt-2 w-48 rounded-md bg-card-bg border border-card-border shadow-lg z-20">
-                  {FORM_ITEMS.map((item) => (
+                  {RESOURCE_ITEMS.map((item) => (
                     <Link
                       key={item.href}
                       href={item.href}
-                      onClick={() => setFormsMenuOpen(false)}
+                      onClick={() => setResourcesMenuOpen(false)}
                       className="block px-4 py-2 text-sm text-foreground hover:bg-background-secondary transition-colors first:rounded-t-md last:rounded-b-md"
                     >
                       {item.label}
@@ -330,12 +331,12 @@ export function Header() {
               ))}
             </div>
 
-            {/* Forms section - Always visible */}
+            {/* Resources section - Always visible */}
             <div className="mb-2">
               <p className="px-3 py-2 text-xs font-semibold text-foreground-muted uppercase">
-                Forms
+                Resources
               </p>
-              {FORM_ITEMS.map((item) => (
+              {RESOURCE_ITEMS.map((item) => (
                 <Link
                   key={item.href}
                   href={item.href}
