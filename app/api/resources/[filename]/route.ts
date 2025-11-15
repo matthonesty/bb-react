@@ -1,11 +1,10 @@
 /**
  * Resources API Endpoint
- * Serves markdown files from the documents directory
+ * Serves markdown documents from the database
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { readFile, writeFile } from 'fs/promises';
-import path from 'path';
+import pool from '@/lib/db';
 import { getPublicSession } from '@/lib/auth/session';
 import { canViewPrivateResources, canEditResources } from '@/lib/auth/roleConstants';
 
@@ -16,16 +15,25 @@ export async function GET(
   try {
     const { filename } = await params;
 
-    // Validate filename to prevent directory traversal
+    // Validate filename to prevent SQL injection
     if (!filename || filename.includes('..') || filename.includes('/')) {
       return NextResponse.json({ error: 'Invalid filename' }, { status: 400 });
     }
 
-    // Check if this is a private resource
-    const isPrivate = filename.toLowerCase().endsWith('private.md');
+    // Get document from database
+    const result = await pool.query(
+      'SELECT content, is_private FROM documents WHERE filename = $1',
+      [filename]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
+
+    const document = result.rows[0];
 
     // If private, verify user has FC+ role
-    if (isPrivate) {
+    if (document.is_private) {
       const session = await getPublicSession();
 
       if (!session) {
@@ -37,16 +45,8 @@ export async function GET(
       }
     }
 
-    // Read the file from the documents directory
-    const filePath = path.join(process.cwd(), 'documents', filename);
-    const content = await readFile(filePath, 'utf-8');
-
-    return NextResponse.json({ content });
+    return NextResponse.json({ content: document.content });
   } catch (error: unknown) {
-    if (error && typeof error === 'object' && 'code' in error && error.code === 'ENOENT') {
-      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
-    }
-
     console.error('[RESOURCES] GET error:', error);
     return NextResponse.json({ error: 'Failed to load resource' }, { status: 500 });
   }
@@ -59,7 +59,7 @@ export async function PUT(
   try {
     const { filename } = await params;
 
-    // Validate filename to prevent directory traversal
+    // Validate filename to prevent SQL injection
     if (!filename || filename.includes('..') || filename.includes('/')) {
       return NextResponse.json({ error: 'Invalid filename' }, { status: 400 });
     }
@@ -85,9 +85,15 @@ export async function PUT(
       return NextResponse.json({ error: 'Invalid content' }, { status: 400 });
     }
 
-    // Write the file to the documents directory
-    const filePath = path.join(process.cwd(), 'documents', filename);
-    await writeFile(filePath, content, 'utf-8');
+    // Update document in database
+    const result = await pool.query(
+      'UPDATE documents SET content = $1, updated_by = $2, updated_at = CURRENT_TIMESTAMP WHERE filename = $3 RETURNING id',
+      [content, session.character_id, filename]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
 
     return NextResponse.json({ success: true });
   } catch (error: unknown) {
