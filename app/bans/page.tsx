@@ -203,7 +203,6 @@ export default function BansPage() {
                   <TableRow>
                     <TableHead>Name</TableHead>
                     <TableHead>Type</TableHead>
-                    <TableHead>ESI ID</TableHead>
                     <TableHead>Ban Scope</TableHead>
                     <TableHead>Banned By</TableHead>
                     <TableHead>Reason</TableHead>
@@ -226,11 +225,6 @@ export default function BansPage() {
                         }>
                           {ban.type}
                         </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="text-sm text-foreground-muted">
-                          {ban.esi_id || '-'}
-                        </span>
                       </TableCell>
                       <TableCell>
                         <div className="flex gap-1 flex-wrap">
