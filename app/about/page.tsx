@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
@@ -15,7 +16,9 @@ import {
   Smile,
   DollarSign,
   UserPlus,
-  Bomb
+  Bomb,
+  ChevronDown,
+  ChevronRight
 } from 'lucide-react';
 
 export default function AboutPage() {
@@ -29,6 +32,46 @@ export default function AboutPage() {
   });
 
   const shipTypes = srpData?.ship_types || [];
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+
+  const faqs = [
+    {
+      question: "There's a new channel and discord server?",
+      answer: 'As of October 2023, Bombers Bar has moved to new services. The new in-game main channel is "BB: Bombers Bar" and the link to the new discord server can be found on the website homepage. You can leave the old main channel and discord if you\'re still in them as those will no longer be used or updated.',
+    },
+    {
+      question: 'How to join us on TS?',
+      answer: 'There is a fixed address and password in the "BB: Bombers Bar" channel that you should use to join our Teamspeak server. When you initially connect you will be in the "Main Lobby". From here you should be able to join the various public channels. When a fleet is starting and you x up, switch to the in-game Fleet chat window, in the MOTD you will see the relevant TS channel to use (usually BB Roam 1) together with new password.',
+    },
+    {
+      question: 'What is an X-up?',
+      answer: 'Simple, just type an "x" in a channel. An X-up channel for joining fleet will be linked in the main channel when fleet is starting and while fleet is still accepting members.',
+    },
+    {
+      question: 'MOTD (Message Of The Day)',
+      answer: 'In your fleet chat window have a look at the MOTD. Be sure to reload it often because info will change from time to time. The MOTD has important info such as; who is the fleet BLOPS, who is the FC and what staging system you should travel to. The BLOPS and FC pilots are two most important characters in fleet, you should put them in your WATCHLIST.',
+    },
+    {
+      question: 'Fleet Types',
+      answer: 'The general fleet types we run are; Whaling, Armada, Habakuk, Wolfpack and Bombing fleets. Each fleet type has different ship requirements and objectives.',
+    },
+    {
+      question: 'To cloak or not to cloak?',
+      answer: 'Once you arrive to the staging system, stay cloaked in system or dock at the station/citadel specified in the MOTD. YOU NEED TO BE CLOAKED when you warp to the BLOPS! If you warp uncloaked, you will uncloak all others in the fleet and put the whole fleet in danger.',
+    },
+    {
+      question: 'Bridge is up!',
+      answer: 'When the hunter finds a target they will light a covert cyno. Our BLOPS will lock on to that cyno and will open the bridge for our fleet. To take the bridge you need to; Keep at range 1000m to the BLOPS, when the blue vortex appears around BLOPS or the bridger says "bridge up!" you can right click the BLOPS pilot and use Jump to... the cyno system.',
+    },
+    {
+      question: 'Finally! Jumping on target',
+      answer: 'Once you jump on the target: First, ALIGN to some random celestial. Then, lock the target. And then, ALWAYS FIRST APPLY POINT or e-war before DPS. DO NOT start with torpedos before FC calls for it. BB fleet usually have 20,000-30,000 DPS and can melt down most targets quickly. Once we kill ship, lock the pod. E-WAR ONLY ON THE POD! DO NOT shoot torpedos at the pod.',
+    },
+    {
+      question: 'Target killed, pod killed \\o/ hurray, now what?',
+      answer: 'Congrats! Now warp to a random celestial if the FC calls for it and cloak on the way. Cloak while you warp off, NOT at the moment you arrive at the celestial. You just killed expensive ship and his friends will try to find you. Once cloaked and safe, wait for the BLOPS to jump in and call us all to warp to zero.',
+    },
+  ];
 
   const reasons = [
     {
@@ -566,6 +609,33 @@ export default function AboutPage() {
               </div>
             </div>
           </Card>
+        </section>
+
+        {/* FAQ */}
+        <section className="mb-16">
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Frequently Asked Questions</h2>
+          <div className="space-y-2">
+            {faqs.map((faq, index) => (
+              <div key={index} className="border border-border rounded-lg overflow-hidden bg-surface">
+                <button
+                  onClick={() => setOpenFaqIndex(openFaqIndex === index ? null : index)}
+                  className="flex w-full items-center justify-between px-4 py-3 text-left transition-colors hover:bg-surface-secondary"
+                >
+                  <h3 className="text-sm font-semibold text-foreground pr-4">{faq.question}</h3>
+                  {openFaqIndex === index ? (
+                    <ChevronDown className="h-4 w-4 shrink-0 text-primary" />
+                  ) : (
+                    <ChevronRight className="h-4 w-4 shrink-0 text-foreground-muted" />
+                  )}
+                </button>
+                {openFaqIndex === index && (
+                  <div className="border-t border-border bg-background-dark px-4 py-3">
+                    <p className="text-sm text-foreground-muted leading-relaxed">{faq.answer}</p>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </section>
 
         {/* Call to Action */}

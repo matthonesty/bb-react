@@ -113,14 +113,6 @@ export function Header() {
               About
             </Link>
 
-            {/* FAQ Link - Always visible */}
-            <Link
-              href="/faq"
-              className="rounded-md px-3 py-2 text-sm font-medium text-foreground-muted hover:bg-background-secondary hover:text-foreground transition-colors"
-            >
-              FAQ
-            </Link>
-
             {/* Forms Dropdown - Always visible */}
             <div className="relative" ref={formsMenuRef}>
               <button
@@ -293,15 +285,6 @@ export function Header() {
               className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
             >
               About
-            </Link>
-
-            {/* FAQ Link - Always visible */}
-            <Link
-              href="/faq"
-              onClick={() => setMobileMenuOpen(false)}
-              className="block rounded-md px-3 py-2 text-base font-medium text-foreground hover:bg-background-tertiary transition-colors"
-            >
-              FAQ
             </Link>
 
             {/* Forms section - Always visible */}
