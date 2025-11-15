@@ -144,6 +144,22 @@ export interface WalletJournalEntry {
   tax_receiver_name: string | null;
 }
 
+// Ban Types
+export interface Ban {
+  id: number;
+  name: string;
+  esi_id: number | null;
+  type: 'Character' | 'Corp' | 'Alliance';
+  bb_banned: boolean;
+  xup_banned: boolean;
+  hk_banned: boolean;
+  banned_by: string | null;
+  reason: string | null;
+  ban_date: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 // UI Component Props Types
 export interface TableColumn<T> {
   key: keyof T | string;
