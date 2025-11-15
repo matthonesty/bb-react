@@ -18,7 +18,9 @@ import {
   UserPlus,
   Bomb,
   ChevronDown,
-  ChevronRight
+  ChevronRight,
+  Mail,
+  Info
 } from 'lucide-react';
 
 export default function AboutPage() {
@@ -257,79 +259,105 @@ export default function AboutPage() {
 
         {/* O'bombercare (SRP) Section */}
         <section id="obombercare" className="mb-16 scroll-mt-20">
-          <Card className="p-8">
-            <h2 className="text-3xl font-bold text-foreground mb-6 text-center">
-              O&apos;bombercare (Ship Replacement Program)
-            </h2>
-            <div className="mb-6">
-              <p className="text-foreground-muted mb-6 text-center">
-                O&apos;bombercare is our Ship Replacement Program (SRP) that reimburses pilots for ship losses during Bombers Bar fleets.
-                Fly with confidence knowing your approved ships are covered!
-              </p>
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
+            O&apos;bombercare (Ship Replacement Program)
+          </h2>
+
+          {/* Description Card */}
+          <div className="rounded-lg bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 p-6 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="rounded-lg bg-primary/20 p-3 shrink-0">
+                <Heart className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground mb-2">We&apos;ve Got You Covered!</h3>
+                <p className="text-foreground-muted leading-relaxed">
+                  O&apos;bombercare is our Ship Replacement Program (SRP) that reimburses pilots for ship losses during Bombers Bar fleets.
+                  Fly with confidence knowing your approved ships are covered!
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* How to Submit Card */}
+          <div className="rounded-lg border border-border bg-surface p-6 mb-6">
+            <div className="flex items-start gap-4">
+              <div className="rounded-lg bg-primary/10 p-3 shrink-0">
+                <Mail className="h-6 w-6 text-primary" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-foreground mb-2">How to Submit for SRP</h3>
+                <p className="text-foreground-muted">
+                  Send an EVE mail to <span className="font-semibold text-primary">&quot;Bombers Bar SRP&quot;</span> with a link to your zKillboard or in-game loss mail.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* SRP Payouts */}
+          <div>
+            <div className="flex items-center gap-2 mb-4">
+              <DollarSign className="h-5 w-5 text-primary" />
+              <h3 className="text-xl font-bold text-foreground">SRP Payouts</h3>
             </div>
 
-            <div className="mb-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">How to Submit for SRP</h3>
-              <p className="text-foreground-muted">
-                Send an EVE mail to <span className="font-semibold text-foreground">&quot;Bombers Bar SRP&quot;</span> with a link to your zKillboard or in-game loss mail.
-              </p>
-            </div>
-
-            <div className="border-t border-border pt-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">SRP Payouts</h3>
-
-              {srpLoading ? (
-                <div className="flex items-center justify-center py-8">
-                  <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
-                </div>
-              ) : (
-                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {Object.entries(
-                    shipTypes.reduce((acc, ship) => {
-                      if (!acc[ship.group_name]) {
-                        acc[ship.group_name] = [];
-                      }
-                      acc[ship.group_name].push(ship);
-                      return acc;
-                    }, {} as Record<string, typeof shipTypes>)
-                  ).map(([groupName, ships]) => (
-                    <div key={groupName} className="rounded-lg border border-border bg-surface p-4">
-                      <h4 className="font-semibold text-foreground mb-3 text-sm uppercase tracking-wider">
+            {srpLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                {Object.entries(
+                  shipTypes.reduce((acc, ship) => {
+                    if (!acc[ship.group_name]) {
+                      acc[ship.group_name] = [];
+                    }
+                    acc[ship.group_name].push(ship);
+                    return acc;
+                  }, {} as Record<string, typeof shipTypes>)
+                ).map(([groupName, ships]) => (
+                  <div key={groupName} className="rounded-lg border border-border bg-surface p-5 hover:border-primary/30 transition-all">
+                    <div className="flex items-center gap-2 mb-4">
+                      <div className="h-1 w-1 rounded-full bg-primary"></div>
+                      <h4 className="font-bold text-foreground text-base uppercase tracking-wide">
                         {groupName}
                       </h4>
-                      <div className="space-y-2">
-                        {ships.map((ship) => (
-                          <div key={ship.type_name} className="text-xs">
-                            <div className="flex justify-between items-start">
-                              <span className="text-foreground-muted flex-1 mr-2">{ship.type_name}</span>
-                              <div className="flex flex-col items-end">
-                                <span className="font-semibold text-foreground whitespace-nowrap">
-                                  {(ship.base_payout / 1000000).toFixed(0)}m
-                                </span>
-                                {ship.polarized_payout && (
-                                  <span className="text-xs text-foreground-muted whitespace-nowrap">
-                                    {(ship.polarized_payout / 1000000).toFixed(0)}m pol
-                                  </span>
-                                )}
-                                {ship.fc_discretion && (
-                                  <span className="text-xs text-foreground-muted italic">FC disc.</span>
-                                )}
-                              </div>
-                            </div>
-                            {ship.notes && (
-                              <div className="text-xs text-foreground-muted italic mt-0.5">
-                                * {ship.notes}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
                     </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </Card>
+                    <div className="space-y-3">
+                      {ships.map((ship) => (
+                        <div key={ship.type_name} className="pb-3 border-b border-border last:border-0 last:pb-0">
+                          <div className="flex justify-between items-start gap-3 mb-1">
+                            <span className="text-sm text-foreground font-medium flex-1">{ship.type_name}</span>
+                            <div className="flex flex-col items-end gap-0.5">
+                              <span className="font-bold text-primary text-sm whitespace-nowrap">
+                                {(ship.base_payout / 1000000).toFixed(0)}M ISK
+                              </span>
+                              {ship.polarized_payout && (
+                                <span className="text-xs text-foreground-muted whitespace-nowrap">
+                                  {(ship.polarized_payout / 1000000).toFixed(0)}M pol
+                                </span>
+                              )}
+                              {ship.fc_discretion && (
+                                <span className="text-xs text-primary/70 italic">FC discretion</span>
+                              )}
+                            </div>
+                          </div>
+                          {ship.notes && (
+                            <div className="flex items-start gap-1.5 mt-1.5">
+                              <Info className="h-3 w-3 text-foreground-muted shrink-0 mt-0.5" />
+                              <p className="text-xs text-foreground-muted italic leading-relaxed">
+                                {ship.notes}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </section>
 
         {/* Video Resources */}
