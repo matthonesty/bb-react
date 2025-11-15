@@ -4,7 +4,10 @@ import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
-import { FileText, Lock, ChevronDown, ChevronRight, Edit2, Save, X } from 'lucide-react';
+import { Button } from '@/components/ui/Button';
+import { Modal, ModalFooter } from '@/components/ui/Modal';
+import { Input } from '@/components/ui/Input';
+import { FileText, Lock, ChevronDown, ChevronRight, Edit2, Save, X, Plus } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -71,6 +74,14 @@ export default function ResourcesPage() {
   const [editMode, setEditMode] = useState<Record<string, boolean>>({});
   const [editedContent, setEditedContent] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState<Record<string, boolean>>({});
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [newResource, setNewResource] = useState({
+    title: '',
+    filename: '',
+    content: '',
+    isPrivate: false,
+  });
+  const [isCreating, setIsCreating] = useState(false);
 
   // Check if user has FC+ role (can view private resources)
   const hasActiveFCRole = user?.roles ? canViewPrivateResources(user.roles) : false;
@@ -155,17 +166,83 @@ export default function ResourcesPage() {
     }
   };
 
+  // Create new resource
+  const handleCreateResource = async () => {
+    if (!newResource.title.trim() || !newResource.filename.trim()) {
+      alert('Title and filename are required');
+      return;
+    }
+
+    // Ensure filename ends with .md
+    const filename = newResource.filename.endsWith('.md')
+      ? newResource.filename
+      : `${newResource.filename}.md`;
+
+    setIsCreating(true);
+
+    try {
+      const response = await fetch('/api/resources', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          filename,
+          content: newResource.content,
+          isPrivate: newResource.isPrivate,
+        }),
+      });
+
+      if (response.ok) {
+        // Add to resources list
+        RESOURCES.push({
+          title: newResource.title,
+          filename,
+          content: '',
+          isPrivate: newResource.isPrivate,
+        });
+
+        // Reset form and close modal
+        setNewResource({ title: '', filename: '', content: '', isPrivate: false });
+        setIsAddModalOpen(false);
+
+        // Reload page to show new resource
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(`Failed to create resource: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to create resource:', error);
+      alert('Failed to create resource');
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
   return (
     <PageContainer>
       <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-4">
-            Resources
-          </h1>
-          <p className="text-lg text-foreground-muted">
-            Documentation, guides, and policies for Bombers Bar
-          </p>
+        <div className="mb-12">
+          <div className="text-center mb-4">
+            <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-4">
+              Resources
+            </h1>
+            <p className="text-lg text-foreground-muted">
+              Documentation, guides, and policies for Bombers Bar
+            </p>
+          </div>
+          {canEdit && (
+            <div className="flex justify-center">
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setIsAddModalOpen(true)}
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Resource
+              </Button>
+            </div>
+          )}
         </div>
 
         {/* Resources List */}
@@ -288,6 +365,99 @@ export default function ResourcesPage() {
             </p>
           </div>
         )}
+
+        {/* Add Resource Modal */}
+        <Modal
+          isOpen={isAddModalOpen}
+          onClose={() => {
+            setIsAddModalOpen(false);
+            setNewResource({ title: '', filename: '', content: '', isPrivate: false });
+          }}
+          title="Add New Resource"
+        >
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-foreground-muted mb-2">
+                Title *
+              </label>
+              <Input
+                type="text"
+                value={newResource.title}
+                onChange={(e) => setNewResource({ ...newResource, title: e.target.value })}
+                placeholder="e.g., New FC Guidelines"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground-muted mb-2">
+                Filename * <span className="text-xs text-foreground-muted">(will be saved as .md)</span>
+              </label>
+              <Input
+                type="text"
+                value={newResource.filename}
+                onChange={(e) =>
+                  setNewResource({
+                    ...newResource,
+                    filename: e.target.value.toLowerCase().replace(/\s+/g, ''),
+                  })
+                }
+                placeholder="e.g., newfcguidelines"
+              />
+              <p className="text-xs text-foreground-muted mt-1">
+                Suggested format: descriptivename[public|private].md
+              </p>
+            </div>
+
+            <div>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={newResource.isPrivate}
+                  onChange={(e) => setNewResource({ ...newResource, isPrivate: e.target.checked })}
+                  className="rounded border-border"
+                />
+                <span className="text-sm font-medium text-foreground-muted">
+                  Private (FC+ only)
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-foreground-muted mb-2">
+                Content (Markdown)
+              </label>
+              <textarea
+                value={newResource.content}
+                onChange={(e) => setNewResource({ ...newResource, content: e.target.value })}
+                placeholder="# Title&#10;&#10;Write your markdown content here..."
+                className="w-full min-h-[300px] p-4 font-mono text-sm bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-y"
+              />
+            </div>
+          </div>
+
+          <ModalFooter>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setIsAddModalOpen(false);
+                setNewResource({ title: '', filename: '', content: '', isPrivate: false });
+              }}
+              disabled={isCreating}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="primary"
+              onClick={handleCreateResource}
+              isLoading={isCreating}
+              disabled={!newResource.title.trim() || !newResource.filename.trim() || isCreating}
+            >
+              Create Resource
+            </Button>
+          </ModalFooter>
+        </Modal>
       </div>
     </PageContainer>
   );
