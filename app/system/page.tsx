@@ -39,6 +39,8 @@ export default function SystemPage() {
   const [esiStatus, setEsiStatus] = useState<ESIStatus | null>(null);
   const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null);
   const [loading, setLoading] = useState(true);
+  const [clearingIdle, setClearingIdle] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function loadESIStatus() {
@@ -81,6 +83,10 @@ export default function SystemPage() {
   }
 
   async function clearIdleConnections() {
+    setClearingIdle(true);
+    setError(null);
+    setSuccessMessage(null);
+
     try {
       const response = await fetch('/api/admin/system-status', {
         method: 'POST',
@@ -96,11 +102,19 @@ export default function SystemPage() {
         throw new Error(data.error || 'Failed to clear idle connections');
       }
 
+      // Show success message
+      setSuccessMessage(`Successfully cleared idle connections (before: ${data.before}, after: ${data.after})`);
+
       // Reload system status to show updated counts
       await loadSystemStatus();
+
+      // Clear success message after 5 seconds
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err: any) {
       console.error('Failed to clear idle connections:', err);
       setError(err.message);
+    } finally {
+      setClearingIdle(false);
     }
   }
 
@@ -151,6 +165,13 @@ export default function SystemPage() {
             </Button>
           }
         />
+
+        {/* Success Message */}
+        {successMessage && (
+          <div className="mb-6 bg-success/10 border border-success text-success px-4 py-3 rounded-lg">
+            {successMessage}
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (
@@ -243,8 +264,10 @@ export default function SystemPage() {
                   variant="secondary"
                   size="sm"
                   className="text-xs"
+                  isLoading={clearingIdle}
+                  disabled={clearingIdle}
                 >
-                  Clear Idle
+                  {clearingIdle ? 'Clearing...' : 'Clear Idle'}
                 </Button>
               )}
             </div>
