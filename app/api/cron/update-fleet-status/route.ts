@@ -31,13 +31,13 @@ export async function GET(request: NextRequest) {
       message: 'Fleet statuses updated',
       ...result,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error updating fleet statuses:', error);
     return NextResponse.json(
       {
         success: false,
         error: 'Failed to update fleet statuses',
-        details: error.message,
+        details: error instanceof Error ? error.message : 'Unknown error',
       },
       { status: 500 }
     );
