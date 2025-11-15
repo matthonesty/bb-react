@@ -390,7 +390,7 @@ export default function ResourcesPage() {
 
             <div>
               <label className="block text-sm font-medium text-foreground-muted mb-2">
-                Filename * <span className="text-xs text-foreground-muted">(will be saved as .md)</span>
+                Filename *
               </label>
               <Input
                 type="text"
@@ -401,10 +401,10 @@ export default function ResourcesPage() {
                     filename: e.target.value.toLowerCase().replace(/\s+/g, ''),
                   })
                 }
-                placeholder="e.g., newfcguidelines"
+                placeholder="e.g., newfcguidelinespublic"
               />
               <p className="text-xs text-foreground-muted mt-1">
-                Suggested format: descriptivename[public|private].md
+                Suggested format: descriptivename[public|private]
               </p>
             </div>
 
