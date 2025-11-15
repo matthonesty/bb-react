@@ -120,7 +120,7 @@ export default function FleetDetailPage() {
       const response = await fetch('/api/admin/fleet-types');
       const data = await response.json();
       if (data.success) {
-        setFleetTypes(data.fleetTypes);
+        setFleetTypes(data.fleet_types);
       }
     } catch (err: any) {
       console.error('Failed to load fleet types:', err);

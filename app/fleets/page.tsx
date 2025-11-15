@@ -83,7 +83,7 @@ export default function FleetsPage() {
       const data = await response.json();
 
       if (data.success) {
-        setFleetTypes(data.fleetTypes.filter((ft: FleetType) => ft.is_active));
+        setFleetTypes(data.fleet_types.filter((ft: FleetType) => ft.is_active));
       }
     } catch (err: any) {
       console.error('Failed to load fleet types:', err);
@@ -184,7 +184,7 @@ export default function FleetsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">All Statuses</option>
                 <option value="scheduled">Scheduled</option>
@@ -201,7 +201,7 @@ export default function FleetsPage() {
               <select
                 value={fleetTypeFilter}
                 onChange={(e) => setFleetTypeFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">All Fleet Types</option>
                 {fleetTypes.map((ft) => (
@@ -219,7 +219,7 @@ export default function FleetsPage() {
               <select
                 value={fcFilter}
                 onChange={(e) => setFCFilter(e.target.value)}
-                className="w-full px-3 py-2 bg-background-elevated border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
               >
                 <option value="">All FCs</option>
                 {fcs.map((fc) => (
