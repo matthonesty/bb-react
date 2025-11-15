@@ -202,7 +202,7 @@ export function FittingWheel({
           top: 0,
           width: '398px',
           height: '398px',
-          zIndex: 0,
+          zIndex: -1,
         }}
       >
         <img
@@ -229,7 +229,7 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: 1,
+            zIndex: -1,
           }}
         >
           <img
@@ -250,7 +250,7 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: 1,
+            zIndex: -1,
           }}
         >
           <img
@@ -271,7 +271,7 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: 1,
+            zIndex: -1,
           }}
         >
           <img
@@ -292,7 +292,7 @@ export function FittingWheel({
             top: 0,
             width: '398px',
             height: '398px',
-            zIndex: 1,
+            zIndex: -1,
           }}
         >
           <img
@@ -312,10 +312,13 @@ export function FittingWheel({
           top: '71px',
           width: '256px',
           height: '256px',
-          zIndex: -1,
+          zIndex: -2,
         }}
       >
-        <span className="shipImageSpan" style={{ height: '256px', width: '256px' }}>
+        <span
+          className="shipImageSpan"
+          style={{ height: '256px', width: '256px', display: 'block' }}
+        >
           <img
             src={getShipRenderUrl(shipTypeId, 256)}
             alt={shipName || 'Ship'}
@@ -323,6 +326,7 @@ export function FittingWheel({
             style={{
               height: '256px',
               width: '256px',
+              display: 'block',
             }}
             onError={(e) => {
               (e.target as HTMLImageElement).src = getTypeIconUrl(shipTypeId, 256);
