@@ -14,17 +14,41 @@
 
 import pool from './db';
 
+export interface QueueMailParams {
+  mailType: string;
+  recipientCharacterId: number;
+  payload: Record<string, any>;
+  retryAfter: Date;
+}
+
+export interface PendingMail {
+  id: number;
+  mail_type: string;
+  recipient_character_id: number;
+  payload: Record<string, any>;
+  retry_after: Date;
+  attempts: number;
+  last_error: string | null;
+}
+
+export interface QueueStats {
+  total_queued: number;
+  ready_to_send: number;
+  waiting: number;
+}
+
 /**
  * Queue a mail send for later retry
  *
- * @param {Object} params - Mail parameters
- * @param {string} params.mailType - Type of mail ('confirmation', 'rejection', 'unapproved_ship')
- * @param {number} params.recipientCharacterId - Character ID of recipient
- * @param {Object} params.payload - Mail data (subject, body, sender, etc.)
- * @param {Date} params.retryAfter - When to retry sending
- * @returns {Promise<number>} ID of the queued mail
+ * @param params - Mail parameters
+ * @returns ID of the queued mail
  */
-async function queueMailSend({ mailType, recipientCharacterId, payload, retryAfter }) {
+export async function queueMailSend({
+  mailType,
+  recipientCharacterId,
+  payload,
+  retryAfter,
+}: QueueMailParams): Promise<number> {
   const result = await pool.query(
     `INSERT INTO pending_mail_sends (
       mail_type, recipient_character_id, payload, retry_after
@@ -44,9 +68,9 @@ async function queueMailSend({ mailType, recipientCharacterId, payload, retryAft
 /**
  * Get pending mails ready to retry (limited to 15 per batch)
  *
- * @returns {Promise<Array>} Array of pending mail objects (max 15)
+ * @returns Array of pending mail objects (max 15)
  */
-async function getPendingMailsReadyToSend() {
+export async function getPendingMailsReadyToSend(): Promise<PendingMail[]> {
   const result = await pool.query(
     `SELECT id, mail_type, recipient_character_id, payload, retry_after, attempts, last_error
      FROM pending_mail_sends
@@ -64,10 +88,9 @@ async function getPendingMailsReadyToSend() {
 /**
  * Mark a queued mail as successfully sent and remove from queue
  *
- * @param {number} queueId - ID of the queued mail
- * @returns {Promise<void>}
+ * @param queueId - ID of the queued mail
  */
-async function markMailSent(queueId) {
+export async function markMailSent(queueId: number): Promise<void> {
   await pool.query('DELETE FROM pending_mail_sends WHERE id = $1', [queueId]);
 
   console.log(`[MAIL QUEUE] Mail ${queueId} sent successfully - removed from queue`);
@@ -76,12 +99,15 @@ async function markMailSent(queueId) {
 /**
  * Update a queued mail with retry information (when still rate limited)
  *
- * @param {number} queueId - ID of the queued mail
- * @param {Date} newRetryAfter - New retry time
- * @param {string} error - Error message
- * @returns {Promise<void>}
+ * @param queueId - ID of the queued mail
+ * @param newRetryAfter - New retry time
+ * @param error - Error message
  */
-async function updateMailRetry(queueId, newRetryAfter, error) {
+export async function updateMailRetry(
+  queueId: number,
+  newRetryAfter: Date,
+  error: string
+): Promise<void> {
   await pool.query(
     `UPDATE pending_mail_sends
      SET attempts = attempts + 1,
@@ -100,11 +126,10 @@ async function updateMailRetry(queueId, newRetryAfter, error) {
 /**
  * Remove a mail from queue (when max attempts reached or permanent error)
  *
- * @param {number} queueId - ID of the queued mail
- * @param {string} reason - Reason for removal
- * @returns {Promise<void>}
+ * @param queueId - ID of the queued mail
+ * @param reason - Reason for removal
  */
-async function removeMailFromQueue(queueId, reason) {
+export async function removeMailFromQueue(queueId: number, reason: string): Promise<void> {
   await pool.query('DELETE FROM pending_mail_sends WHERE id = $1', [queueId]);
 
   console.log(`[MAIL QUEUE] Mail ${queueId} removed from queue - ${reason}`);
@@ -113,9 +138,9 @@ async function removeMailFromQueue(queueId, reason) {
 /**
  * Get pending mail queue statistics
  *
- * @returns {Promise<Object>} Queue statistics
+ * @returns Queue statistics
  */
-async function getQueueStats() {
+export async function getQueueStats(): Promise<QueueStats> {
   const result = await pool.query(
     `SELECT
        COUNT(*) as total_queued,
@@ -126,12 +151,3 @@ async function getQueueStats() {
 
   return result.rows[0];
 }
-
-export {
-  queueMailSend,
-  getPendingMailsReadyToSend,
-  markMailSent,
-  updateMailRetry,
-  removeMailFromQueue,
-  getQueueStats,
-};

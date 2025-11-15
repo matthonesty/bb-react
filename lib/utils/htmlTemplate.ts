@@ -11,20 +11,23 @@
  * @module lib/utils/htmlTemplate
  */
 
+export interface RedirectPageOptions {
+  title: string;
+  heading: string;
+  message: string;
+  redirectUrl?: string;
+  redirectDelay?: number;
+  useScript?: boolean;
+}
+
 /**
  * Generate HTML redirect/error page
  *
  * Creates a simple HTML page with auto-redirect functionality.
  * Supports both meta refresh and JavaScript redirect for reliability.
  *
- * @param {Object} options - Template options
- * @param {string} options.title - Page title (shown in browser tab)
- * @param {string} options.heading - Main heading (h1)
- * @param {string} options.message - Body message (paragraph)
- * @param {string} [options.redirectUrl='/'] - URL to redirect to
- * @param {number} [options.redirectDelay=3] - Delay in seconds before redirect
- * @param {boolean} [options.useScript=false] - Add JavaScript redirect as backup
- * @returns {string} Complete HTML page as string
+ * @param options - Template options
+ * @returns Complete HTML page as string
  *
  * @example
  * // Success redirect
@@ -47,14 +50,14 @@
  *   redirectDelay: 3
  * });
  */
-function renderRedirectPage({
+export function renderRedirectPage({
   title,
   heading,
   message,
   redirectUrl = '/',
   redirectDelay = 3,
   useScript = false,
-}) {
+}: RedirectPageOptions): string {
   // Generate script tag if requested (useful for immediate redirects)
   const scriptTag = useScript ? `<script>window.location.href = '${redirectUrl}';</script>` : '';
 
@@ -114,17 +117,22 @@ function renderRedirectPage({
  * Convenience wrapper for common authentication error pattern.
  * Auto-redirects after 3 seconds (or immediately if delay=0).
  *
- * @param {string} heading - Error heading to display
- * @param {string} [message] - Optional detailed error message
- * @param {string} [redirectUrl='/'] - URL to redirect to
- * @param {number} [redirectDelay=3] - Seconds before redirect
- * @returns {string} HTML error page
+ * @param heading - Error heading to display
+ * @param message - Optional detailed error message
+ * @param redirectUrl - URL to redirect to
+ * @param redirectDelay - Seconds before redirect
+ * @returns HTML error page
  *
  * @example
  * renderAuthError('Invalid state parameter');
  * renderAuthError('Login Required', 'Please log in to continue', '/auth/login', 3);
  */
-function renderAuthError(heading, message = null, redirectUrl = '/', redirectDelay = 3) {
+export function renderAuthError(
+  heading: string,
+  message: string | null = null,
+  redirectUrl = '/',
+  redirectDelay = 3
+): string {
   // Support old single-parameter call for backward compatibility
   if (
     typeof heading === 'string' &&
@@ -158,13 +166,13 @@ function renderAuthError(heading, message = null, redirectUrl = '/', redirectDel
  * Convenience wrapper for successful login.
  * Redirects immediately with both meta refresh and JavaScript.
  *
- * @param {string} [redirectUrl='/'] - Where to redirect after login
- * @returns {string} HTML success page
+ * @param redirectUrl - Where to redirect after login
+ * @returns HTML success page
  *
  * @example
  * renderAuthSuccess('/data');
  */
-function renderAuthSuccess(redirectUrl = '/') {
+export function renderAuthSuccess(redirectUrl = '/'): string {
   return renderRedirectPage({
     title: 'Login Successful',
     heading: 'Login Successful!',
@@ -181,13 +189,13 @@ function renderAuthSuccess(redirectUrl = '/') {
  * Convenience wrapper for failed authentication.
  * Shows error message and redirects after 5 seconds.
  *
- * @param {string} errorMessage - Technical error message
- * @returns {string} HTML failure page
+ * @param errorMessage - Technical error message
+ * @returns HTML failure page
  *
  * @example
  * renderAuthFailure('Token exchange failed');
  */
-function renderAuthFailure(errorMessage) {
+export function renderAuthFailure(errorMessage: string): string {
   return renderRedirectPage({
     title: 'Authentication Failed',
     heading: 'Authentication Failed',
@@ -196,5 +204,3 @@ function renderAuthFailure(errorMessage) {
     redirectDelay: 5,
   });
 }
-
-export { renderRedirectPage, renderAuthError, renderAuthSuccess, renderAuthFailure };

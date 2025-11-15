@@ -14,8 +14,5 @@
 /**
  * Regular user scopes (for all human users)
  * Only requests publicData scope - no ESI operation scopes needed
- * @constant {string[]}
  */
-const REGULAR_USER_SCOPES = ['publicData'];
-
-export { REGULAR_USER_SCOPES };
+export const REGULAR_USER_SCOPES: string[] = ['publicData'];

@@ -19,11 +19,11 @@
  * Safely parses string to integer with optional min/max constraints.
  * Returns default value if parsing fails or value is out of bounds.
  *
- * @param {string|number} value - Value to parse
- * @param {number} defaultValue - Default if invalid or out of bounds
- * @param {number|null} [min=null] - Minimum allowed value (inclusive)
- * @param {number|null} [max=null] - Maximum allowed value (inclusive)
- * @returns {number} Validated integer
+ * @param value - Value to parse
+ * @param defaultValue - Default if invalid or out of bounds
+ * @param min - Minimum allowed value (inclusive)
+ * @param max - Maximum allowed value (inclusive)
+ * @returns Validated integer
  *
  * @example
  * parseIntWithBounds('42', 1, 1, 100)  // Returns: 42
@@ -31,8 +31,13 @@
  * parseIntWithBounds('-5', 1, 1, 100)  // Returns: 1 (below min)
  * parseIntWithBounds('200', 1, 1, 100) // Returns: 100 (above max)
  */
-function parseIntWithBounds(value, defaultValue, min = null, max = null) {
-  let parsed = parseInt(value);
+export function parseIntWithBounds(
+  value: string | number,
+  defaultValue: number,
+  min: number | null = null,
+  max: number | null = null
+): number {
+  const parsed = parseInt(String(value));
 
   // Return default if parsing failed
   if (isNaN(parsed)) {
@@ -52,18 +57,19 @@ function parseIntWithBounds(value, defaultValue, min = null, max = null) {
   return parsed;
 }
 
+export interface PaginationParams {
+  page: number;
+  limit: number;
+}
+
 /**
  * Validate pagination parameters (page and limit)
  *
  * Standard validation for paginated API endpoints.
  * Ensures page is positive and limit is within reasonable bounds.
  *
- * @param {Object} query - Request query object
- * @param {string|number} [query.page] - Page number (1-indexed)
- * @param {string|number} [query.limit] - Items per page
- * @returns {Object} Validated pagination params
- * @property {number} page - Page number (min: 1)
- * @property {number} limit - Items per page (min: 1, max: 100, default: 25)
+ * @param query - Request query object
+ * @returns Validated pagination params with page (min: 1) and limit (min: 1, max: 100, default: 25)
  *
  * @example
  * validatePagination({ page: '2', limit: '50' })
@@ -75,9 +81,12 @@ function parseIntWithBounds(value, defaultValue, min = null, max = null) {
  * validatePagination({})
  * // Returns: { page: 1, limit: 25 } (defaults)
  */
-function validatePagination(query) {
-  const page = parseIntWithBounds(query.page, 1, 1, null);
-  const limit = parseIntWithBounds(query.limit, 25, 1, 100);
+export function validatePagination(query: {
+  page?: string | number;
+  limit?: string | number;
+}): PaginationParams {
+  const page = parseIntWithBounds(query.page ?? 1, 1, 1, null);
+  const limit = parseIntWithBounds(query.limit ?? 25, 25, 1, 100);
 
   return { page, limit };
 }
@@ -89,8 +98,8 @@ function validatePagination(query) {
  * omitting the parameter. This function sanitizes query objects by
  * removing these string values.
  *
- * @param {Object} query - Request query object
- * @returns {Object} Sanitized query object (new object, not mutated)
+ * @param query - Request query object
+ * @returns Sanitized query object (new object, not mutated)
  *
  * @example
  * sanitizeQueryParams({ foo: 'bar', baz: 'null', qux: 'undefined' })
@@ -99,17 +108,22 @@ function validatePagination(query) {
  * sanitizeQueryParams({ id: '123', name: null })
  * // Returns: { id: '123' }
  */
-function sanitizeQueryParams(query) {
-  const sanitized = {};
+export function sanitizeQueryParams<T extends Record<string, unknown>>(query: T): Partial<T> {
+  const sanitized: Partial<T> = {};
 
   for (const [key, value] of Object.entries(query)) {
     // Skip string 'null', 'undefined', actual null, and actual undefined
     if (value !== 'null' && value !== 'undefined' && value !== null && value !== undefined) {
-      sanitized[key] = value;
+      sanitized[key as keyof T] = value as T[keyof T];
     }
   }
 
   return sanitized;
+}
+
+export interface ValidationResult {
+  valid: boolean;
+  error?: string;
 }
 
 /**
@@ -118,11 +132,9 @@ function sanitizeQueryParams(query) {
  * Checks if a required parameter is present and non-empty.
  * Useful for parameters that must be provided.
  *
- * @param {any} value - Parameter value to validate
- * @param {string} paramName - Parameter name (for error message)
- * @returns {Object} Validation result
- * @property {boolean} valid - Whether parameter is valid
- * @property {string} [error] - Error message if invalid
+ * @param value - Parameter value to validate
+ * @param paramName - Parameter name (for error message)
+ * @returns Validation result
  *
  * @example
  * validateRequired('123', 'contractId')
@@ -134,7 +146,7 @@ function sanitizeQueryParams(query) {
  * validateRequired(null, 'typeId')
  * // Returns: { valid: false, error: 'Missing required parameter: typeId' }
  */
-function validateRequired(value, paramName) {
+export function validateRequired(value: unknown, paramName: string): ValidationResult {
   if (
     value === null ||
     value === undefined ||
@@ -150,5 +162,3 @@ function validateRequired(value, paramName) {
 
   return { valid: true };
 }
-
-export { parseIntWithBounds, validatePagination, sanitizeQueryParams, validateRequired };

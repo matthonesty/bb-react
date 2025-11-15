@@ -7,14 +7,12 @@
 /**
  * Sleep for a specified duration
  *
- * @param {number} ms - Milliseconds to sleep
- * @returns {Promise<void>} Promise that resolves after the delay
+ * @param ms - Milliseconds to sleep
+ * @returns Promise that resolves after the delay
  *
  * @example
  * await sleep(1000); // Wait 1 second
  */
-function sleep(ms) {
+export function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
-
-export { sleep };
