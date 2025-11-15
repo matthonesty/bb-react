@@ -239,19 +239,23 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">
             Reasons To Join Bombers Bar Fleets
           </h2>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {reasons.map((reason, index) => {
               const Icon = reason.icon;
               return (
-                <Card key={index} className="p-6 hover:border-primary/50 transition-colors">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="rounded-lg bg-primary/10 p-2">
-                      <Icon className="h-6 w-6 text-primary" />
+                <div
+                  key={index}
+                  className="group relative rounded-xl border border-border bg-surface p-6 transition-all hover:border-primary/50 hover:shadow-lg hover:-translate-y-1"
+                >
+                  <div className="mb-4">
+                    <div className="inline-flex items-center justify-center rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 p-3 mb-3">
+                      <Icon className="h-7 w-7 text-primary" />
                     </div>
-                    <h3 className="font-bold text-foreground">{reason.title}</h3>
+                    <h3 className="font-bold text-foreground text-lg leading-tight">{reason.title}</h3>
                   </div>
-                  <p className="text-sm text-foreground-muted">{reason.description}</p>
-                </Card>
+                  <p className="text-sm text-foreground-muted leading-relaxed">{reason.description}</p>
+                  <div className="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-primary/5 to-transparent rounded-bl-full opacity-0 group-hover:opacity-100 transition-opacity" />
+                </div>
               );
             })}
           </div>
