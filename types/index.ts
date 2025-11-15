@@ -91,19 +91,24 @@ export interface Fleet {
 }
 
 export interface FleetCommander {
-  character_id: number;
-  character_name: string;
-  rank: FCRank;
-  alt_of: number | null;
-  alt_of_name: string | null;
+  id: number;
   status: FCStatus;
-  added_by: number;
-  added_at: string;
+  rank: FCRank;
+  main_character_id: number;
+  main_character_name: string;
+  bb_corp_alt_id: number | null;
+  bb_corp_alt_name: string | null;
+  additional_alts: Array<{ character_id: number; character_name: string }>;
   notes: string | null;
+  access_level: FCAccessLevel | null;
+  is_admin?: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export type FCRank = 'Trainee' | 'FC' | 'Senior FC' | 'Lead FC';
-export type FCStatus = 'Active' | 'Inactive';
+export type FCRank = 'SFC' | 'JFC' | 'FC' | 'Support';
+export type FCStatus = 'Active' | 'Inactive' | 'Banned' | 'Deleted';
+export type FCAccessLevel = 'FC' | 'OBomberCare' | 'Accountant' | 'Council' | 'Election Officer';
 
 // Wallet Types
 export interface WalletTransaction {
