@@ -2059,7 +2059,12 @@ async function categorizeModules(modules: any) {
     // For fitted modules (high/mid/low/rig/subsystem), expand quantity into individual slots
     // For cargo items, keep as single entry with quantity
     if (slotType === 'cargo') {
-      categorized[slotType].push(moduleData);
+      // Use type_name for cargo items to match frontend expectation
+      categorized[slotType].push({
+        type_id: item.type_id,
+        type_name: name,
+        quantity: item.quantity,
+      });
     } else {
       // Expand into individual slot entries
       for (let i = 0; i < item.quantity; i++) {
