@@ -13,7 +13,6 @@ interface AddParticipantModalProps {
 
 export function AddParticipantModal({ fleetId, onClose, onSuccess }: AddParticipantModalProps) {
   const [formData, setFormData] = useState({
-    character_id: '',
     character_name: '',
     role: '',
   });
@@ -29,7 +28,6 @@ export function AddParticipantModal({ fleetId, onClose, onSuccess }: AddParticip
     try {
       const payload = {
         fleet_id: fleetId,
-        character_id: parseInt(formData.character_id),
         character_name: formData.character_name.trim(),
         role: formData.role.trim() || null,
       };
@@ -56,7 +54,7 @@ export function AddParticipantModal({ fleetId, onClose, onSuccess }: AddParticip
   };
 
   return (
-    <Modal isOpen onClose={onClose} title="Add Participant">
+    <Modal isOpen onClose={onClose} title="Add Hunters or Support">
       <form onSubmit={handleSubmit}>
         <div className="space-y-4">
           {error && (
@@ -64,19 +62,6 @@ export function AddParticipantModal({ fleetId, onClose, onSuccess }: AddParticip
               <p className="text-error text-sm">{error}</p>
             </div>
           )}
-
-          <div>
-            <label className="block text-sm font-medium text-foreground-muted mb-2">
-              Character ID *
-            </label>
-            <Input
-              type="number"
-              value={formData.character_id}
-              onChange={(e) => setFormData({ ...formData, character_id: e.target.value })}
-              placeholder="12345678"
-              required
-            />
-          </div>
 
           <div>
             <label className="block text-sm font-medium text-foreground-muted mb-2">
@@ -109,7 +94,7 @@ export function AddParticipantModal({ fleetId, onClose, onSuccess }: AddParticip
             Cancel
           </Button>
           <Button type="submit" variant="primary" isLoading={loading}>
-            Add Participant
+            Add Hunters/Support
           </Button>
         </ModalFooter>
       </form>

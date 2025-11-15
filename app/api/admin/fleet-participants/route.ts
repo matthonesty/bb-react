@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
 import { verifyAuth } from '@/lib/auth/apiAuth';
+import { resolveIds } from '@/lib/esi';
 
 // GET - List participants for a fleet
 export async function GET(request: NextRequest) {
@@ -89,16 +90,43 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { fleet_id, character_id, character_name, role } = body;
+    const { fleet_id, character_name, role } = body;
 
     // Validate required fields
-    if (!fleet_id || !character_id || !character_name) {
+    if (!fleet_id || !character_name) {
       return NextResponse.json(
         {
           success: false,
-          error: 'Missing required fields: fleet_id, character_id, character_name',
+          error: 'Missing required fields: fleet_id, character_name',
         },
         { status: 400 }
+      );
+    }
+
+    // Resolve character name to character ID using ESI
+    let character_id: number;
+    try {
+      const resolvedIds = await resolveIds([character_name.trim()]);
+
+      if (!resolvedIds.characters || resolvedIds.characters.length === 0) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: `Character "${character_name}" not found. Please check the spelling and try again.`,
+          },
+          { status: 400 }
+        );
+      }
+
+      character_id = resolvedIds.characters[0].id;
+    } catch (esiError: any) {
+      console.error('ESI character resolution failed:', esiError);
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Failed to resolve character name. Please try again later.',
+        },
+        { status: 500 }
       );
     }
 

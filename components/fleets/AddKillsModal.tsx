@@ -127,13 +127,13 @@ export function AddKillsModal({ fleetId, participants, onClose, onSuccess }: Add
             <textarea
               value={formData.zkill_urls}
               onChange={(e) => setFormData({ ...formData, zkill_urls: e.target.value })}
-              placeholder="https://zkillboard.com/kill/123456/&#10;https://zkillboard.com/kill/789012/&#10;Or just paste IDs (one per line)"
+              placeholder="https://zkillboard.com/kill/129129383/&#10;https://zkillboard.com/kill/128946440/"
               rows={6}
               className="w-full px-3 py-2 bg-input-bg border border-input-border rounded-md text-foreground focus:outline-none focus:ring-2 focus:ring-primary resize-none font-mono text-sm"
               required
             />
             <p className="text-xs text-foreground-muted mt-1">
-              One URL or killmail ID per line
+              Enter one or multiple zkillboard URLs. Each URL must be on a new line.
             </p>
           </div>
         </div>

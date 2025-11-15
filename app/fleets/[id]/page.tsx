@@ -346,7 +346,7 @@ export default function FleetDetailPage() {
             {canManage && (
               <Button variant="secondary" size="sm" onClick={() => setIsAddParticipantModalOpen(true)}>
                 <UserPlus size={14} className="mr-2" />
-                Add Hunter/Support
+                Add Hunters/Support
               </Button>
             )}
           </div>
