@@ -19,6 +19,7 @@ import { PageContainer } from '@/components/layout/PageContainer';
 import { PageHeader } from '@/components/layout/PageHeader';
 import { formatDate } from '@/lib/utils/format';
 import { X, Plus, Pencil, Trash2 } from 'lucide-react';
+import { BanModal } from '@/components/bans/BanModal';
 import type { Ban } from '@/types';
 
 export default function BansPage() {
@@ -35,6 +36,10 @@ export default function BansPage() {
   const [typeFilter, setTypeFilter] = useState('');
   const [banTypeFilter, setBanTypeFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedBan, setSelectedBan] = useState<Ban | null>(null);
 
   const canManage = hasRole(['admin', 'Council']);
 
@@ -70,6 +75,25 @@ export default function BansPage() {
     }
   }
 
+  function openAddModal() {
+    setSelectedBan(null);
+    setIsModalOpen(true);
+  }
+
+  function openEditModal(ban: Ban) {
+    setSelectedBan(ban);
+    setIsModalOpen(true);
+  }
+
+  function closeModal() {
+    setIsModalOpen(false);
+    setSelectedBan(null);
+  }
+
+  function handleModalSuccess() {
+    loadBans();
+  }
+
   async function deleteBan(id: number, name: string) {
     if (!confirm(`Are you sure you want to delete the ban for "${name}"?`)) {
       return;
@@ -100,7 +124,7 @@ export default function BansPage() {
           description="Manage banned characters, corporations, and alliances"
           actions={
             canManage && (
-              <Button>
+              <Button onClick={openAddModal}>
                 <Plus size={16} className="mr-2" />
                 Add Ban
               </Button>
@@ -248,7 +272,7 @@ export default function BansPage() {
                             <Button
                               variant="ghost"
                               size="sm"
-                              onClick={() => {/* TODO: Edit modal */}}
+                              onClick={() => openEditModal(ban)}
                             >
                               <Pencil size={14} />
                             </Button>
@@ -277,6 +301,14 @@ export default function BansPage() {
             Showing {bans.length} ban{bans.length !== 1 ? 's' : ''}
           </div>
         )}
+
+        {/* Ban Modal */}
+        <BanModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onSuccess={handleModalSuccess}
+          ban={selectedBan}
+        />
       </PageContainer>
     </RequireAuth>
   );
