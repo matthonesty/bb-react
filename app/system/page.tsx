@@ -123,15 +123,15 @@ export default function SystemPage() {
     return 'error';
   }
 
-  function getRouteStatusColor(status: string): string {
-    const colors: Record<string, string> = {
-      ok: '#10b981',
-      degraded: '#f59e0b',
-      down: '#ef4444',
-      recovering: '#3b82f6',
-      unknown: '#6b7280',
+  function getRouteStatusClass(status: string): string {
+    const classes: Record<string, string> = {
+      ok: 'text-success',
+      degraded: 'text-warning',
+      down: 'text-error',
+      recovering: 'text-primary',
+      unknown: 'text-foreground-muted',
     };
-    return colors[status] || colors.unknown;
+    return classes[status] || classes.unknown;
   }
 
   return (
@@ -212,8 +212,7 @@ export default function SystemPage() {
                           {route.route}
                         </span>
                         <span
-                          className="text-xs font-semibold uppercase"
-                          style={{ color: getRouteStatusColor(route.status) }}
+                          className={`text-xs font-semibold uppercase ${getRouteStatusClass(route.status)}`}
                         >
                           {route.status}
                         </span>

@@ -217,33 +217,43 @@ export default function WalletPage() {
                           {formatDateTime(entry.date)}
                         </TableCell>
                         <TableCell>
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-background-tertiary text-foreground">
+                          <span className="text-sm text-foreground">
                             {refTypeLabel}
                           </span>
                         </TableCell>
-                        <TableCell className={`text-right font-mono ${isCredit ? 'text-success' : 'text-error'}`}>
-                          {isCredit ? '+' : ''}{formatISK(Math.abs(entry.amount), 2)}
+                        <TableCell className={`text-right ${isCredit ? 'text-success' : 'text-error'}`}>
+                          <span className="text-sm font-medium">
+                            {isCredit ? '+' : ''}{formatISK(Math.abs(entry.amount), 2)}
+                          </span>
                         </TableCell>
-                        <TableCell className="text-right font-mono text-foreground">
-                          {formatISK(entry.balance, 2)}
+                        <TableCell className="text-right">
+                          <span className="text-sm font-medium text-foreground">
+                            {formatISK(entry.balance, 2)}
+                          </span>
                         </TableCell>
                         <TableCell>
-                          {entry.first_party_name || `ID ${entry.first_party_id || 'N/A'}`}
+                          <span className="text-sm text-foreground">
+                            {entry.first_party_name || `ID ${entry.first_party_id || 'N/A'}`}
+                          </span>
                         </TableCell>
                         <TableCell>
-                          {entry.second_party_name || `ID ${entry.second_party_id || 'N/A'}`}
+                          <span className="text-sm text-foreground">
+                            {entry.second_party_name || `ID ${entry.second_party_id || 'N/A'}`}
+                          </span>
                         </TableCell>
                         <TableCell>
                           {entry.reason && /^\d+$/.test(entry.reason) ? (
-                            <Link href={`/srp?id=${entry.reason}`} className="text-primary hover:text-primary-hover">
+                            <Link href={`/srp?id=${entry.reason}`} className="text-sm text-primary hover:text-primary-hover">
                               {entry.reason}
                             </Link>
                           ) : (
-                            entry.reason || '-'
+                            <span className="text-sm text-foreground">{entry.reason || '-'}</span>
                           )}
                         </TableCell>
                         <TableCell className="max-w-xs truncate">
-                          {entry.description || '-'}
+                          <span className="text-sm text-foreground">
+                            {entry.description || '-'}
+                          </span>
                         </TableCell>
                       </TableRow>
                     );
