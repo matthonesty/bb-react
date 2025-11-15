@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { formatDate } from '@/lib/utils/format';
+import { sanitizeMailHtml } from '@/lib/utils/sanitizeMailHtml';
 
 interface ProcessedMail {
   mail_id: number;
@@ -309,9 +310,10 @@ function MailDetail({ mail, loading }: { mail?: ProcessedMailDetail; loading: bo
       {mail.mail_body && (
         <div>
           <label className="block text-sm font-medium text-foreground-muted mb-2">Mail Body</label>
-          <div className="bg-background-tertiary border border-border rounded-lg p-3 text-sm text-foreground max-h-64 overflow-y-auto whitespace-pre-wrap">
-            {mail.mail_body}
-          </div>
+          <div
+            className="bg-background-tertiary border border-border rounded-lg p-3 text-sm text-foreground max-h-64 overflow-y-auto"
+            dangerouslySetInnerHTML={{ __html: sanitizeMailHtml(mail.mail_body) }}
+          />
         </div>
       )}
 
