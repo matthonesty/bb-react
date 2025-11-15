@@ -12,17 +12,6 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: [
-          '/api/',
-          '/srp',
-          '/fcs',
-          '/doctrines',
-          '/bans',
-          '/srp-config',
-          '/wallet',
-          '/mail',
-          '/system',
-        ],
       },
     ],
     sitemap: `${baseUrl}/sitemap.xml`,
