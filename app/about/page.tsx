@@ -246,12 +246,9 @@ export default function AboutPage() {
 
             <div className="mb-6">
               <h3 className="text-xl font-bold text-foreground mb-4">How to Submit for SRP</h3>
-              <p className="text-foreground-muted mb-4">
+              <p className="text-foreground-muted">
                 Send an EVE mail to <span className="font-semibold text-foreground">&quot;Bombers Bar SRP&quot;</span> with a link to your zKillboard or in-game loss mail.
               </p>
-              <div className="rounded-md bg-background-secondary p-4 text-sm">
-                <strong className="text-foreground">Important:</strong> Killmails older than 1 week are no longer eligible for SRP. Submit on time!
-              </div>
             </div>
 
             <div className="border-t border-border pt-6">
