@@ -126,7 +126,15 @@ export async function GET(request: NextRequest) {
       params.push(searchPattern, searchPattern, searchPattern);
     }
 
-    query += ` ORDER BY main_character_name ASC`;
+    query += ` ORDER BY
+      CASE rank
+        WHEN 'SFC' THEN 1
+        WHEN 'FC' THEN 2
+        WHEN 'JFC' THEN 3
+        WHEN 'Support' THEN 4
+        ELSE 5
+      END,
+      main_character_name ASC`;
     query += ` LIMIT $${paramCount++} OFFSET $${paramCount++}`;
     params.push(limit, offset);
 

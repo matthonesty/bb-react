@@ -32,7 +32,7 @@ export default function FCsPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [statusFilter, setStatusFilter] = useState('');
+  const [statusFilter, setStatusFilter] = useState('Active');
   const [rankFilter, setRankFilter] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
 
