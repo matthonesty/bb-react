@@ -43,7 +43,7 @@ export const SRP_STATUSES: SRPStatus[] = [
 ];
 
 // FC Ranks in order of seniority
-export const FC_RANKS: FCRank[] = ['Trainee', 'FC', 'Senior FC', 'Lead FC'];
+export const FC_RANKS: FCRank[] = ['Support', 'FC', 'JFC', 'SFC'];
 
 // Pagination defaults
 export const DEFAULT_PAGE_SIZE = 50;

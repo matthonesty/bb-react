@@ -63,10 +63,10 @@ export const Badge = forwardRef<HTMLSpanElement, BadgeProps>(
       }
     } else if (fcRank) {
       const rankVariants: Record<FCRank, Exclude<BadgeProps['variant'], undefined>> = {
-        'Lead FC': 'info',
-        'Senior FC': 'info',
+        SFC: 'info',
+        JFC: 'warning',
         FC: 'success',
-        Trainee: 'warning',
+        Support: 'secondary',
       };
       autoVariant = rankVariants[fcRank];
       displayContent = fcRank;

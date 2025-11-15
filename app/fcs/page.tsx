@@ -237,7 +237,7 @@ export default function FCsPage() {
                               ? 'success'
                               : fc.status === 'Inactive'
                               ? 'default'
-                              : 'danger'
+                              : 'error'
                           }
                         >
                           {fc.status}
@@ -258,7 +258,7 @@ export default function FCsPage() {
                       </TableCell>
                       <TableCell>
                         {fc.is_admin ? (
-                          <Badge variant="danger">Admin</Badge>
+                          <Badge variant="error">Admin</Badge>
                         ) : fc.access_level ? (
                           <Badge variant="info">{fc.access_level}</Badge>
                         ) : (
