@@ -62,7 +62,7 @@ export default function Home() {
           <div className="mb-6 flex items-center gap-3">
             <Calendar className="h-6 w-6 text-primary" />
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Upcoming Fleets</h2>
+              <h2 className="text-2xl font-bold text-foreground">Upcoming & Active Fleets</h2>
               <p className="text-foreground-muted">
                 Join our scheduled fleets and participate in epic battles
               </p>

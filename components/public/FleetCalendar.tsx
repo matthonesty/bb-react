@@ -48,13 +48,19 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
             {format(scheduledDate, 'EEE')}
           </div>
 
-          <div className="flex items-center gap-1.5">
-            <Clock className="h-4 w-4 text-foreground-muted" />
-            <span className="font-semibold text-foreground">
-              {formattedTime}
-            </span>
-            <span className="text-xs text-foreground-muted">{fleet.timezone}</span>
-          </div>
+          {fleet.status === 'in_progress' ? (
+            <Badge variant="success" className="bg-success/20 text-success border-success/30 font-semibold">
+              In Progress
+            </Badge>
+          ) : (
+            <div className="flex items-center gap-1.5">
+              <Clock className="h-4 w-4 text-foreground-muted" />
+              <span className="font-semibold text-foreground">
+                {formattedTime}
+              </span>
+              <span className="text-xs text-foreground-muted">{fleet.timezone}</span>
+            </div>
+          )}
         </div>
 
         {/* Fleet Details */}

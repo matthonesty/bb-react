@@ -44,12 +44,12 @@ export async function GET(request: NextRequest) {
     const params: (string | number)[] = [];
     let paramCount = 1;
 
-    // Default: show fleets from now onwards
+    // Default: show scheduled fleets from now onwards, plus all in_progress fleets
     if (from_date) {
       query += ` AND f.scheduled_at >= $${paramCount++}`;
       params.push(from_date);
     } else {
-      query += ` AND f.scheduled_at >= NOW()`;
+      query += ` AND (f.scheduled_at >= NOW() OR f.status = 'in_progress')`;
     }
 
     if (to_date) {
