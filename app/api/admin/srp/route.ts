@@ -4,29 +4,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
 import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-// Helper to verify auth
-async function verifyAuth(request: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
-
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    return decoded;
-  } catch {
-    return null;
-  }
-}
+import { verifyAuth } from '@/lib/auth/apiAuth';
 
 export async function GET(request: NextRequest) {
   try {

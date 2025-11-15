@@ -110,6 +110,84 @@ export type FCRank = 'SFC' | 'JFC' | 'FC' | 'Support';
 export type FCStatus = 'Active' | 'Inactive' | 'Banned' | 'Deleted';
 export type FCAccessLevel = 'FC' | 'OBomberCare' | 'Accountant' | 'Council' | 'Election Officer';
 
+// Fleet Type (Doctrine Category) Types
+export interface FleetType {
+  id: number;
+  name: string;
+  description: string | null;
+  is_active: boolean;
+  display_order: number;
+  doctrine_count?: number;
+  active_doctrine_count?: number;
+  created_at: string;
+  updated_at: string;
+  created_by?: number;
+  updated_by?: number;
+}
+
+// Module Item (for fitting slots)
+export interface ModuleItem {
+  type_id: number;
+  type_name: string;
+  quantity: number;
+}
+
+// Doctrine (Ship Fitting) Types
+export interface Doctrine {
+  id: number;
+  fleet_type_id: number;
+  fleet_type_name?: string;
+  name: string;
+  ship_type_id: number;
+  ship_name: string;
+  ship_group_id: number | null;
+  ship_group_name: string | null;
+  high_slots: number;
+  mid_slots: number;
+  low_slots: number;
+  rig_slots: number;
+  high_slot_modules: ModuleItem[] | string;
+  mid_slot_modules: ModuleItem[] | string;
+  low_slot_modules: ModuleItem[] | string;
+  rig_modules: ModuleItem[] | string;
+  cargo_items: ModuleItem[] | string;
+  notes: string | null;
+  is_active: boolean;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+  created_by?: number;
+  updated_by?: number;
+}
+
+// Fitting Import Response
+export interface FittingImport {
+  ship_type_id: number;
+  ship_name: string;
+  ship_group_id: number;
+  ship_group_name: string;
+  name: string;
+  high_slots: number;
+  mid_slots: number;
+  low_slots: number;
+  rig_slots: number;
+  launcher_hardpoints: number;
+  turret_hardpoints: number;
+  cargo_capacity: number;
+  high_slot_modules: ModuleItem[];
+  mid_slot_modules: ModuleItem[];
+  low_slot_modules: ModuleItem[];
+  rig_modules: ModuleItem[];
+  cargo_items: ModuleItem[];
+  module_counts: {
+    high: number;
+    mid: number;
+    low: number;
+    rig: number;
+    cargo: number;
+  };
+}
+
 // Wallet Types
 export interface WalletTransaction {
   id: number;

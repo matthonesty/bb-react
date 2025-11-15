@@ -44,6 +44,11 @@ export const NAV_ITEMS: NavItem[] = [
         roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
       },
       {
+        label: 'Doctrines',
+        href: '/doctrines',
+        roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],
+      },
+      {
         label: 'Ban Management',
         href: '/bans',
         roles: [ROLES.ADMIN, ROLES.COUNCIL, ROLES.ACCOUNTANT, ROLES.OBOMBERCARE, ROLES.FC, ROLES.ELECTION_OFFICER],

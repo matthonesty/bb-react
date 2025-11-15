@@ -4,34 +4,9 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import jwt from 'jsonwebtoken';
 import pool from '@/lib/db';
 import { isAuthorizedRole } from '@/lib/auth/roles';
-
-const JWT_SECRET = process.env.JWT_SECRET!;
-
-// Helper to verify auth
-async function verifyAuth(request: NextRequest) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('auth_token')?.value;
-
-  if (!token) {
-    return null;
-  }
-
-  try {
-    const decoded = jwt.verify(token, JWT_SECRET) as any;
-    return decoded;
-  } catch {
-    return null;
-  }
-}
-
-// Helper to check if user can manage bans (Admin & Council only)
-function canManageBans(roles: string[]): boolean {
-  return roles?.some((role: string) => ['admin', 'Council'].includes(role));
-}
+import { verifyAuth, canManage } from '@/lib/auth/apiAuth';
 
 // GET - List all bans
 export async function GET(request: NextRequest) {
@@ -164,7 +139,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user can manage bans (Admin & Council only)
-    if (!canManageBans(user.roles)) {
+    if (!canManage(user.roles)) {
       return NextResponse.json(
         { error: 'Forbidden', message: 'Admin or Council role required' },
         { status: 403 }
@@ -236,7 +211,7 @@ export async function PUT(request: NextRequest) {
     }
 
     // Check if user can manage bans
-    if (!canManageBans(user.roles)) {
+    if (!canManage(user.roles)) {
       return NextResponse.json(
         { error: 'Forbidden', message: 'Admin or Council role required' },
         { status: 403 }
@@ -325,7 +300,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     // Check if user can manage bans
-    if (!canManageBans(user.roles)) {
+    if (!canManage(user.roles)) {
       return NextResponse.json(
         { error: 'Forbidden', message: 'Admin or Council role required' },
         { status: 403 }
