@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { NAV_ITEMS } from '@/lib/constants';
@@ -53,7 +54,7 @@ export function Header() {
           {/* Logo / Brand */}
           <div className="flex items-center">
             <Link href="/" className="flex items-center space-x-2">
-              <img src="/logo.png" alt="Bombers Bar" className="h-10 w-10" />
+              <Image src="/logo.png" alt="Bombers Bar" width={40} height={40} className="h-10 w-10" />
               <span className="text-xl font-bold text-foreground">Bombers Bar</span>
             </Link>
           </div>
@@ -152,9 +153,11 @@ export function Header() {
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center space-x-2 rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-background-secondary transition-colors"
                 >
-                  <img
+                  <Image
                     src={`https://images.evetech.net/characters/${user.character_id}/portrait?size=32`}
                     alt={user.character_name}
+                    width={24}
+                    height={24}
                     className="h-6 w-6 rounded-full"
                   />
                   <span>{user.character_name}</span>
@@ -190,9 +193,11 @@ export function Header() {
             </div>
           ) : (
             <div className="hidden md:block">
-              <img
+              <Image
                 src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
                 alt="Login with EVE Online"
+                width={270}
+                height={45}
                 onClick={() => {
                   const returnUrl = encodeURIComponent(window.location.pathname);
                   window.location.href = `/api/auth/login?return_url=${returnUrl}`;
@@ -280,9 +285,11 @@ export function Header() {
           {isAuthenticated && user && (
             <div className="border-t border-border px-4 py-3">
               <div className="mb-2 flex items-center space-x-2">
-                <img
+                <Image
                   src={`https://images.evetech.net/characters/${user.character_id}/portrait?size=32`}
                   alt={user.character_name}
+                  width={32}
+                  height={32}
                   className="h-8 w-8 rounded-full"
                 />
                 <div>
@@ -318,9 +325,11 @@ export function Header() {
           {/* Login section (unauthenticated only) */}
           {!isAuthenticated && (
             <div className="border-t border-border px-4 py-3">
-              <img
+              <Image
                 src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
                 alt="Login with EVE Online"
+                width={270}
+                height={45}
                 onClick={() => {
                   const returnUrl = encodeURIComponent(window.location.pathname);
                   window.location.href = `/api/auth/login?return_url=${returnUrl}`;

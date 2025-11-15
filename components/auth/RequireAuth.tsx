@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
+import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 import { Card } from '@/components/ui/Card';
 import type { UserRole } from '@/types';
@@ -62,9 +63,11 @@ export function RequireAuth({ children, requireFCRole = false, requiredRoles }: 
           <div className="text-center p-8">
             <h1 className="text-2xl font-bold text-foreground mb-4">Authentication Required</h1>
             <p className="text-foreground-muted mb-6">Please log in to continue.</p>
-            <img
+            <Image
               src="https://web.ccpgamescdn.com/eveonlineassets/developers/eve-sso-login-white-large.png"
               alt="Login with EVE Online"
+              width={270}
+              height={45}
               onClick={() => {
                 const returnUrl = encodeURIComponent(window.location.pathname);
                 window.location.href = `/api/auth/login?return_url=${returnUrl}`;

@@ -15,6 +15,10 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'everef.net',
       },
+      {
+        protocol: 'https',
+        hostname: 'web.ccpgamescdn.com',
+      },
     ],
   },
 };

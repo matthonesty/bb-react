@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { useAuth } from '@/hooks/useAuth';
 
 export default function Home() {
@@ -20,7 +21,7 @@ export default function Home() {
     <div className="flex min-h-screen items-center justify-center px-4">
       <div className="text-center">
         <div className="mb-6 flex justify-center">
-          <img src="/logo.png" alt="Bombers Bar" className="h-32 w-32" />
+          <Image src="/logo.png" alt="Bombers Bar" width={128} height={128} className="h-32 w-32" />
         </div>
         <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-6xl">
           Welcome to Bombers Bar

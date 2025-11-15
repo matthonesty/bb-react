@@ -1,5 +1,6 @@
 'use client';
 
+/* eslint-disable @next/next/no-img-element */
 import type { ModuleItem } from '@/types';
 
 interface FittingWheelProps {
