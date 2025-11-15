@@ -143,7 +143,6 @@ export function FittingWheel({
               top: `${pos.y}px`,
               width: `${size}px`,
               height: `${size}px`,
-              zIndex: 2,
             }}
           >
             <a
@@ -191,6 +190,7 @@ export function FittingWheel({
         height: '398px',
         width: '398px',
         margin: '0 auto',
+        zIndex: 3,
       }}
     >
       {/* Base background */}
