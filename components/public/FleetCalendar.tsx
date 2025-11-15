@@ -148,21 +148,6 @@ function FleetCard({ fleet }: { fleet: FleetManagement }) {
               </div>
             )}
           </div>
-
-          {/* Participant Count */}
-          {fleet.participant_count > 0 && (
-            <div className="mt-4 pt-4 border-t border-border">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="flex items-center gap-1.5 text-primary">
-                  <Users className="h-4 w-4" />
-                  <span className="font-bold text-lg">{fleet.participant_count}</span>
-                </div>
-                <span className="text-foreground-muted">
-                  pilot{fleet.participant_count !== 1 ? 's' : ''} registered
-                </span>
-              </div>
-            </div>
-          )}
         </div>
       </div>
     </Card>
