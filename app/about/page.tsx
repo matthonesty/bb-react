@@ -20,7 +20,9 @@ import {
   ChevronDown,
   ChevronRight,
   Mail,
-  Info
+  Info,
+  Calendar,
+  AlertCircle
 } from 'lucide-react';
 
 export default function AboutPage() {
@@ -186,51 +188,72 @@ export default function AboutPage() {
         {/* How to Join */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold text-foreground mb-8 text-center">How to Join a Fleet?</h2>
-          <div className="space-y-6">
-            <Card className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
+          <div className="relative space-y-8">
+            {/* Connecting Line */}
+            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent hidden md:block" />
+
+            {/* Step 1 */}
+            <div className="relative flex items-start gap-6">
+              <div className="flex-shrink-0 relative z-10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                  <MessageCircle className="h-8 w-8 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-white border-2 border-background">
                   1
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-foreground mb-2">Join Our Channels</h3>
-                  <p className="text-foreground-muted">
-                    Join the in-game chat channel <span className="font-semibold text-foreground">&quot;BB: Bombers Bar&quot;</span>, the Discord channel linked above, and install TeamSpeak3 and bookmark the Bombers Bar TeamSpeak comms.
-                  </p>
-                </div>
               </div>
-            </Card>
+              <div className="flex-1 rounded-xl border border-border bg-surface p-6 shadow-sm hover:border-primary/30 hover:shadow-md transition-all">
+                <h3 className="text-xl font-bold text-foreground mb-3">Join Our Channels</h3>
+                <p className="text-foreground-muted leading-relaxed">
+                  Join the in-game chat channel <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-primary/10 text-primary font-semibold text-sm">&quot;BB: Bombers Bar&quot;</span>, the Discord channel linked above, and install TeamSpeak3 and bookmark the Bombers Bar TeamSpeak comms.
+                </p>
+              </div>
+            </div>
 
-            <Card className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
+            {/* Step 2 */}
+            <div className="relative flex items-start gap-6">
+              <div className="flex-shrink-0 relative z-10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                  <Calendar className="h-8 w-8 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-white border-2 border-background">
                   2
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-foreground mb-2">Check Fleet Schedule</h3>
-                  <p className="text-foreground-muted">
-                    Check out time and date for the next fleet. Fleets are in the BB channel MOTD and will be listed in the announcements channel of the Discord. Consider having your ship fitted and ready in place well in advance of fleet start.
-                  </p>
-                </div>
               </div>
-            </Card>
+              <div className="flex-1 rounded-xl border border-border bg-surface p-6 shadow-sm hover:border-primary/30 hover:shadow-md transition-all">
+                <h3 className="text-xl font-bold text-foreground mb-3">Check Fleet Schedule</h3>
+                <p className="text-foreground-muted leading-relaxed">
+                  Check out time and date for the next fleet. Fleets are in the BB channel MOTD and will be listed in the announcements channel of the Discord. Consider having your ship fitted and ready in place well in advance of fleet start.
+                </p>
+              </div>
+            </div>
 
-            <Card className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
+            {/* Step 3 */}
+            <div className="relative flex items-start gap-6">
+              <div className="flex-shrink-0 relative z-10">
+                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary/80 shadow-lg">
+                  <UserPlus className="h-8 w-8 text-white" />
+                </div>
+                <div className="absolute -bottom-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-primary text-xs font-bold text-white border-2 border-background">
                   3
                 </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold text-foreground mb-2">X-Up and Join!</h3>
-                  <p className="text-foreground-muted mb-4">
-                    Bring your ship to the pre-announced staging system, and X up in the linked X-up channel when that channel gets linked as the scheduled fleet time approaches. Accept the fleet invite and you&apos;re in!
-                  </p>
-                  <div className="rounded-md bg-background-secondary p-4 text-sm text-foreground-muted">
-                    <strong className="text-foreground">Note:</strong> Bombers Bar does not have a static staging system but it is recommended to have clones & ships ready in: <span className="font-semibold text-foreground">Jita, Amarr, and Thera</span> as well as other major trade hubs.
+              </div>
+              <div className="flex-1 rounded-xl border border-border bg-surface p-6 shadow-sm hover:border-primary/30 hover:shadow-md transition-all">
+                <h3 className="text-xl font-bold text-foreground mb-3">X-Up and Join!</h3>
+                <p className="text-foreground-muted mb-4 leading-relaxed">
+                  Bring your ship to the pre-announced staging system, and X up in the linked X-up channel when that channel gets linked as the scheduled fleet time approaches. Accept the fleet invite and you&apos;re in!
+                </p>
+                <div className="flex items-start gap-3 rounded-lg bg-primary/5 border border-primary/20 p-4">
+                  <AlertCircle className="h-5 w-5 text-primary shrink-0 mt-0.5" />
+                  <div className="text-sm">
+                    <strong className="text-foreground font-semibold">Note:</strong>
+                    <span className="text-foreground-muted"> Bombers Bar does not have a static staging system but it is recommended to have clones & ships ready in: </span>
+                    <span className="font-semibold text-primary">Jita, Amarr, and Thera</span>
+                    <span className="text-foreground-muted"> as well as other major trade hubs.</span>
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </div>
         </section>
 
