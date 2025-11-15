@@ -163,19 +163,26 @@ export function FittingDisplay({
       </div>
 
       {/* Module Lists - Below Wheel */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {renderModuleList('High Slots', highSlotModules)}
-        {renderModuleList('Mid Slots', midSlotModules)}
-        {renderModuleList('Low Slots', lowSlotModules)}
-        {renderModuleList('Rigs', rigModules)}
-      </div>
-
-      {/* Cargo */}
-      {cargoItems.filter((c) => c !== null && c && c.type_id).length > 0 && (
-        <div className="p-3 bg-background-dark rounded-md">
-          {renderModuleList('Cargo', cargoItems)}
+      <div className="space-y-4">
+        {/* Row 1: High and Mid Slots */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {renderModuleList('High Slots', highSlotModules)}
+          {renderModuleList('Mid Slots', midSlotModules)}
         </div>
-      )}
+
+        {/* Row 2: Low Slots and Rigs */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {renderModuleList('Low Slots', lowSlotModules)}
+          {renderModuleList('Rigs', rigModules)}
+        </div>
+
+        {/* Row 3: Cargo (full width) */}
+        {cargoItems.filter((c) => c !== null && c && c.type_id).length > 0 && (
+          <div className="p-3 bg-background-dark rounded-md">
+            {renderModuleList('Cargo', cargoItems)}
+          </div>
+        )}
+      </div>
 
       {/* Notes */}
       {notes && (

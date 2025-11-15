@@ -231,7 +231,11 @@ export function FittingWheel({
             zIndex: -1,
           }}
         >
-          <img src={PANEL_IMAGES.high[highSlots] || ''} alt="" style={{ border: 0 }} />
+          <img
+            src={PANEL_IMAGES.high[highSlots] || ''}
+            alt=""
+            style={{ border: 0, width: '398px', height: '398px' }}
+          />
         </div>
       )}
 
@@ -248,7 +252,11 @@ export function FittingWheel({
             zIndex: -1,
           }}
         >
-          <img src={PANEL_IMAGES.mid[midSlots] || ''} alt="" style={{ border: 0 }} />
+          <img
+            src={PANEL_IMAGES.mid[midSlots] || ''}
+            alt=""
+            style={{ border: 0, width: '398px', height: '398px' }}
+          />
         </div>
       )}
 
@@ -265,7 +273,11 @@ export function FittingWheel({
             zIndex: -1,
           }}
         >
-          <img src={PANEL_IMAGES.low[lowSlots] || ''} alt="" style={{ border: 0 }} />
+          <img
+            src={PANEL_IMAGES.low[lowSlots] || ''}
+            alt=""
+            style={{ border: 0, width: '398px', height: '398px' }}
+          />
         </div>
       )}
 
@@ -282,7 +294,11 @@ export function FittingWheel({
             zIndex: -1,
           }}
         >
-          <img src={PANEL_IMAGES.rig[rigSlots] || ''} alt="" style={{ border: 0 }} />
+          <img
+            src={PANEL_IMAGES.rig[rigSlots] || ''}
+            alt=""
+            style={{ border: 0, width: '398px', height: '398px' }}
+          />
         </div>
       )}
 
