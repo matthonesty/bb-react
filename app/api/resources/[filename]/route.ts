@@ -20,9 +20,9 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid filename' }, { status: 400 });
     }
 
-    // Get document from database
+    // Get document from database (exclude soft-deleted)
     const result = await pool.query(
-      'SELECT content, is_private FROM documents WHERE filename = $1',
+      'SELECT content, is_private FROM documents WHERE filename = $1 AND deleted_at IS NULL',
       [filename]
     );
 
@@ -99,5 +99,48 @@ export async function PUT(
   } catch (error: unknown) {
     console.error('[RESOURCES] PUT error:', error);
     return NextResponse.json({ error: 'Failed to save resource' }, { status: 500 });
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ filename: string }> }
+) {
+  try {
+    const { filename } = await params;
+
+    // Validate filename to prevent SQL injection
+    if (!filename || filename.includes('..') || filename.includes('/')) {
+      return NextResponse.json({ error: 'Invalid filename' }, { status: 400 });
+    }
+
+    // Only admin and election officer can delete documents
+    const session = await getPublicSession();
+
+    if (!session) {
+      return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
+    }
+
+    if (!session.roles || !canEditResources(session.roles)) {
+      return NextResponse.json(
+        { error: 'Only admin and election officer can delete documents' },
+        { status: 403 }
+      );
+    }
+
+    // Soft delete: set deleted_at timestamp
+    const result = await pool.query(
+      'UPDATE documents SET deleted_at = CURRENT_TIMESTAMP, updated_by = $1 WHERE filename = $2 AND deleted_at IS NULL RETURNING id',
+      [session.character_id, filename]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: 'Resource not found' }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true });
+  } catch (error: unknown) {
+    console.error('[RESOURCES] DELETE error:', error);
+    return NextResponse.json({ error: 'Failed to delete resource' }, { status: 500 });
   }
 }

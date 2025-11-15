@@ -6,8 +6,9 @@ import { PageContainer } from '@/components/layout/PageContainer';
 import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Modal, ModalFooter } from '@/components/ui/Modal';
+import { ConfirmModal } from '@/components/ui/ConfirmModal';
 import { Input } from '@/components/ui/Input';
-import { FileText, Lock, ChevronDown, ChevronRight, Edit2, Save, X, Plus } from 'lucide-react';
+import { FileText, Lock, ChevronDown, ChevronRight, Edit2, Save, X, Plus, Trash2 } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -82,6 +83,9 @@ export default function ResourcesPage() {
     isPrivate: false,
   });
   const [isCreating, setIsCreating] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [resourceToDelete, setResourceToDelete] = useState<{ title: string; filename: string } | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Check if user has FC+ role (can view private resources)
   const hasActiveFCRole = user?.roles ? canViewPrivateResources(user.roles) : false;
@@ -218,6 +222,34 @@ export default function ResourcesPage() {
     }
   };
 
+  // Delete resource (soft delete)
+  const handleDeleteResource = async () => {
+    if (!resourceToDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await fetch(`/api/resources/${resourceToDelete.filename}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setIsDeleteModalOpen(false);
+        setResourceToDelete(null);
+        // Reload page to update list
+        window.location.reload();
+      } else {
+        const error = await response.json();
+        alert(`Failed to delete resource: ${error.error}`);
+      }
+    } catch (error) {
+      console.error('Failed to delete resource:', error);
+      alert('Failed to delete resource');
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <PageContainer>
       <div className="mx-auto max-w-4xl">
@@ -309,13 +341,25 @@ export default function ResourcesPage() {
                               </button>
                             </>
                           ) : (
-                            <button
-                              onClick={() => handleEdit(resource.filename)}
-                              className="flex items-center gap-2 px-3 py-1.5 text-sm text-foreground-muted hover:text-foreground border border-border rounded-md hover:bg-background-secondary transition-colors"
-                            >
-                              <Edit2 size={16} />
-                              Edit
-                            </button>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={() => handleEdit(resource.filename)}
+                                className="flex items-center gap-2 px-3 py-1.5 text-sm text-foreground-muted hover:text-foreground border border-border rounded-md hover:bg-background-secondary transition-colors"
+                              >
+                                <Edit2 size={16} />
+                                Edit
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setResourceToDelete({ title: resource.title, filename: resource.filename });
+                                  setIsDeleteModalOpen(true);
+                                }}
+                                className="flex items-center gap-2 px-3 py-1.5 text-sm text-error hover:text-error border border-error/30 rounded-md hover:bg-error/10 transition-colors"
+                              >
+                                <Trash2 size={16} />
+                                Delete
+                              </button>
+                            </div>
                           )}
                         </div>
                       )}
@@ -468,6 +512,25 @@ export default function ResourcesPage() {
             </Button>
           </ModalFooter>
         </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <ConfirmModal
+          isOpen={isDeleteModalOpen}
+          onClose={() => {
+            setIsDeleteModalOpen(false);
+            setResourceToDelete(null);
+          }}
+          onConfirm={handleDeleteResource}
+          title="Delete Resource"
+          message={
+            resourceToDelete
+              ? `Are you sure you want to delete "${resourceToDelete.title}"? This will hide the resource but can be recovered if needed.`
+              : ''
+          }
+          confirmText="Delete"
+          confirmVariant="danger"
+          isLoading={isDeleting}
+        />
       </div>
     </PageContainer>
   );
