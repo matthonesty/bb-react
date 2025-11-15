@@ -12,11 +12,11 @@ import { getServerSession } from '@/lib/auth/session';
  * Critical routes we depend on for mail processing and operations
  */
 const CRITICAL_ROUTES = [
-  { method: 'GET', path: '/characters/{character_id}/mail' },
-  { method: 'POST', path: '/characters/{character_id}/mail' },
-  { method: 'GET', path: '/characters/{character_id}/mail/{mail_id}' },
-  { method: 'POST', path: '/universe/names' },
-  { method: 'GET', path: '/corporations/{corporation_id}/wallets/{division}/journal' },
+  { method: 'GET', path: '/characters/{character_id}/mail/' },
+  { method: 'POST', path: '/characters/{character_id}/mail/' },
+  { method: 'GET', path: '/characters/{character_id}/mail/{mail_id}/' },
+  { method: 'POST', path: '/universe/names/' },
+  { method: 'GET', path: '/corporations/{corporation_id}/wallets/{division}/journal/' },
 ];
 
 /**
@@ -33,7 +33,7 @@ let cachedStatus: {
 const CACHE_DURATION = 60000; // 1 minute
 
 /**
- * Fetch ESI status from /meta/status endpoint
+ * Fetch ESI status from /status.json endpoint
  */
 async function fetchESIStatus(forceRefresh = false): Promise<any> {
   const now = Date.now();
@@ -49,7 +49,7 @@ async function fetchESIStatus(forceRefresh = false): Promise<any> {
   }
 
   try {
-    const response = await fetch('https://esi.evetech.net/meta/status', {
+    const response = await fetch('https://esi.evetech.net/status.json', {
       headers: {
         'User-Agent': 'Bombers Bar Admin Panel',
       },
@@ -123,7 +123,7 @@ export async function GET() {
       getCompatibilityDate(),
     ]);
 
-    if (!statusData || !statusData.routes) {
+    if (!statusData || !Array.isArray(statusData)) {
       return NextResponse.json({
         success: true,
         esi_status: 'UNHEALTHY',
@@ -134,16 +134,27 @@ export async function GET() {
       });
     }
 
+    // Convert status.json status to our format
+    const convertStatus = (esiStatus: string): string => {
+      const statusMap: Record<string, string> = {
+        green: 'ok',
+        yellow: 'degraded',
+        red: 'down',
+      };
+      return statusMap[esiStatus.toLowerCase()] || 'unknown';
+    };
+
     // Check critical routes status
     const criticalRouteStatus = CRITICAL_ROUTES.map((criticalRoute) => {
-      const routeStatus = statusData.routes.find(
+      const routeStatus = statusData.find(
         (r: any) =>
-          r.method === criticalRoute.method && r.path === criticalRoute.path
+          r.method.toUpperCase() === criticalRoute.method &&
+          r.route === criticalRoute.path
       );
 
       return {
         route: `${criticalRoute.method} ${criticalRoute.path}`,
-        status: routeStatus?.status?.toLowerCase() || 'unknown',
+        status: routeStatus ? convertStatus(routeStatus.status) : 'unknown',
       };
     });
 
@@ -152,20 +163,13 @@ export async function GET() {
     let message = 'All critical ESI routes operational';
 
     const downRoutes = criticalRouteStatus.filter((r) => r.status === 'down');
-    const recoveringRoutes = criticalRouteStatus.filter(
-      (r) => r.status === 'recovering'
-    );
     const degradedRoutes = criticalRouteStatus.filter(
       (r) => r.status === 'degraded'
     );
 
-    if (downRoutes.length > 0 || recoveringRoutes.length > 0) {
+    if (downRoutes.length > 0) {
       overallStatus = 'DOWN';
-      const issues = [
-        ...downRoutes.map((r) => r.route),
-        ...recoveringRoutes.map((r) => r.route),
-      ];
-      message = `Critical routes unavailable: ${issues.join(', ')}`;
+      message = `Critical routes unavailable: ${downRoutes.map((r) => r.route).join(', ')}`;
     } else if (degradedRoutes.length > 0) {
       overallStatus = 'DEGRADED';
       message = `Some routes degraded: ${degradedRoutes.map((r) => r.route).join(', ')}`;
