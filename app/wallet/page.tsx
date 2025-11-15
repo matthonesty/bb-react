@@ -94,7 +94,8 @@ export default function WalletPage() {
   }, [loadJournal]);
 
   const switchDivision = (division: number) => {
-    if (division !== 4 && !canAccessAllDivisions) {
+    // Allow Division 1 and 4 for all FC+, others require elevated access
+    if (division !== 1 && division !== 4 && !canAccessAllDivisions) {
       return;
     }
     setCurrentDivision(division);
@@ -124,7 +125,7 @@ export default function WalletPage() {
         {/* Division Tabs */}
         <div className="mb-6 flex gap-2 flex-wrap">
           {[1, 2, 3, 4, 5, 6, 7].map((division) => {
-            const isLocked = division !== 4 && !canAccessAllDivisions;
+            const isLocked = division !== 1 && division !== 4 && !canAccessAllDivisions;
             const isActive = division === currentDivision;
 
             return (
@@ -133,11 +134,7 @@ export default function WalletPage() {
                 variant={isActive ? 'primary' : 'secondary'}
                 onClick={() => switchDivision(division)}
                 disabled={isLocked}
-                title={
-                  isLocked
-                    ? 'Accountant, Council, or Admin access required'
-                    : `Division ${division}`
-                }
+                title={isLocked ? 'Access restricted' : `Division ${division}`}
               >
                 Division {division}
               </Button>
