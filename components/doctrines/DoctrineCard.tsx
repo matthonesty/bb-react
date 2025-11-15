@@ -147,7 +147,6 @@ export function DoctrineCard({ doctrine, canManage, onDelete }: DoctrineCardProp
         lowSlotModules={lowSlotModules}
         rigModules={rigModules}
         cargoItems={cargoItems}
-        showCopyButton={false}
         notes={doctrine.notes}
       />
     </Card>
