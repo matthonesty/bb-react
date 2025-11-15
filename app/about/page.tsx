@@ -23,8 +23,7 @@ import {
   Info,
   Calendar,
   AlertCircle,
-  CheckCircle,
-  Sparkles
+  CheckCircle
 } from 'lucide-react';
 
 export default function AboutPage() {
@@ -144,10 +143,6 @@ export default function AboutPage() {
         <div className="mb-16">
           {/* Title with decorative elements */}
           <div className="text-center mb-10">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 mb-4">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-sm font-semibold text-primary">EVE Online&apos;s Premier NPSI Community</span>
-            </div>
             <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl mb-4">
               About Bombers Bar
             </h1>
