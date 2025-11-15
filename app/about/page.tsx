@@ -241,14 +241,9 @@ export default function AboutPage() {
             <div className="mb-6">
               <h3 className="text-xl font-bold text-foreground mb-4">How to Submit for SRP</h3>
               <p className="text-foreground-muted mb-4">
-                Search <span className="font-semibold text-foreground">&quot;Vova Nalentis&quot;</span> in-game and send her an EVE mail with:
+                Send an EVE mail to <span className="font-semibold text-foreground">&quot;Bombers Bar SRP&quot;</span> with a link to your zKillboard or in-game loss mail.
               </p>
-              <ul className="space-y-2 ml-6 list-disc text-foreground-muted">
-                <li>Name of your FC</li>
-                <li>The killmail link</li>
-                <li>For T3 or expensive hunter ships: Amount of donations received from the fleet</li>
-              </ul>
-              <div className="mt-4 rounded-md bg-background-secondary p-4 text-sm">
+              <div className="rounded-md bg-background-secondary p-4 text-sm">
                 <strong className="text-foreground">Important:</strong> Killmails older than 1 week are no longer eligible for SRP. Submit on time!
               </div>
             </div>
@@ -261,7 +256,7 @@ export default function AboutPage() {
                   <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent"></div>
                 </div>
               ) : (
-                <>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {Object.entries(
                     shipTypes.reduce((acc, ship) => {
                       if (!acc[ship.group_name]) {
@@ -271,26 +266,25 @@ export default function AboutPage() {
                       return acc;
                     }, {} as Record<string, typeof shipTypes>)
                   ).map(([groupName, ships]) => (
-                    <div key={groupName} className="mb-6 last:mb-0">
-                      <h4 className="font-semibold text-foreground mb-3">{groupName}</h4>
-                      <div className="space-y-2 text-sm">
+                    <div key={groupName} className="rounded-lg border border-border bg-surface p-4">
+                      <h4 className="font-semibold text-foreground mb-3 text-sm uppercase tracking-wider">
+                        {groupName}
+                      </h4>
+                      <div className="space-y-2">
                         {ships.map((ship) => (
-                          <div
-                            key={ship.type_name}
-                            className="flex justify-between items-center p-2 rounded bg-background-secondary"
-                          >
-                            <span className="text-foreground-muted">{ship.type_name}</span>
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-foreground">
-                                {(ship.base_payout / 1000000).toFixed(0)}m ISK
+                          <div key={ship.type_name} className="flex justify-between items-start text-xs">
+                            <span className="text-foreground-muted flex-1 mr-2">{ship.type_name}</span>
+                            <div className="flex flex-col items-end">
+                              <span className="font-semibold text-foreground whitespace-nowrap">
+                                {(ship.base_payout / 1000000).toFixed(0)}m
                               </span>
                               {ship.polarized_payout && (
-                                <span className="text-xs text-foreground-muted">
-                                  ({(ship.polarized_payout / 1000000).toFixed(0)}m polarized)
+                                <span className="text-xs text-foreground-muted whitespace-nowrap">
+                                  {(ship.polarized_payout / 1000000).toFixed(0)}m pol
                                 </span>
                               )}
                               {ship.fc_discretion && (
-                                <span className="text-xs text-foreground-muted">(FC discretion)</span>
+                                <span className="text-xs text-foreground-muted italic">FC disc.</span>
                               )}
                             </div>
                           </div>
@@ -298,7 +292,7 @@ export default function AboutPage() {
                       </div>
                     </div>
                   ))}
-                </>
+                </div>
               )}
 
               <div className="mt-6 rounded-md bg-primary/10 border border-primary/20 p-4 text-sm text-foreground-muted">
