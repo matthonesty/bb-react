@@ -112,7 +112,7 @@ export function Modal({
         )}
 
         {/* Content - Scrollable */}
-        <div className="px-6 py-4 overflow-y-auto flex-1 min-h-0">{children}</div>
+        <div className="px-6 py-4 pb-6 overflow-y-auto flex-1 min-h-0">{children}</div>
       </div>
     </div>
   );
