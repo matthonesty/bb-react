@@ -2,7 +2,7 @@ import { generatePageMetadata } from '@/lib/utils/metadata';
 
 export const metadata = generatePageMetadata({
   title: 'Bombing Intel',
-  description: 'Submit and view bombing intelligence reports',
+  description: 'Submit Intel to Bombers Bar',
 });
 
 export default function BombingIntelLayout({
