@@ -289,9 +289,9 @@ export default function AboutPage() {
           </Card>
         </section>
 
-        {/* Must Watch Videos */}
+        {/* Video Resources */}
         <section className="mb-16">
-          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Must Watch Videos</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-8 text-center">Video Resources</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <a
               href="https://youtu.be/EHhOhUhEOAU"
