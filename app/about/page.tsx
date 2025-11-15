@@ -239,6 +239,13 @@ export default function AboutPage() {
 
           <Card className="p-8">
             <div className="mb-6">
+              <p className="text-foreground-muted mb-6 text-center">
+                O&apos;bombercare is our Ship Replacement Program (SRP) that reimburses pilots for ship losses during Bombers Bar fleets.
+                Fly with confidence knowing your approved ships are covered!
+              </p>
+            </div>
+
+            <div className="mb-6">
               <h3 className="text-xl font-bold text-foreground mb-4">How to Submit for SRP</h3>
               <p className="text-foreground-muted mb-4">
                 Send an EVE mail to <span className="font-semibold text-foreground">&quot;Bombers Bar SRP&quot;</span> with a link to your zKillboard or in-game loss mail.
@@ -272,24 +279,28 @@ export default function AboutPage() {
                       </h4>
                       <div className="space-y-2">
                         {ships.map((ship) => (
-                          <div key={ship.type_name} className="flex justify-between items-start text-xs">
-                            <span className="text-foreground-muted flex-1 mr-2">
-                              {ship.type_name}
-                              {ship.notes && <span className="font-bold text-foreground ml-1">*</span>}
-                            </span>
-                            <div className="flex flex-col items-end">
-                              <span className="font-semibold text-foreground whitespace-nowrap">
-                                {(ship.base_payout / 1000000).toFixed(0)}m
-                              </span>
-                              {ship.polarized_payout && (
-                                <span className="text-xs text-foreground-muted whitespace-nowrap">
-                                  {(ship.polarized_payout / 1000000).toFixed(0)}m pol
+                          <div key={ship.type_name} className="text-xs">
+                            <div className="flex justify-between items-start">
+                              <span className="text-foreground-muted flex-1 mr-2">{ship.type_name}</span>
+                              <div className="flex flex-col items-end">
+                                <span className="font-semibold text-foreground whitespace-nowrap">
+                                  {(ship.base_payout / 1000000).toFixed(0)}m
                                 </span>
-                              )}
-                              {ship.fc_discretion && (
-                                <span className="text-xs text-foreground-muted italic">FC disc.</span>
-                              )}
+                                {ship.polarized_payout && (
+                                  <span className="text-xs text-foreground-muted whitespace-nowrap">
+                                    {(ship.polarized_payout / 1000000).toFixed(0)}m pol
+                                  </span>
+                                )}
+                                {ship.fc_discretion && (
+                                  <span className="text-xs text-foreground-muted italic">FC disc.</span>
+                                )}
+                              </div>
                             </div>
+                            {ship.notes && (
+                              <div className="text-xs text-foreground-muted italic mt-0.5">
+                                * {ship.notes}
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -297,28 +308,6 @@ export default function AboutPage() {
                   ))}
                 </div>
               )}
-
-              {/* Ship Notes Legend */}
-              {shipTypes.some(ship => ship.notes) && (
-                <div className="mt-6 rounded-md bg-background-secondary p-4 text-xs">
-                  <div className="font-semibold text-foreground mb-2">
-                    <span className="font-bold">*</span> Additional Notes:
-                  </div>
-                  <div className="space-y-1 text-foreground-muted">
-                    {shipTypes
-                      .filter(ship => ship.notes)
-                      .map((ship) => (
-                        <div key={ship.type_name}>
-                          <span className="font-semibold text-foreground">{ship.type_name}:</span> {ship.notes}
-                        </div>
-                      ))}
-                  </div>
-                </div>
-              )}
-
-              <div className="mt-6 rounded-md bg-primary/10 border border-primary/20 p-4 text-sm text-foreground-muted">
-                <strong className="text-foreground">Note:</strong> Capsules are not covered. You typically receive ISK directly to your account without a reply mail.
-              </div>
             </div>
           </Card>
         </section>
